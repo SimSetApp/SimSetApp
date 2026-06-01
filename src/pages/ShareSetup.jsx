@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SIM_SETUP_PARAMS } from "../lib/simData";
@@ -128,6 +129,7 @@ export default function ShareSetup() {
           Shared via <Link to="/" className="text-primary hover:underline">SimSetApp</Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 }

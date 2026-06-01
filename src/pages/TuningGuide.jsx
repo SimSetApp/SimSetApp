@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TUNING_ARTICLES } from "../lib/tuningGuideData";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { BookOpen, Clock, ChevronRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -141,6 +142,7 @@ export default function TuningGuide() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

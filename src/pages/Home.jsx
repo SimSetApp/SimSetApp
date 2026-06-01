@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { CAR_LISTS } from "../lib/simData";
 
 const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/cfbbac601_generated_image.png";
@@ -192,6 +193,7 @@ export default function Home() {
         </div>
 
       </div>
+      <Footer />
     </div>
   );
 }

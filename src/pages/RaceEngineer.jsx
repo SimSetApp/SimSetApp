@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { base44 } from "@/api/base44Client";
 import { SIM_TITLES, CAR_LISTS } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
@@ -261,6 +262,7 @@ Do not be overly verbose. Quality over quantity.`;
           </p>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

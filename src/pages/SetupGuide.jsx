@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import CarSelector from "../components/CarSelector";
 import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
@@ -87,6 +88,7 @@ export default function SetupGuide() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }

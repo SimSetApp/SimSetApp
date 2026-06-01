@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { PROBLEMS, PROBLEM_CATEGORIES } from "../lib/problemSolverData";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Filter, Search, Wrench, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -187,6 +188,7 @@ export default function ProblemSolver() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
