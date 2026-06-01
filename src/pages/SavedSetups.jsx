@@ -7,7 +7,8 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -91,6 +92,17 @@ export default function SavedSetups() {
     (!filterCar || s.car === filterCar) &&
     (!filterTrack || s.track === filterTrack)
   );
+
+  const [copiedId, setCopiedId] = useState(null);
+
+  const shareSetup = (setup) => {
+    const data = { title: setup.title, sim_title: setup.sim_title, car: setup.car, track: setup.track, notes: setup.notes, parameters: setup.parameters };
+    const encoded = btoa(JSON.stringify(data));
+    const url = `${window.location.origin}/share?s=${encoded}`;
+    navigator.clipboard.writeText(url);
+    setCopiedId(setup.id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
   const openDetail = (setup) => setDetailSetup(setup);
@@ -225,14 +237,8 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                      <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground hidden sm:inline-flex" onClick={() => openDetail(setup)}>
-                        <Clock className="w-3.5 h-3.5 mr-1" /> Sessions
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 sm:hidden" onClick={() => openDetail(setup)}>
-                        <Clock className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
-                        <Pencil className="w-3.5 h-3.5" />
+                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={() => shareSetup(setup)}>
+                        {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Share2 className="w-3.5 h-3.5" />}
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
                         <Trash2 className="w-3.5 h-3.5" />

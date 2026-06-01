@@ -13,6 +13,7 @@ import ProblemSolver from './pages/ProblemSolver';
 import TuningGuide from './pages/TuningGuide';
 import SetupMethodology from './pages/SetupMethodology';
 import RaceEngineer from './pages/RaceEngineer';
+import ShareSetup from './pages/ShareSetup';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
       <Route path="/tuning-guide" element={<TuningGuide />} />
       <Route path="/methodology" element={<SetupMethodology />} />
       <Route path="/race-engineer" element={<RaceEngineer />} />
+      <Route path="/share" element={<ShareSetup />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
