@@ -207,7 +207,8 @@ export default function SavedSetups() {
                 {filteredSetups.map(setup => (
                   <div
                     key={setup.id}
-                    className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors"
+                    className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors cursor-pointer"
+                    onClick={() => openEdit(setup)}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
