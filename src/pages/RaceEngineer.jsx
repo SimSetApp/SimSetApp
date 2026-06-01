@@ -138,9 +138,9 @@ Do not be overly verbose. Quality over quantity.`;
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2">
-              <div className="relative">
-                <Bot className="w-6 h-6 text-primary" />
-                <Headphones className="w-3 h-3 text-primary absolute -top-0.5 -right-1" />
+              <div className="relative inline-flex items-center justify-center">
+                <Bot className="w-7 h-7 text-primary" />
+                <Headphones className="w-4 h-4 text-primary absolute -top-1 -right-1" />
               </div>
               AI Race Engineer
             </h1>
@@ -195,9 +195,9 @@ Do not be overly verbose. Quality over quantity.`;
         <div className="flex-1 flex flex-col min-h-0">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center py-8">
-              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 relative">
-                <Bot className="w-8 h-8 text-primary" />
-                <Headphones className="w-4 h-4 text-primary absolute top-2 right-2" />
+              <div className="h-18 w-18 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 relative">
+                <Bot className="w-9 h-9 text-primary" />
+                <Headphones className="w-5 h-5 text-primary absolute top-2.5 right-2.5" />
               </div>
               <h2 className="font-heading text-lg font-semibold mb-1">Ready to engineer your lap time</h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm mb-6">
