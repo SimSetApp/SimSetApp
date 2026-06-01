@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
 const GROUP_COLORS = [
-  { bg: "bg-amber-400/10",  border: "border-amber-400/30",  text: "text-amber-400",  slider: "[&_[role=slider]]:bg-amber-400" },
-  { bg: "bg-blue-400/10",   border: "border-blue-400/30",   text: "text-blue-400",   slider: "[&_[role=slider]]:bg-blue-400" },
-  { bg: "bg-green-400/10",  border: "border-green-400/30",  text: "text-green-400",  slider: "[&_[role=slider]]:bg-green-400" },
-  { bg: "bg-violet-400/10", border: "border-violet-400/30", text: "text-violet-400", slider: "[&_[role=slider]]:bg-violet-400" },
-  { bg: "bg-orange-400/10", border: "border-orange-400/30", text: "text-orange-400", slider: "[&_[role=slider]]:bg-orange-400" },
-  { bg: "bg-rose-400/10",   border: "border-rose-400/30",   text: "text-rose-400",   slider: "[&_[role=slider]]:bg-rose-400" },
-  { bg: "bg-cyan-400/10",   border: "border-cyan-400/30",   text: "text-cyan-400",   slider: "[&_[role=slider]]:bg-cyan-400" },
+  { bg: "bg-amber-400/10",  border: "border-amber-400/30",  text: "text-amber-400",  slider: "[&_[role=slider]]:bg-amber-400 [&_[role=slider]]:border-amber-400 [&>span>span]:bg-amber-400" },
+  { bg: "bg-blue-400/10",   border: "border-blue-400/30",   text: "text-blue-400",   slider: "[&_[role=slider]]:bg-blue-400 [&_[role=slider]]:border-blue-400 [&>span>span]:bg-blue-400" },
+  { bg: "bg-green-400/10",  border: "border-green-400/30",  text: "text-green-400",  slider: "[&_[role=slider]]:bg-green-400 [&_[role=slider]]:border-green-400 [&>span>span]:bg-green-400" },
+  { bg: "bg-violet-400/10", border: "border-violet-400/30", text: "text-violet-400", slider: "[&_[role=slider]]:bg-violet-400 [&_[role=slider]]:border-violet-400 [&>span>span]:bg-violet-400" },
+  { bg: "bg-orange-400/10", border: "border-orange-400/30", text: "text-orange-400", slider: "[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&>span>span]:bg-orange-400" },
+  { bg: "bg-rose-400/10",   border: "border-rose-400/30",   text: "text-rose-400",   slider: "[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&>span>span]:bg-rose-400" },
+  { bg: "bg-cyan-400/10",   border: "border-cyan-400/30",   text: "text-cyan-400",   slider: "[&_[role=slider]]:bg-cyan-400 [&_[role=slider]]:border-cyan-400 [&>span>span]:bg-cyan-400" },
 ];
 import { SIM_SETUP_PARAMS } from "../lib/simData";
 import { Slider } from "@/components/ui/slider";
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function ParamRow({ param, value, onChange }) {
+function ParamRow({ param, value, onChange, sliderClass = "" }) {
   const [inputVal, setInputVal] = useState("");
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
@@ -69,7 +69,7 @@ function ParamRow({ param, value, onChange }) {
         min={param.min}
         max={param.max}
         step={param.step}
-        className="w-full"
+        className={`w-full ${sliderClass}`}
       />
       <div className="flex justify-between text-[10px] text-muted-foreground/60 mt-0.5">
         <span>{param.min}{param.unit}</span>
@@ -108,6 +108,7 @@ function GroupSection({ group, values, onChange, colorIndex = 0 }) {
                   param={param}
                   value={values[param.key] ?? param.default}
                   onChange={onChange}
+                  sliderClass={color.slider}
                 />
               ))}
             </div>
