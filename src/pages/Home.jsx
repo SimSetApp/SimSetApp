@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Headphones } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -87,10 +87,7 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="font-heading text-sm tracking-wider shadow-lg shadow-primary/20">
                 <Link to="/race-engineer">
-                  <div className="relative inline-flex items-center mr-2">
-                    <Bot className="w-4 h-4" />
-                    <Headphones className="w-2.5 h-2.5 absolute -top-1 -right-1" />
-                  </div>
+                  <Bot className="w-4 h-4 mr-2" />
                   AI Race Engineer
                 </Link>
               </Button>
@@ -115,9 +112,8 @@ export default function Home() {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent pointer-events-none" />
             <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6">
-              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0 relative">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0">
                 <Bot className="w-8 h-8 text-primary" />
-                <Headphones className="w-5 h-5 text-primary absolute top-2.5 right-2.5" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
