@@ -114,7 +114,7 @@ export default function SavedSetups() {
                 {/* Sim filter */}
                 <select
                   value={filterSim}
-                  onChange={e => setFilterSim(e.target.value)}
+                  onChange={e => { setFilterSim(e.target.value); setFilterCar(""); setFilterTrack(""); }}
                   className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">All Sims</option>
