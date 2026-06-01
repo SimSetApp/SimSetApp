@@ -3,11 +3,39 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import Navbar from "../components/Navbar";
 import SaveSetupDialog from "../components/SaveSetupDialog";
+import TyrePressureCalc from "../components/TyrePressureCalc";
+import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { SIM_SETUP_PARAMS } from "../lib/simData";
 
-const EMPTY_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/54a49a89f_generated_image.png";
+function SetupParamsSummary({ sim, parameters }) {
+  const groups = sim && SIM_SETUP_PARAMS[sim];
+  if (!groups || !parameters || Object.keys(parameters).length === 0) return null;
+  
+  // Show just a few key values
+  const highlights = ["rear_wing", "front_splitter", "brake_bias", "tc1", "tc", "diff_power"];
+  const shown = [];
+  groups.forEach(g => g.params.forEach(p => {
+    if (highlights.includes(p.key) && parameters[p.key] !== undefined) {
+      shown.push({ label: p.label, value: parameters[p.key], unit: p.unit });
+    }
+  }));
+
+  if (shown.length === 0) return null;
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      {shown.slice(0, 4).map(({ label, value, unit }) => (
+        <Badge key={label} variant="outline" className="text-xs font-mono">
+          {label}: {typeof value === 'number' && value % 1 !== 0 ? value.toFixed(1) : value}{unit}
+        </Badge>
+      ))}
+    </div>
+  );
+}
 
 export default function SavedSetups() {
   const queryClient = useQueryClient();
@@ -28,114 +56,129 @@ export default function SavedSetups() {
     },
   });
 
-  const openEdit = (setup) => {
-    setEditSetup(setup);
-    setDialogOpen(true);
-  };
-
-  const openCreate = () => {
-    setEditSetup(null);
-    setDialogOpen(true);
-  };
+  const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
+  const openCreate = () => { setEditSetup(null); setDialogOpen(true); };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
-              My Garage
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your saved setups — always ready for race day.
-            </p>
-          </div>
-          <Button onClick={openCreate} className="font-heading text-xs tracking-wider">
-            <Plus className="w-4 h-4 mr-1.5" />
-            New Setup
-          </Button>
+        <div className="mb-8">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">My Garage</h1>
+          <p className="text-sm text-muted-foreground mt-1">Setups, tyre pressures, and fuel strategy — all in one place.</p>
         </div>
 
-        {isLoading && (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          </div>
-        )}
+        <Tabs defaultValue="garage">
+          <TabsList className="bg-secondary mb-6 w-full sm:w-auto">
+            <TabsTrigger value="garage" className="font-heading text-xs tracking-wider">
+              <FolderOpen className="w-3.5 h-3.5 mr-1.5" /> Garage
+            </TabsTrigger>
+            <TabsTrigger value="tyres" className="font-heading text-xs tracking-wider">
+              <Circle className="w-3.5 h-3.5 mr-1.5" /> Tyre Pressures
+            </TabsTrigger>
+            <TabsTrigger value="fuel" className="font-heading text-xs tracking-wider">
+              <Fuel className="w-3.5 h-3.5 mr-1.5" /> Fuel Strategy
+            </TabsTrigger>
+          </TabsList>
 
-        {!isLoading && setups.length === 0 && (
-          <div className="text-center py-20">
-            <img src={EMPTY_IMG} alt="" className="w-48 h-48 mx-auto rounded-2xl object-cover mb-6 opacity-60" />
-            <h3 className="font-heading text-lg font-semibold tracking-wide">Your garage is empty</h3>
-            <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
-              Save your first setup and never start from scratch again.
-            </p>
-            <Button onClick={openCreate} className="mt-6 font-heading text-xs tracking-wider">
-              <Plus className="w-4 h-4 mr-1.5" />
-              Save First Setup
-            </Button>
-          </div>
-        )}
+          {/* Garage tab */}
+          <TabsContent value="garage">
+            <div className="flex justify-end mb-4">
+              <Button onClick={openCreate} className="font-heading text-xs tracking-wider">
+                <Plus className="w-4 h-4 mr-1.5" /> New Setup
+              </Button>
+            </div>
 
-        {!isLoading && setups.length > 0 && (
-          <div className="space-y-3">
-            {setups.map(setup => (
-              <div
-                key={setup.id}
-                className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-heading text-sm font-semibold tracking-wide truncate">
-                      {setup.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-3 mt-2">
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Car className="w-3 h-3 text-primary" />
-                        {setup.car}
-                      </span>
-                      <span className="text-xs text-border">•</span>
-                      <span className="text-xs text-muted-foreground">{setup.sim_title}</span>
-                      {setup.track && (
-                        <>
-                          <span className="text-xs text-border">•</span>
-                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <MapPin className="w-3 h-3" />
-                            {setup.track}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    {setup.notes && (
-                      <div className="mt-3 flex items-start gap-2">
-                        <FileText className="w-3 h-3 text-muted-foreground mt-0.5 shrink-0" />
-                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                          {setup.notes}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
-                      <Pencil className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
+            {isLoading && (
+              <div className="flex justify-center py-20">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
-            ))}
-          </div>
-        )}
+            )}
+
+            {!isLoading && setups.length === 0 && (
+              <div className="text-center py-20">
+                <SlidersHorizontal className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
+                <h3 className="font-heading text-lg font-semibold tracking-wide">Your garage is empty</h3>
+                <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
+                  Save your first setup with full parameter values — never start from scratch again.
+                </p>
+                <Button onClick={openCreate} className="mt-6 font-heading text-xs tracking-wider">
+                  <Plus className="w-4 h-4 mr-1.5" /> Save First Setup
+                </Button>
+              </div>
+            )}
+
+            {!isLoading && setups.length > 0 && (
+              <div className="space-y-3">
+                {setups.map(setup => (
+                  <div
+                    key={setup.id}
+                    className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-heading text-sm font-semibold tracking-wide truncate">{setup.title}</h3>
+                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Car className="w-3 h-3 text-primary" />
+                            {setup.car}
+                          </span>
+                          <span className="text-xs text-border">•</span>
+                          <span className="text-xs text-muted-foreground">{setup.sim_title}</span>
+                          {setup.track && (
+                            <>
+                              <span className="text-xs text-border">•</span>
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <MapPin className="w-3 h-3" />{setup.track}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <SetupParamsSummary sim={setup.sim_title} parameters={setup.parameters} />
+                        {setup.notes && (
+                          <div className="mt-2 flex items-start gap-2">
+                            <FileText className="w-3 h-3 text-muted-foreground mt-0.5 shrink-0" />
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{setup.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Tyre calculator */}
+          <TabsContent value="tyres">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Tyre Pressure Calculator</h2>
+              <p className="text-xs text-muted-foreground mb-6">Calculates cold start pressures based on track and ambient temperatures.</p>
+              <TyrePressureCalc />
+            </div>
+          </TabsContent>
+
+          {/* Fuel calculator */}
+          <TabsContent value="fuel">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Fuel Strategy Calculator</h2>
+              <p className="text-xs text-muted-foreground mb-6">Work out exactly how much fuel you need for any race format.</p>
+              <FuelCalc />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {dialogOpen && (
-        <SaveSetupDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          editSetup={editSetup}
-        />
+        <SaveSetupDialog open={dialogOpen} onOpenChange={setDialogOpen} editSetup={editSetup} />
       )}
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
