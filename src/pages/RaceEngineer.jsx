@@ -6,7 +6,7 @@ import { SIM_TITLES, CAR_LISTS } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw } from "lucide-react";
+import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw, Headphones } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 const QUICK_QUESTIONS = [
@@ -138,7 +138,10 @@ Do not be overly verbose. Quality over quantity.`;
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2">
-              <Bot className="w-6 h-6 text-primary" />
+              <div className="relative">
+                <Bot className="w-6 h-6 text-primary" />
+                <Headphones className="w-3 h-3 text-primary absolute -top-0.5 -right-1" />
+              </div>
               AI Race Engineer
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">Describe your handling problem — get specific setup advice</p>
@@ -192,8 +195,9 @@ Do not be overly verbose. Quality over quantity.`;
         <div className="flex-1 flex flex-col min-h-0">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center py-8">
-              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 relative">
                 <Bot className="w-8 h-8 text-primary" />
+                <Headphones className="w-4 h-4 text-primary absolute top-2 right-2" />
               </div>
               <h2 className="font-heading text-lg font-semibold mb-1">Ready to engineer your lap time</h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm mb-6">
