@@ -63,14 +63,14 @@ export default function SavedSetups() {
     },
   });
 
-  // Full lists from simData, scoped to selected sim
+  // Full lists from simData, scoped strictly to selected sim
   const allSims = SIM_TITLES;
   const allCars = filterSim && CAR_LISTS[filterSim]
     ? Object.values(CAR_LISTS[filterSim]).flat().sort()
-    : [...new Set(Object.values(CAR_LISTS).flatMap(classes => Object.values(classes).flat()))].sort();
+    : [];
   const allTracks = filterSim && TRACK_LISTS[filterSim]
     ? [...TRACK_LISTS[filterSim]].sort()
-    : [...new Set(Object.values(TRACK_LISTS).flat())].sort();
+    : [];
 
   const filteredSetups = setups.filter(s =>
     (!filterSim || s.sim_title === filterSim) &&
@@ -124,18 +124,20 @@ export default function SavedSetups() {
                 <select
                   value={filterCar}
                   onChange={e => setFilterCar(e.target.value)}
-                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  disabled={!filterSim}
+                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <option value="">All Cars</option>
+                  <option value="">{filterSim ? "All Cars" : "Select sim first"}</option>
                   {allCars.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 {/* Track filter */}
                 <select
                   value={filterTrack}
                   onChange={e => setFilterTrack(e.target.value)}
-                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  disabled={!filterSim}
+                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <option value="">All Tracks</option>
+                  <option value="">{filterSim ? "All Tracks" : "Select sim first"}</option>
                   {allTracks.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
                 {(filterSim || filterCar || filterTrack) && (
