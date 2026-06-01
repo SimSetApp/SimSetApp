@@ -132,6 +132,38 @@ export const CLASS_SETUP_DEFAULTS = {
       spring_front: 550, spring_rear: 600, arb_front: 5, arb_rear: 4, bump_front: 8, bump_rear: 8, rebound_front: 8, rebound_rear: 8,
       diff_preload: 75, diff_power: 75, diff_coast: 55, brake_bias: 55.0, brake_force: 100,
       tc: 0, abs: 0
+    },
+    "NASCAR Truck": {
+      tyre_pressure_fl: 25.0, tyre_pressure_fr: 29.0, tyre_pressure_rl: 21.0, tyre_pressure_rr: 31.0,
+      front_downforce: 3, rear_downforce: 4, ride_height_front: 3.75, ride_height_rear: 4.0,
+      camber_front: -2.0, camber_rear: -0.5, toe_front: 0.04, toe_rear: 0.04, caster: 7.0,
+      spring_front: 500, spring_rear: 550, arb_front: 4, arb_rear: 4, bump_front: 8, bump_rear: 8, rebound_front: 8, rebound_rear: 8,
+      diff_preload: 70, diff_power: 72, diff_coast: 52, brake_bias: 55.0, brake_force: 100,
+      tc: 0, abs: 0
+    },
+    "Mazda": {
+      tyre_pressure_fl: 30.0, tyre_pressure_fr: 30.0, tyre_pressure_rl: 29.5, tyre_pressure_rr: 29.5,
+      front_downforce: 2, rear_downforce: 3, ride_height_front: 3.0, ride_height_rear: 3.5,
+      camber_front: -2.5, camber_rear: -1.5, toe_front: -0.04, toe_rear: 0.06, caster: 9.0,
+      spring_front: 300, spring_rear: 350, arb_front: 2, arb_rear: 2, bump_front: 5, bump_rear: 5, rebound_front: 5, rebound_rear: 5,
+      diff_preload: 20, diff_power: 40, diff_coast: 20, brake_bias: 56.0, brake_force: 100,
+      tc: 0, abs: 0
+    },
+    "Oval / Dirt": {
+      tyre_pressure_fl: 24.0, tyre_pressure_fr: 28.0, tyre_pressure_rl: 20.0, tyre_pressure_rr: 30.0,
+      front_downforce: 3, rear_downforce: 4, ride_height_front: 4.0, ride_height_rear: 4.25,
+      camber_front: -3.0, camber_rear: -0.5, toe_front: 0.06, toe_rear: 0.06, caster: 8.0,
+      spring_front: 450, spring_rear: 500, arb_front: 4, arb_rear: 3, bump_front: 7, bump_rear: 7, rebound_front: 7, rebound_rear: 7,
+      diff_preload: 60, diff_power: 70, diff_coast: 50, brake_bias: 54.5, brake_force: 100,
+      tc: 0, abs: 0
+    },
+    "Radical / Sports": {
+      tyre_pressure_fl: 27.0, tyre_pressure_fr: 27.0, tyre_pressure_rl: 26.5, tyre_pressure_rr: 26.5,
+      front_downforce: 5, rear_downforce: 7, ride_height_front: 2.25, ride_height_rear: 2.75,
+      camber_front: -3.5, camber_rear: -2.0, toe_front: -0.08, toe_rear: 0.10, caster: 12.0,
+      spring_front: 600, spring_rear: 650, arb_front: 5, arb_rear: 4, bump_front: 9, bump_rear: 9, rebound_front: 9, rebound_rear: 9,
+      diff_preload: 40, diff_power: 60, diff_coast: 30, brake_bias: 57.0, brake_force: 100,
+      tc: 2, abs: 2
     }
   },
 
@@ -352,6 +384,38 @@ export const CLASS_SETUP_DEFAULTS = {
       arb_front: 7, arb_rear: 5, spring_front: 120, spring_rear: 140, bump_front: 12, bump_rear: 12, rebound_front: 12, rebound_rear: 12,
       diff_preload: 65, diff_power: 72, diff_coast: 44, brake_bias: 58.0, brake_duct_front: 4, brake_duct_rear: 3,
       tc: 3, abs: 2, engine_map: 2
+    },
+    "Copa Truck": {
+      tyre_pressure_fl: 28.0, tyre_pressure_fr: 30.0, tyre_pressure_rl: 26.0, tyre_pressure_rr: 28.0,
+      front_wing: 2, rear_wing: 3, ride_height_front: 80, ride_height_rear: 85,
+      camber_front: -1.0, camber_rear: -0.3, toe_front: 0.0, toe_rear: 0.1, caster: 5.0,
+      arb_front: 3, arb_rear: 2, spring_front: 55, spring_rear: 65, bump_front: 6, bump_rear: 6, rebound_front: 6, rebound_rear: 6,
+      diff_preload: 80, diff_power: 85, diff_coast: 60, brake_bias: 55.0, brake_duct_front: 2, brake_duct_rear: 2,
+      tc: 3, abs: 3, engine_map: 3
+    },
+    "Touring / Road": {
+      tyre_pressure_fl: 30.0, tyre_pressure_fr: 30.0, tyre_pressure_rl: 29.5, tyre_pressure_rr: 29.5,
+      front_wing: 2, rear_wing: 3, ride_height_front: 68, ride_height_rear: 73,
+      camber_front: -2.5, camber_rear: -1.5, toe_front: -0.15, toe_rear: 0.4, caster: 9.5,
+      arb_front: 3, arb_rear: 2, spring_front: 60, spring_rear: 70, bump_front: 5, bump_rear: 5, rebound_front: 5, rebound_rear: 5,
+      diff_preload: 25, diff_power: 40, diff_coast: 20, brake_bias: 56.0, brake_duct_front: 1, brake_duct_rear: 1,
+      tc: 5, abs: 4, engine_map: 3
+    },
+    "Historic F1": {
+      tyre_pressure_fl: 26.0, tyre_pressure_fr: 26.0, tyre_pressure_rl: 25.5, tyre_pressure_rr: 25.5,
+      front_wing: 7, rear_wing: 9, ride_height_front: 50, ride_height_rear: 58,
+      camber_front: -3.0, camber_rear: -1.5, toe_front: -0.1, toe_rear: 0.05, caster: 11.0,
+      arb_front: 5, arb_rear: 4, spring_front: 130, spring_rear: 160, bump_front: 10, bump_rear: 10, rebound_front: 10, rebound_rear: 10,
+      diff_preload: 25, diff_power: 55, diff_coast: 18, brake_bias: 58.5, brake_duct_front: 2, brake_duct_rear: 2,
+      tc: 0, abs: 0, engine_map: 2
+    },
+    "Touring Car Historic": {
+      tyre_pressure_fl: 28.5, tyre_pressure_fr: 28.5, tyre_pressure_rl: 28.0, tyre_pressure_rr: 28.0,
+      front_wing: 2, rear_wing: 3, ride_height_front: 65, ride_height_rear: 72,
+      camber_front: -2.8, camber_rear: -1.8, toe_front: -0.1, toe_rear: 0.4, caster: 9.5,
+      arb_front: 3, arb_rear: 2, spring_front: 60, spring_rear: 70, bump_front: 5, bump_rear: 5, rebound_front: 5, rebound_rear: 5,
+      diff_preload: 30, diff_power: 45, diff_coast: 22, brake_bias: 56.5, brake_duct_front: 2, brake_duct_rear: 1,
+      tc: 0, abs: 0, engine_map: 3
     }
   },
 
@@ -427,6 +491,22 @@ export const CLASS_SETUP_DEFAULTS = {
       camber_front: -1.8, camber_rear: -1.2, toe_front: -0.15, toe_rear: 0.3,
       lsd_initial: 20, lsd_accel: 30, lsd_decel: 20, brake_balance: 10,
       downforce_front: 500, downforce_rear: 550
+    },
+    "N100 (Kei Cars)": {
+      tyre_pressure_fl: 270, tyre_pressure_fr: 270, tyre_pressure_rl: 265, tyre_pressure_rr: 265,
+      ride_height_front: 115, ride_height_rear: 120, spring_front: 3, spring_rear: 4,
+      damper_ext_front: 3, damper_ext_rear: 3, damper_comp_front: 2, damper_comp_rear: 2, arb_front: 1, arb_rear: 1,
+      camber_front: -0.8, camber_rear: -0.5, toe_front: 0.0, toe_rear: 0.1,
+      lsd_initial: 5, lsd_accel: 10, lsd_decel: 8, brake_balance: 11,
+      downforce_front: 0, downforce_rear: 0
+    },
+    "Gr.X / Vision GT": {
+      tyre_pressure_fl: 215, tyre_pressure_fr: 215, tyre_pressure_rl: 210, tyre_pressure_rr: 210,
+      ride_height_front: 75, ride_height_rear: 80, spring_front: 18, spring_rear: 20,
+      damper_ext_front: 7, damper_ext_rear: 7, damper_comp_front: 7, damper_comp_rear: 7, arb_front: 6, arb_rear: 5,
+      camber_front: -3.0, camber_rear: -2.0, toe_front: -0.3, toe_rear: 0.5,
+      lsd_initial: 30, lsd_accel: 40, lsd_decel: 30, brake_balance: 9,
+      downforce_front: 750, downforce_rear: 800
     }
   }
 };
