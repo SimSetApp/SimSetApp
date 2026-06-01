@@ -10,8 +10,11 @@ const CAR_CLASSES = Object.keys(TYRE_PRESSURE_BASES);
 const SIM_UNIT = {
   "Assetto Corsa Competizione": { unit: "PSI", key: "acc", decimals: 1 },
   "iRacing": { unit: "PSI", key: "iracing", decimals: 1 },
-  "rFactor 2": { unit: "kPa", key: "rf2_kpa", decimals: 0 },
-  "Automobilista 2": { unit: "PSI", key: "ams2", decimals: 1 }
+  "Assetto Corsa": { unit: "PSI", key: "ac", decimals: 1 },
+  "Assetto Corsa Evo": { unit: "PSI", key: "ace", decimals: 1 },
+  "Le Mans Ultimate": { unit: "kPa", key: "lmu_kpa", decimals: 0 },
+  "Automobilista 2": { unit: "PSI", key: "ams2", decimals: 1 },
+  "Gran Turismo 7": { unit: "kPa", key: "gt7_kpa", decimals: 0 }
 };
 
 function pressureColor(target, value) {

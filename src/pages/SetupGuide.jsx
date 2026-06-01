@@ -61,8 +61,8 @@ export default function SetupGuide() {
           </TabsList>
 
           <TabsContent value="parameters" className="space-y-4">
-            {SETUP_PARAMETERS.map(cat => (
-              <SetupCategorySection key={cat.category} category={cat} />
+            {SETUP_PARAMETERS.map((cat, idx) => (
+              <SetupCategorySection key={cat.category} category={cat} index={idx} />
             ))}
           </TabsContent>
 

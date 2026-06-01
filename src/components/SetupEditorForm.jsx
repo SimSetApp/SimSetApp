@@ -1,4 +1,14 @@
 import { useState, useEffect } from "react";
+
+const GROUP_COLORS = [
+  { bg: "bg-amber-400/10",  border: "border-amber-400/30",  text: "text-amber-400",  slider: "[&_[role=slider]]:bg-amber-400" },
+  { bg: "bg-blue-400/10",   border: "border-blue-400/30",   text: "text-blue-400",   slider: "[&_[role=slider]]:bg-blue-400" },
+  { bg: "bg-green-400/10",  border: "border-green-400/30",  text: "text-green-400",  slider: "[&_[role=slider]]:bg-green-400" },
+  { bg: "bg-violet-400/10", border: "border-violet-400/30", text: "text-violet-400", slider: "[&_[role=slider]]:bg-violet-400" },
+  { bg: "bg-orange-400/10", border: "border-orange-400/30", text: "text-orange-400", slider: "[&_[role=slider]]:bg-orange-400" },
+  { bg: "bg-rose-400/10",   border: "border-rose-400/30",   text: "text-rose-400",   slider: "[&_[role=slider]]:bg-rose-400" },
+  { bg: "bg-cyan-400/10",   border: "border-cyan-400/30",   text: "text-cyan-400",   slider: "[&_[role=slider]]:bg-cyan-400" },
+];
 import { SIM_SETUP_PARAMS } from "../lib/simData";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -30,16 +40,17 @@ function ParamRow({ param, value, onChange }) {
   );
 }
 
-function GroupSection({ group, values, onChange }) {
+function GroupSection({ group, values, onChange, colorIndex = 0 }) {
+  const color = GROUP_COLORS[colorIndex % GROUP_COLORS.length];
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className={`rounded-xl border ${color.border} bg-card overflow-hidden`}>
       <button
         onClick={() => setOpen(!open)}
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/40 transition-colors"
       >
-        <span className="font-heading text-xs font-semibold tracking-wider text-primary">{group.group}</span>
+        <span className={`font-heading text-xs font-semibold tracking-wider ${color.text}`}>{group.group}</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">{group.params.length} params</span>
           <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
@@ -99,12 +110,13 @@ export default function SetupEditorForm({ sim, parameters, onChange }) {
 
   return (
     <div className="space-y-3">
-      {groups.map(group => (
+      {groups.map((group, idx) => (
         <GroupSection
           key={group.group}
           group={group}
           values={parameters}
           onChange={handleChange}
+          colorIndex={idx}
         />
       ))}
     </div>
