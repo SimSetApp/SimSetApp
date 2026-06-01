@@ -92,3 +92,20 @@
     @apply bg-background text-foreground font-body;
   }
 }
+
+@layer components {
+  select:hover {
+    @apply border-primary/40 bg-secondary/80;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  [role="option"]:hover,
+  [data-radix-collection-item]:hover {
+    @apply bg-primary/10;
+  }
+
+  [role="tab"]:hover:not([data-state="active"]) {
+    @apply bg-muted/80 text-foreground;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+}
