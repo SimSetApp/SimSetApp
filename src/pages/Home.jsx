@@ -30,7 +30,7 @@ export default function Home() {
               <img src={LOGO_URL} alt="SimSetApp" className="h-20 sm:h-24 w-auto" />
             </div>
             <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
-              Your racing engineer in your pocket. Understand every setup parameter,
+              The racing engineer in your pocket. Understand every setup parameter,
               browse real car lists from the biggest sims, and save your winning setups.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
