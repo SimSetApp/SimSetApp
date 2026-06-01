@@ -7,7 +7,8 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { SIM_SETUP_PARAMS } from "../lib/simData";
@@ -45,6 +46,9 @@ export default function SavedSetups() {
   const [editSetup, setEditSetup] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [detailSetup, setDetailSetup] = useState(null);
+  const [filterSim, setFilterSim] = useState("");
+  const [filterCar, setFilterCar] = useState("");
+  const [filterTrack, setFilterTrack] = useState("");
 
   const { data: setups = [], isLoading } = useQuery({
     queryKey: ["saved-setups"],
@@ -58,6 +62,16 @@ export default function SavedSetups() {
       setDeleteId(null);
     },
   });
+
+  const uniqueSims = [...new Set(setups.map(s => s.sim_title).filter(Boolean))];
+  const uniqueCars = [...new Set(setups.map(s => s.car).filter(Boolean))];
+  const uniqueTracks = [...new Set(setups.map(s => s.track).filter(Boolean))];
+
+  const filteredSetups = setups.filter(s =>
+    (!filterSim || s.sim_title === filterSim) &&
+    (!filterCar || s.car === filterCar) &&
+    (!filterTrack || s.track === filterTrack)
+  );
 
   const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
   const openDetail = (setup) => setDetailSetup(setup);
@@ -90,7 +104,44 @@ export default function SavedSetups() {
 
           {/* Garage tab */}
           <TabsContent value="garage">
-            <div className="flex justify-end mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="flex flex-wrap gap-2">
+                {/* Sim filter */}
+                <select
+                  value={filterSim}
+                  onChange={e => setFilterSim(e.target.value)}
+                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">All Sims</option>
+                  {uniqueSims.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                {/* Car filter */}
+                <select
+                  value={filterCar}
+                  onChange={e => setFilterCar(e.target.value)}
+                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">All Cars</option>
+                  {uniqueCars.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                {/* Track filter */}
+                <select
+                  value={filterTrack}
+                  onChange={e => setFilterTrack(e.target.value)}
+                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">All Tracks</option>
+                  {uniqueTracks.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                {(filterSim || filterCar || filterTrack) && (
+                  <button
+                    onClick={() => { setFilterSim(""); setFilterCar(""); setFilterTrack(""); }}
+                    className="h-8 px-2 rounded-lg border border-border bg-secondary text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground"
+                  >
+                    <X className="w-3 h-3" /> Clear
+                  </button>
+                )}
+              </div>
               <Button onClick={openCreate} className="font-heading text-xs tracking-wider">
                 <Plus className="w-4 h-4 mr-1.5" /> New Setup
               </Button>
@@ -117,7 +168,10 @@ export default function SavedSetups() {
 
             {!isLoading && setups.length > 0 && (
               <div className="space-y-3">
-                {setups.map(setup => (
+                {filteredSetups.length === 0 && (
+                  <div className="text-center py-12 text-sm text-muted-foreground">No setups match the selected filters.</div>
+                )}
+                {filteredSetups.map(setup => (
                   <div
                     key={setup.id}
                     className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors"
