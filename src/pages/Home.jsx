@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import { CAR_LISTS } from "../lib/simData";
 
-const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/032abc5d6_generated_image.png";
+const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/f5dfed07d_generated_image.png";
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
 
 const simStats = Object.entries(CAR_LISTS).map(([name, groups]) => ({
