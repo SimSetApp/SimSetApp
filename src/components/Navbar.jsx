@@ -10,6 +10,7 @@ const navItems = [
   { path: "/problem-solver", label: "Problem Solver" },
   { path: "/tuning-guide", label: "Tuning Guide" },
   { path: "/methodology", label: "Methodology" },
+  { path: "/race-engineer", label: "Race Engineer" },
   { path: "/saved-setups", label: "My Garage" },
 ];
 
