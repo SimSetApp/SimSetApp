@@ -11,7 +11,7 @@ import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { SIM_SETUP_PARAMS } from "../lib/simData";
+import { SIM_SETUP_PARAMS, SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
 import SetupDetailSheet from "../components/SetupDetailSheet";
 import SetupComparison from "../components/SetupComparison";
 
@@ -63,9 +63,14 @@ export default function SavedSetups() {
     },
   });
 
-  const uniqueSims = [...new Set(setups.map(s => s.sim_title).filter(Boolean))];
-  const uniqueCars = [...new Set(setups.map(s => s.car).filter(Boolean))];
-  const uniqueTracks = [...new Set(setups.map(s => s.track).filter(Boolean))];
+  // Full lists from simData, filtered by selected sim where applicable
+  const allSims = SIM_TITLES;
+  const allCars = filterSim && CAR_LISTS[filterSim]
+    ? Object.values(CAR_LISTS[filterSim]).flat().sort()
+    : Object.values(CAR_LISTS).flatMap(classes => Object.values(classes).flat()).sort();
+  const allTracks = filterSim && TRACK_LISTS[filterSim]
+    ? TRACK_LISTS[filterSim]
+    : Object.values(TRACK_LISTS).flat().filter((v, i, a) => a.indexOf(v) === i).sort();
 
   const filteredSetups = setups.filter(s =>
     (!filterSim || s.sim_title === filterSim) &&
@@ -113,7 +118,7 @@ export default function SavedSetups() {
                   className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">All Sims</option>
-                  {uniqueSims.map(s => <option key={s} value={s}>{s}</option>)}
+                  {allSims.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 {/* Car filter */}
                 <select
@@ -122,7 +127,7 @@ export default function SavedSetups() {
                   className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">All Cars</option>
-                  {uniqueCars.map(c => <option key={c} value={c}>{c}</option>)}
+                  {allCars.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 {/* Track filter */}
                 <select
@@ -131,7 +136,7 @@ export default function SavedSetups() {
                   className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">All Tracks</option>
-                  {uniqueTracks.map(t => <option key={t} value={t}>{t}</option>)}
+                  {allTracks.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
                 {(filterSim || filterCar || filterTrack) && (
                   <button
