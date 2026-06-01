@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, Gauge } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import { CAR_LISTS } from "../lib/simData";
 
 const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/520ec606f_generated_image.png";
+const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
 
 const simStats = Object.entries(CAR_LISTS).map(([name, groups]) => ({
   name,
@@ -25,20 +26,11 @@ export default function Home() {
         </div>
         <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-24 sm:pt-28 sm:pb-32">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <Gauge className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-display text-xs font-bold tracking-widest text-primary uppercase">
-                Pit Wall
-              </span>
+            <div className="mb-6">
+              <img src={LOGO_URL} alt="SimSetApp" className="h-14 w-auto" />
             </div>
-            <h1 className="font-display text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
-              Dial in your
-              <span className="text-primary block">perfect setup</span>
-            </h1>
             <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
-              Your racing engineer in your pocket. Understand every setup parameter, 
+              Your racing engineer in your pocket. Understand every setup parameter,
               browse real car lists from the biggest sims, and save your winning setups.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

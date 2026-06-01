@@ -1,4 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
+
+const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
 import { Gauge, BookOpen, FolderOpen } from "lucide-react";
 
 const navItems = [
@@ -13,13 +15,8 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Gauge className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="font-display text-sm font-bold tracking-wider hidden sm:block">
-            PIT WALL
-          </span>
+        <Link to="/" className="flex items-center">
+          <img src={LOGO_URL} alt="SimSetApp" className="h-8 w-auto" />
         </Link>
         <div className="flex items-center gap-1">
           {navItems.map(({ path, label, icon: Icon }) => {
