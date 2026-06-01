@@ -63,14 +63,14 @@ export default function SavedSetups() {
     },
   });
 
-  // Full lists from simData, filtered by selected sim where applicable
+  // Full lists from simData, scoped to selected sim
   const allSims = SIM_TITLES;
   const allCars = filterSim && CAR_LISTS[filterSim]
     ? Object.values(CAR_LISTS[filterSim]).flat().sort()
-    : Object.values(CAR_LISTS).flatMap(classes => Object.values(classes).flat()).sort();
+    : [...new Set(Object.values(CAR_LISTS).flatMap(classes => Object.values(classes).flat()))].sort();
   const allTracks = filterSim && TRACK_LISTS[filterSim]
-    ? TRACK_LISTS[filterSim]
-    : Object.values(TRACK_LISTS).flat().filter((v, i, a) => a.indexOf(v) === i).sort();
+    ? [...TRACK_LISTS[filterSim]].sort()
+    : [...new Set(Object.values(TRACK_LISTS).flat())].sort();
 
   const filteredSetups = setups.filter(s =>
     (!filterSim || s.sim_title === filterSim) &&
