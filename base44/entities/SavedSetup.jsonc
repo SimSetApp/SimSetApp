@@ -1,0 +1,42 @@
+{
+  "name": "SavedSetup",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Setup Title"
+    },
+    "sim_title": {
+      "type": "string",
+      "title": "Sim Title",
+      "enum": [
+        "iRacing",
+        "Assetto Corsa Competizione",
+        "rFactor 2",
+        "Automobilista 2"
+      ]
+    },
+    "car": {
+      "type": "string",
+      "title": "Car"
+    },
+    "track": {
+      "type": "string",
+      "title": "Track"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "parameters": {
+      "type": "object",
+      "title": "Setup Parameters",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "title",
+    "sim_title",
+    "car"
+  ]
+}

@@ -6,7 +6,9 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
-// Add page imports here
+import Home from './pages/Home';
+import SetupGuide from './pages/SetupGuide';
+import SavedSetups from './pages/SavedSetups';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -34,7 +36,9 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route path="/" element={<Home />} />
+      <Route path="/setup-guide" element={<SetupGuide />} />
+      <Route path="/saved-setups" element={<SavedSetups />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
