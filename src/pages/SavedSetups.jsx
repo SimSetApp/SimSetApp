@@ -55,6 +55,11 @@ export default function SavedSetups() {
     queryFn: () => base44.entities.SavedSetup.list("-created_date"),
   });
 
+  const { data: customVehicles = [] } = useQuery({
+    queryKey: ["custom-vehicles"],
+    queryFn: () => base44.entities.CustomVehicle.list(),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.SavedSetup.delete(id),
     onSuccess: () => {
@@ -65,9 +70,12 @@ export default function SavedSetups() {
 
   // Full lists from simData, scoped strictly to selected sim (deduplicated)
   const allSims = SIM_TITLES;
-  const allCars = filterSim && CAR_LISTS[filterSim]
-    ? [...new Set(Object.values(CAR_LISTS[filterSim]).flat())].sort()
+  const customCarsForSim = filterSim
+    ? customVehicles.filter(v => v.sim_title === filterSim).map(v => v.name)
     : [];
+  const allCars = filterSim && CAR_LISTS[filterSim]
+    ? [...new Set([...Object.values(CAR_LISTS[filterSim]).flat(), ...customCarsForSim])].sort()
+    : filterSim ? [...new Set(customCarsForSim)].sort() : [];
   const allTracks = filterSim && TRACK_LISTS[filterSim]
     ? [...new Set(TRACK_LISTS[filterSim])].sort()
     : [];
