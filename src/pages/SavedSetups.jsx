@@ -7,10 +7,11 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { SIM_SETUP_PARAMS } from "../lib/simData";
+import SetupDetailSheet from "../components/SetupDetailSheet";
 
 function SetupParamsSummary({ sim, parameters }) {
   const groups = sim && SIM_SETUP_PARAMS[sim];
@@ -42,6 +43,7 @@ export default function SavedSetups() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editSetup, setEditSetup] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [detailSetup, setDetailSetup] = useState(null);
 
   const { data: setups = [], isLoading } = useQuery({
     queryKey: ["saved-setups"],
@@ -57,6 +59,7 @@ export default function SavedSetups() {
   });
 
   const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
+  const openDetail = (setup) => setDetailSetup(setup);
   const openCreate = () => { setEditSetup(null); setDialogOpen(true); };
 
   return (
@@ -143,13 +146,16 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
+                    <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground" onClick={() => openDetail(setup)}>
+                      <Clock className="w-3.5 h-3.5 mr-1" /> Sessions
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                     </div>
                   </div>
                 ))}
@@ -176,6 +182,12 @@ export default function SavedSetups() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <SetupDetailSheet
+        setup={detailSetup}
+        open={!!detailSetup}
+        onOpenChange={(o) => { if (!o) setDetailSetup(null); }}
+      />
 
       {dialogOpen && (
         <SaveSetupDialog open={dialogOpen} onOpenChange={setDialogOpen} editSetup={editSetup} />

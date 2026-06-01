@@ -1,0 +1,112 @@
+{
+  "name": "SessionLog",
+  "type": "object",
+  "properties": {
+    "setup_id": {
+      "type": "string",
+      "title": "Setup ID"
+    },
+    "session_type": {
+      "type": "string",
+      "title": "Session Type",
+      "enum": [
+        "Practice",
+        "Qualifying",
+        "Race",
+        "Hot Lap",
+        "Endurance"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "title": "Date"
+    },
+    "weather": {
+      "type": "string",
+      "title": "Weather",
+      "enum": [
+        "Sunny",
+        "Partly Cloudy",
+        "Overcast",
+        "Light Rain",
+        "Heavy Rain",
+        "Variable / Changing"
+      ]
+    },
+    "track_temp": {
+      "type": "number",
+      "title": "Track Temp (\u00b0C)"
+    },
+    "air_temp": {
+      "type": "number",
+      "title": "Air Temp (\u00b0C)"
+    },
+    "humidity": {
+      "type": "number",
+      "title": "Humidity (%)"
+    },
+    "wind_speed": {
+      "type": "number",
+      "title": "Wind Speed (km/h)"
+    },
+    "track_condition": {
+      "type": "string",
+      "title": "Track Condition",
+      "enum": [
+        "Green",
+        "Rubbered In",
+        "Damp",
+        "Wet",
+        "Drying"
+      ]
+    },
+    "lap_times_json": {
+      "type": "string",
+      "title": "Lap Times (JSON)"
+    },
+    "pit_stops_json": {
+      "type": "string",
+      "title": "Pit Stops (JSON)"
+    },
+    "best_lap_time": {
+      "type": "string",
+      "title": "Best Lap Time"
+    },
+    "total_laps": {
+      "type": "number",
+      "title": "Total Laps"
+    },
+    "fuel_per_lap_actual": {
+      "type": "number",
+      "title": "Actual Fuel / Lap (L)"
+    },
+    "fuel_start": {
+      "type": "number",
+      "title": "Fuel at Start (L)"
+    },
+    "tyre_compound": {
+      "type": "string",
+      "title": "Tyre Compound"
+    },
+    "race_position_start": {
+      "type": "number",
+      "title": "Grid Position"
+    },
+    "race_position_finish": {
+      "type": "number",
+      "title": "Finish Position"
+    },
+    "incidents": {
+      "type": "number",
+      "title": "Incident Points / Penalties"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Session Notes"
+    }
+  },
+  "required": [
+    "setup_id",
+    "session_type"
+  ]
+}
