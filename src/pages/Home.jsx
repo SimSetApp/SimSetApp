@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import { CAR_LISTS } from "../lib/simData";
@@ -22,25 +22,27 @@ export default function Home() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src={HERO_IMG} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/30" />
+          {/* subtle green glow */}
+          <div className="absolute bottom-0 left-0 w-1/2 h-64 bg-primary/5 blur-3xl rounded-full" />
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-24 sm:pt-28 sm:pb-32">
+        <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-28 sm:pt-28 sm:pb-36">
           <div className="max-w-2xl">
             <div className="mb-6">
-              <img src={LOGO_URL} alt="SimSetApp" className="h-20 sm:h-24 w-auto" />
+              <img src={LOGO_URL} alt="SimSetApp" className="h-20 sm:h-24 w-auto drop-shadow-lg" />
             </div>
             <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
               The racing engineer in your pocket. Understand every setup parameter,
               browse real car lists from the biggest sims, and save your winning setups.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="font-heading text-sm tracking-wider">
+              <Button asChild size="lg" className="font-heading text-sm tracking-wider shadow-lg shadow-primary/20">
                 <Link to="/setup-guide">
                   <BookOpen className="w-4 h-4 mr-2" />
                   Setup Guide
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="font-heading text-sm tracking-wider">
+              <Button asChild variant="outline" size="lg" className="font-heading text-sm tracking-wider border-border/60 hover:border-primary/40">
                 <Link to="/saved-setups">
                   <FolderOpen className="w-4 h-4 mr-2" />
                   My Garage
@@ -53,25 +55,28 @@ export default function Home() {
 
       {/* Sim Stats */}
       <div className="max-w-6xl mx-auto px-4 pb-20">
-        <h2 className="font-heading text-lg font-bold tracking-wide mb-6">
-          Supported Sims
-        </h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
+          <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Supported Sims</h2>
+          <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {simStats.map(sim => (
             <Link
               key={sim.name}
               to="/setup-guide"
-              className="group rounded-2xl border border-border bg-card p-5 hover:border-primary/30 transition-all duration-300"
+              className="group relative rounded-2xl border border-border bg-card p-5 hover:border-primary/40 hover:bg-card/80 transition-all duration-300 overflow-hidden"
             >
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <h3 className="font-heading text-sm font-semibold tracking-wide">{sim.name}</h3>
               <div className="mt-3 flex items-center gap-4">
                 <div>
-                  <div className="text-2xl font-bold text-primary">{sim.cars}</div>
+                  <div className="text-2xl font-bold text-primary tabular-nums">{sim.cars}</div>
                   <div className="text-xs text-muted-foreground">cars</div>
                 </div>
                 <div className="w-px h-8 bg-border" />
                 <div>
-                  <div className="text-2xl font-bold">{sim.classes}</div>
+                  <div className="text-2xl font-bold tabular-nums">{sim.classes}</div>
                   <div className="text-xs text-muted-foreground">classes</div>
                 </div>
               </div>
@@ -83,27 +88,37 @@ export default function Home() {
         </div>
 
         {/* Quick features */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
             {
+              icon: SlidersHorizontal,
               title: "Every Parameter Explained",
               desc: "From tyre pressures to differential preload — understand what each change does to your car's behavior.",
+              accent: "text-primary",
+              bg: "bg-primary/10",
             },
             {
+              icon: MapPin,
               title: "Track-Specific Tips",
               desc: "Quick recommendations for popular circuits — wing levels, brake cooling, and what to focus on.",
+              accent: "text-chart-2",
+              bg: "bg-chart-2/10",
             },
             {
+              icon: Gauge,
               title: "Save Your Setups",
               desc: "Keep a garage of your winning setups with notes, so you're never starting from scratch.",
+              accent: "text-chart-3",
+              bg: "bg-chart-3/10",
             },
           ].map((f, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-6">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                <span className="font-display text-sm font-bold text-primary">{i + 1}</span>
+            <div key={i} className="relative rounded-2xl border border-border bg-card p-6 overflow-hidden group hover:border-border/80 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-background/20" />
+              <div className={`relative w-10 h-10 rounded-xl ${f.bg} flex items-center justify-center mb-4`}>
+                <f.icon className={`w-5 h-5 ${f.accent}`} />
               </div>
-              <h3 className="font-heading text-sm font-semibold tracking-wide">{f.title}</h3>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.desc}</p>
+              <h3 className="relative font-heading text-sm font-semibold tracking-wide">{f.title}</h3>
+              <p className="relative text-sm text-muted-foreground mt-2 leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
