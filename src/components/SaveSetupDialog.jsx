@@ -34,6 +34,9 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
   const carGroups = sim && CAR_LISTS[sim] ? CAR_LISTS[sim] : {};
   const classNames = Object.keys(carGroups);
   const [activeClass, setActiveClass] = useState("");
+  const [customCar, setCustomCar] = useState(
+    editSetup?.car && sim && CAR_LISTS[sim] && !Object.values(CAR_LISTS[sim] || {}).flat().includes(editSetup.car)
+  );
 
   const trackList = sim && TRACK_LISTS[sim] ? TRACK_LISTS[sim] : [];
   const [customTrack, setCustomTrack] = useState(
@@ -62,6 +65,7 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
     setCar("");
     setParameters({});
     setActiveClass("");
+    setCustomCar(false);
   };
 
   return (
@@ -115,7 +119,14 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
                   ))}
                 </div>
               )}
-              <Select value={car} onValueChange={setCar} disabled={!sim}>
+              <Select
+                value={customCar ? "__custom__" : (car || "")}
+                onValueChange={v => {
+                  if (v === "__custom__") { setCustomCar(true); setCar(""); }
+                  else { setCustomCar(false); setCar(v); }
+                }}
+                disabled={!sim}
+              >
                 <SelectTrigger><SelectValue placeholder="Car" /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(carGroups)
@@ -127,8 +138,17 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
                       </SelectGroup>
                     ))}
                   {!sim && <div className="px-3 py-2 text-xs text-muted-foreground">Pick a sim first</div>}
+                  {sim && <SelectItem value="__custom__">Other / Custom car…</SelectItem>}
                 </SelectContent>
               </Select>
+              {customCar && (
+                <Input
+                  value={car}
+                  onChange={e => setCar(e.target.value)}
+                  placeholder="Type car name or mod…"
+                  className="mt-1"
+                />
+              )}
             </div>
           </div>
           <div className="space-y-2">
