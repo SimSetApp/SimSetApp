@@ -291,7 +291,7 @@ export const CLASS_SETUP_DEFAULTS = {
       front_wing: 6, rear_wing: 8, ride_height_front: 50, ride_height_rear: 60,
       camber_front: -3.2, camber_rear: -2.0, toe_front: -0.4, toe_rear: 0.6, caster: 10.5,
       spring_front: 120, spring_rear: 145, arb_front: 35, arb_rear: 28, bump_front: 4500, bump_rear: 4500, rebound_front: 5500, rebound_rear: 5500,
-      diff_preload: 65, diff_power: 68, diff_coast: 42, brake_bias: 57.5,
+      diff_preload: 65, diff_power: 68, diff_coast: 42, brake_bias: 57.5, brake_duct_front: 2, brake_duct_rear: 1,
       tc: 3, abs: 2, engine_map: 3
     },
     "LMP2": {
@@ -299,7 +299,7 @@ export const CLASS_SETUP_DEFAULTS = {
       front_wing: 8, rear_wing: 10, ride_height_front: 55, ride_height_rear: 65,
       camber_front: -3.0, camber_rear: -2.0, toe_front: -0.4, toe_rear: 0.6, caster: 10.5,
       spring_front: 100, spring_rear: 120, arb_front: 25, arb_rear: 20, bump_front: 4000, bump_rear: 4000, rebound_front: 5000, rebound_rear: 5000,
-      diff_preload: 60, diff_power: 65, diff_coast: 40, brake_bias: 57.5,
+      diff_preload: 60, diff_power: 65, diff_coast: 40, brake_bias: 57.5, brake_duct_front: 3, brake_duct_rear: 2,
       tc: 4, abs: 3, engine_map: 3
     },
     "LMGT3 (2024)": {
@@ -307,7 +307,7 @@ export const CLASS_SETUP_DEFAULTS = {
       front_wing: 7, rear_wing: 9, ride_height_front: 58, ride_height_rear: 65,
       camber_front: -3.0, camber_rear: -2.0, toe_front: -0.4, toe_rear: 0.6, caster: 10.5,
       spring_front: 100, spring_rear: 120, arb_front: 25, arb_rear: 20, bump_front: 4000, bump_rear: 4000, rebound_front: 5000, rebound_rear: 5000,
-      diff_preload: 60, diff_power: 65, diff_coast: 40, brake_bias: 57.5,
+      diff_preload: 60, diff_power: 65, diff_coast: 40, brake_bias: 57.5, brake_duct_front: 2, brake_duct_rear: 1,
       tc: 4, abs: 3, engine_map: 3
     },
     "GTE (Legacy 2022)": {
@@ -315,7 +315,7 @@ export const CLASS_SETUP_DEFAULTS = {
       front_wing: 8, rear_wing: 10, ride_height_front: 56, ride_height_rear: 64,
       camber_front: -3.2, camber_rear: -2.1, toe_front: -0.4, toe_rear: 0.7, caster: 11.0,
       spring_front: 105, spring_rear: 125, arb_front: 28, arb_rear: 22, bump_front: 4200, bump_rear: 4200, rebound_front: 5200, rebound_rear: 5200,
-      diff_preload: 62, diff_power: 67, diff_coast: 42, brake_bias: 57.5,
+      diff_preload: 62, diff_power: 67, diff_coast: 42, brake_bias: 57.5, brake_duct_front: 3, brake_duct_rear: 2,
       tc: 3, abs: 3, engine_map: 3
     }
   },

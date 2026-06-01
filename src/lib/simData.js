@@ -1151,7 +1151,8 @@ export const SIM_SETUP_PARAMS = {
       group: "Electronics",
       params: [
         { key: "tc", label: "Traction Control", unit: "", min: 0, max: 9, step: 1, default: 3 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 9, step: 1, default: 3 }
+        { key: "abs", label: "ABS", unit: "", min: 0, max: 9, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 1 }
       ]
     }
   ],
@@ -1341,7 +1342,9 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 70, step: 0.5, default: 57.5 }
+        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 70, step: 0.5, default: 57.5 },
+        { key: "brake_duct_front", label: "Duct Front", unit: "", min: 0, max: 6, step: 1, default: 2 },
+        { key: "brake_duct_rear", label: "Duct Rear", unit: "", min: 0, max: 6, step: 1, default: 1 }
       ]
     },
     {

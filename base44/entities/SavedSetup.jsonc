@@ -12,8 +12,11 @@
       "enum": [
         "iRacing",
         "Assetto Corsa Competizione",
-        "rFactor 2",
-        "Automobilista 2"
+        "Assetto Corsa",
+        "Assetto Corsa Evo",
+        "Le Mans Ultimate",
+        "Automobilista 2",
+        "Gran Turismo 7"
       ]
     },
     "car": {
