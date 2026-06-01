@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import { CAR_LISTS } from "../lib/simData";
@@ -37,12 +37,18 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="font-heading text-sm tracking-wider shadow-lg shadow-primary/20">
+                <Link to="/race-engineer">
+                  <Bot className="w-4 h-4 mr-2" />
+                  AI Race Engineer
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="font-heading text-sm tracking-wider border-border/60 hover:border-primary/40">
                 <Link to="/setup-guide">
                   <BookOpen className="w-4 h-4 mr-2" />
                   Setup Guide
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="font-heading text-sm tracking-wider border-border/60 hover:border-primary/40">
+              <Button asChild variant="ghost" size="lg" className="font-heading text-sm tracking-wider">
                 <Link to="/saved-setups">
                   <FolderOpen className="w-4 h-4 mr-2" />
                   My Garage
@@ -51,6 +57,31 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI Race Engineer feature banner */}
+      <div className="max-w-6xl mx-auto px-4 pt-10 pb-2">
+        <Link to="/race-engineer" className="group block rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 hover:border-primary/60 hover:from-primary/15 transition-all duration-300 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0">
+              <Bot className="w-7 h-7 text-primary" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-heading text-xs font-semibold tracking-widest uppercase text-primary">New</span>
+                <Zap className="w-3 h-3 text-primary" />
+              </div>
+              <h2 className="font-heading text-xl font-bold tracking-wide">AI Race Engineer</h2>
+              <p className="text-sm text-muted-foreground mt-1 max-w-xl leading-relaxed">
+                Describe your handling problem and get instant, specific setup changes — understeer, snap oversteer, tyre temps, braking stability and more. Powered by AI trained on sim racing expertise.
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 text-sm text-primary font-medium group-hover:gap-2.5 transition-all flex-shrink-0">
+              Try it now <ArrowRight className="w-4 h-4" />
+            </div>
+          </div>
+        </Link>
       </div>
 
       {/* Sim Stats */}
