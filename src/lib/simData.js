@@ -1088,6 +1088,14 @@ export const SIM_SETUP_PARAMS = {
         { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
+      ]
     }
   ],
   "iRacing": [
@@ -1154,6 +1162,13 @@ export const SIM_SETUP_PARAMS = {
         { key: "abs", label: "ABS", unit: "", min: 0, max: 9, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 1 }
       ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "kg", min: 1, max: 120, step: 1, default: 60 },
+        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 50, step: 1, default: 0 }
+      ]
     }
   ],
   "Assetto Corsa": [
@@ -1218,6 +1233,13 @@ export const SIM_SETUP_PARAMS = {
       params: [
         { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 4 },
         { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 }
+      ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
@@ -1287,6 +1309,14 @@ export const SIM_SETUP_PARAMS = {
         { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
+      ]
     }
   ],
   "Le Mans Ultimate": [
@@ -1354,6 +1384,13 @@ export const SIM_SETUP_PARAMS = {
         { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 3 }
       ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 60 },
+        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 }
+      ]
     }
   ],
   "Gran Turismo 7": [
@@ -1407,6 +1444,13 @@ export const SIM_SETUP_PARAMS = {
       group: "Brakes",
       params: [
         { key: "brake_balance", label: "Brake Balance (F→R)", unit: "", min: 1, max: 20, step: 1, default: 10 }
+      ]
+    },
+    {
+      group: "Strategy & Weight",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 50 },
+        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 100, step: 5, default: 0 }
       ]
     },
     {
@@ -1486,6 +1530,13 @@ SIM_SETUP_PARAMS["Automobilista 2"] = [
       { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 4 },
       { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 },
       { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 3 }
+    ]
+  },
+  {
+    group: "Strategy & Weight",
+    params: [
+      { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
+      { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 }
     ]
   }
 ];
