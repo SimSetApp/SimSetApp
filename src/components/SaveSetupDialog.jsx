@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
+import { SIM_TITLES, CAR_LISTS, TRACK_LISTS, SIM_SETUP_PARAMS } from "../lib/simData";
+import { CLASS_SETUP_DEFAULTS, getCarClass } from "../lib/classSetupDefaults";
 import SetupEditorForm from "./SetupEditorForm";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, FileText, SlidersHorizontal } from "lucide-react";
+import { Loader2, FileText, SlidersHorizontal, Upload, Download } from "lucide-react";
 
 export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
   const queryClient = useQueryClient();
@@ -68,6 +69,53 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
     setCustomCar(false);
   };
 
+  const handleCarChange = (carName) => {
+    if (carName === "__custom__") { setCustomCar(true); setCar(""); return; }
+    setCustomCar(false);
+    setCar(carName);
+    // Auto-fill class defaults if no parameters set yet
+    if (Object.keys(parameters).length === 0) {
+      const carClass = getCarClass(sim, carName);
+      const classDefaults = carClass && CLASS_SETUP_DEFAULTS[sim]?.[carClass];
+      if (classDefaults) {
+        setParameters(classDefaults);
+      } else if (SIM_SETUP_PARAMS[sim]) {
+        // Fall back to sim defaults
+        const flat = {};
+        SIM_SETUP_PARAMS[sim].forEach(group => group.params.forEach(p => { flat[p.key] = p.default; }));
+        setParameters(flat);
+      }
+    }
+  };
+
+  const handleExport = () => {
+    const data = { simsetapp_version: 1, title, sim_title: sim, car, track, notes, parameters };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title || "setup"}.simsetapp.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const data = JSON.parse(ev.target.result);
+      if (data.title) setTitle(data.title);
+      if (data.sim_title) { setSim(data.sim_title); setActiveClass(""); }
+      if (data.car) { setCar(data.car); setCustomCar(false); }
+      if (data.track) setTrack(data.track);
+      if (data.notes) setNotes(data.notes);
+      if (data.parameters) setParameters(data.parameters);
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -121,10 +169,7 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
               )}
               <Select
                 value={customCar ? "__custom__" : (car || "")}
-                onValueChange={v => {
-                  if (v === "__custom__") { setCustomCar(true); setCar(""); }
-                  else { setCustomCar(false); setCar(v); }
-                }}
+                onValueChange={handleCarChange}
                 disabled={!sim}
               >
                 <SelectTrigger><SelectValue placeholder="Car" /></SelectTrigger>
@@ -204,6 +249,24 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
             </TabsContent>
           </Tabs>
 
+          <div className="flex gap-2 pt-1">
+            <label className="cursor-pointer">
+              <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+              <div className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-input bg-transparent text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <Upload className="w-3.5 h-3.5" />
+                Import JSON
+              </div>
+            </label>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={!title && !sim}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-input bg-transparent text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-40"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export JSON
+            </button>
+          </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={!title || !sim || !car || mutation.isPending}>
