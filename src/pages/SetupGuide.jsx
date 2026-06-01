@@ -5,7 +5,8 @@ import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
 import { SETUP_PARAMETERS } from "../lib/simData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, MapPin, Car } from "lucide-react";
+import { BookOpen, MapPin, Car, Thermometer } from "lucide-react";
+import TyreAnalyzer from "../components/TyreAnalyzer";
 
 export default function SetupGuide() {
   const [sim, setSim] = useState("");
@@ -58,6 +59,10 @@ export default function SetupGuide() {
               <MapPin className="w-3.5 h-3.5 mr-1.5" />
               Track Tips
             </TabsTrigger>
+            <TabsTrigger value="tyre-analyzer" className="font-heading text-xs tracking-wider">
+              <Thermometer className="w-3.5 h-3.5 mr-1.5" />
+              Tyre Temps
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="parameters" className="space-y-4">
@@ -68,6 +73,12 @@ export default function SetupGuide() {
 
           <TabsContent value="tracks">
             <TrackTips />
+          </TabsContent>
+
+          <TabsContent value="tyre-analyzer">
+            <div className="rounded-2xl border border-border bg-card p-5">
+              <TyreAnalyzer />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

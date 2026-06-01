@@ -9,6 +9,9 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import SetupGuide from './pages/SetupGuide';
 import SavedSetups from './pages/SavedSetups';
+import ProblemSolver from './pages/ProblemSolver';
+import TuningGuide from './pages/TuningGuide';
+import SetupMethodology from './pages/SetupMethodology';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,6 +42,9 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Home />} />
       <Route path="/setup-guide" element={<SetupGuide />} />
       <Route path="/saved-setups" element={<SavedSetups />} />
+      <Route path="/problem-solver" element={<ProblemSolver />} />
+      <Route path="/tuning-guide" element={<TuningGuide />} />
+      <Route path="/methodology" element={<SetupMethodology />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

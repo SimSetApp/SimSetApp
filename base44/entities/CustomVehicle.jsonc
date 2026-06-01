@@ -1,0 +1,39 @@
+{
+  "name": "CustomVehicle",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Car Name"
+    },
+    "class": {
+      "type": "string",
+      "title": "Class / Category"
+    },
+    "sim_title": {
+      "type": "string",
+      "title": "Sim Title"
+    },
+    "manufacturer": {
+      "type": "string",
+      "title": "Manufacturer"
+    },
+    "year": {
+      "type": "string",
+      "title": "Year / Version"
+    },
+    "is_mod": {
+      "type": "boolean",
+      "title": "Is a Mod / Custom"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "name",
+    "class",
+    "sim_title"
+  ]
+}

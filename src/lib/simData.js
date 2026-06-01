@@ -1,15 +1,27 @@
-export const SIM_TITLES = ["iRacing", "Assetto Corsa Competizione", "Assetto Corsa", "Assetto Corsa Evo", "Le Mans Ultimate", "Automobilista 2", "Gran Turismo 7"];
+export const SIM_TITLES = [
+  "iRacing",
+  "Assetto Corsa Competizione",
+  "Assetto Corsa",
+  "Assetto Corsa Evo",
+  "Le Mans Ultimate",
+  "Automobilista 2",
+  "Gran Turismo 7"
+];
 
+// ─────────────────────────────────────────────
+// CAR LISTS — fully expanded per sim
+// ─────────────────────────────────────────────
 export const CAR_LISTS = {
   "iRacing": {
     "GT3": [
       "Audi R8 LMS EVO II GT3",
       "BMW M4 GT3",
+      "Chevrolet Corvette Z06 GT3.R",
       "Ferrari 296 GT3",
       "Ford Mustang GT3",
-      "Lamborghini Huracán GT3 EVO",
+      "Lamborghini Huracán GT3 EVO2",
       "McLaren 720S GT3 EVO",
-      "Mercedes-AMG GT3 2020",
+      "Mercedes-AMG GT3 EVO 2020",
       "Porsche 911 GT3 R (992)"
     ],
     "GT4": [
@@ -17,76 +29,98 @@ export const CAR_LISTS = {
       "BMW M4 GT4",
       "McLaren 570S GT4",
       "Mercedes-AMG GT4",
-      "Porsche 718 Cayman GT4"
+      "Porsche 718 Cayman GT4",
+      "Toyota GR86 GT4"
     ],
-    "LMDh / GTP": [
+    "GTE": [
+      "Chevrolet Corvette C8.R GTE",
+      "Ferrari 488 GT3 EVO (GTE Spec)",
+      "Ford GT GTE",
+      "Porsche 911 RSR (991.2)"
+    ],
+    "GTP / LMDh": [
       "Acura ARX-06 GTP",
       "BMW M Hybrid V8",
-      "Cadillac V-Series.R",
-      "Porsche 963"
+      "Cadillac V-Series.R GTP",
+      "Porsche 963 GTP"
     ],
     "LMP2": [
       "Dallara P217 LMP2"
     ],
-    "Prototype": [
-      "Dallara IR-01",
-      "Radical SR10"
-    ],
     "Touring / TCR": [
       "Audi RS 3 LMS TCR",
       "Honda Civic Type R TCR",
-      "Hyundai Elantra N TC"
+      "Hyundai Elantra N TC",
+      "Volkswagen Golf GTI TCR"
     ],
     "Open Wheel": [
-      "Dallara F3",
-      "Dallara iR-04",
-      "Formula Vee",
-      "Super Formula SF23",
+      "Dallara F3 (2019)",
+      "Dallara iR-04 (Formula iRacing)",
+      "Dallara F2 (2018)",
+      "Formula Vee (1600)",
       "IndyCar IR-18",
-      "Williams FW31"
+      "Super Formula SF23",
+      "Williams FW31 (F1 2009)",
+      "Porsche TAG Turbo (F1 1987)",
+      "Skip Barber Formula 2000"
     ],
-    "Stock Car": [
+    "Mazda": [
+      "Mazda MX-5 Cup",
+      "Mazda MX-5 Mx-5 (Spec Racer)"
+    ],
+    "NASCAR Cup": [
       "NASCAR Next Gen Camaro ZL1",
       "NASCAR Next Gen Mustang",
-      "NASCAR Next Gen Camry",
+      "NASCAR Next Gen Camry"
+    ],
+    "NASCAR Xfinity": [
+      "NASCAR Xfinity Camaro",
+      "NASCAR Xfinity Mustang",
+      "NASCAR Xfinity Supra"
+    ],
+    "NASCAR Truck": [
       "NASCAR Truck Silverado",
       "NASCAR Truck Tundra",
       "NASCAR Truck F-150"
     ],
-    "Sports Car": [
-      "Ferrari 488 GT3 EVO",
-      "Ford GT GTE",
-      "Chevrolet Corvette C8.R GTE",
-      "Porsche 911 RSR"
-    ],
     "Oval / Dirt": [
-      "Late Model Stock",
+      "Late Model Stock Car",
       "Super Late Model",
-      "Sprint Car Non-Wing",
+      "Sprint Car Non-Wing (305)",
       "Sprint Car 410 Wing",
       "Dirt Midget",
-      "Legend Car",
+      "Dirt Late Model",
+      "Legend Car (1990s Ford Thunderbird)",
       "Street Stock"
+    ],
+    "Radical / Sports": [
+      "Radical SR10"
     ]
   },
+
   "Assetto Corsa Competizione": {
     "GT3": [
-      "Aston Martin Vantage V8 GT3 2019",
-      "Audi R8 LMS GT3 EVO II",
-      "Bentley Continental GT3 2018",
-      "BMW M4 GT3",
-      "BMW M6 GT3",
-      "Ferrari 296 GT3",
-      "Ferrari 488 GT3 EVO",
-      "Honda NSX GT3 EVO",
-      "Lamborghini Huracán GT3 EVO",
-      "Lamborghini Huracán GT3 EVO2",
-      "Lexus RC F GT3",
-      "McLaren 720S GT3 EVO",
-      "Mercedes-AMG GT3 2020",
-      "Nissan GT-R Nismo GT3 2018",
-      "Porsche 911 GT3 R (991 II)",
-      "Porsche 911 GT3 R (992)",
+      "Aston Martin Vantage V8 GT3 (2019)",
+      "Aston Martin Vantage GT3 AMR (2022)",
+      "Audi R8 LMS GT3 EVO (2019)",
+      "Audi R8 LMS GT3 EVO II (2022)",
+      "Bentley Continental GT3 (2018)",
+      "Bentley Continental GT3 (2020)",
+      "BMW M4 GT3 (2022)",
+      "BMW M6 GT3 (2017)",
+      "Emil Frey Jaguar G3 (2012)",
+      "Ferrari 296 GT3 (2023)",
+      "Ferrari 488 GT3 EVO (2020)",
+      "Honda NSX GT3 EVO (2019)",
+      "Lamborghini Huracán GT3 EVO (2019)",
+      "Lamborghini Huracán GT3 EVO2 (2023)",
+      "Lexus RC F GT3 (2016)",
+      "McLaren 720S GT3 EVO (2023)",
+      "McLaren 650S GT3 (2015)",
+      "Mercedes-AMG GT3 EVO (2020)",
+      "Nissan GT-R Nismo GT3 (2018)",
+      "Porsche 911 GT3 R (991 II) (2019)",
+      "Porsche 911 GT3 R (992) (2023)",
       "Reiter Engineering R-EX GT3"
     ],
     "GT4": [
@@ -109,21 +143,23 @@ export const CAR_LISTS = {
       "Mercedes-AMG GT2",
       "Porsche 911 GT2 RS CS Evo"
     ],
-    "Cup": [
+    "Cup Cars": [
       "Ferrari 488 Challenge EVO",
-      "Lamborghini Huracán ST",
-      "Lamborghini Huracán ST EVO2",
+      "Lamborghini Huracán ST (2015)",
+      "Lamborghini Huracán ST EVO2 (2023)",
       "Porsche 992 GT3 Cup"
     ],
     "TCX": [
       "BMW M2 CS Racing"
     ]
   },
+
   "Assetto Corsa": {
     "GT3": [
       "Audi R8 LMS Ultra",
       "BMW Z4 GT3",
       "Ferrari 458 GT3",
+      "Ferrari 458 Italia GT3 (2012)",
       "Lamborghini Huracán GT3",
       "McLaren 650S GT3",
       "Mercedes SLS AMG GT3",
@@ -133,55 +169,63 @@ export const CAR_LISTS = {
     "GTE / GT2": [
       "Ferrari 458 Italia GTE",
       "Porsche 911 RSR (991)",
-      "BMW M3 GT2",
+      "BMW M3 GT2 (E92)",
       "Chevrolet Corvette C7.R"
     ],
     "LMP1": [
-      "Audi R18 e-tron quattro",
-      "Toyota TS040 Hybrid",
-      "Porsche 919 Hybrid Evo"
+      "Audi R18 e-tron quattro (2014)",
+      "Toyota TS040 Hybrid (2014)",
+      "Porsche 919 Hybrid Evo (2017)"
     ],
     "LMP2": [
       "Ligier JS P2 Honda",
       "Morgan LMP2 Judd"
     ],
     "GT4": [
-      "BMW M4 GT4",
+      "BMW M4 GT4 (F82)",
       "Maserati Gran Turismo MC GT4"
     ],
     "Touring / WTCC": [
       "Honda Civic WTCC 2014",
-      "BMW M3 E30",
+      "BMW M3 E30 Group A",
       "Ford Sierra RS500 Cosworth",
-      "Alfa Romeo 155 Ti V6"
+      "Alfa Romeo 155 Ti V6 DTM",
+      "BMW 320si WTCC 2006"
     ],
     "Open Wheel": [
       "Dallara F312",
       "Formula Abarth",
-      "Lotus 98T (1986)",
-      "Ferrari 312T (1975)"
+      "Lotus 98T Formula 1 (1986)",
+      "Ferrari 312T Formula 1 (1975)",
+      "Tatuus FA 010 (Formula Abarth)"
     ],
-    "Road Cars": [
+    "GT Sport / Road": [
       "Ferrari 458 Italia",
       "Ferrari 599 GTB Fiorano",
       "Ferrari F40",
+      "Ferrari 599XX EVO",
       "Lamborghini Huracán LP610-4",
       "Lamborghini Aventador LP700-4",
+      "Lamborghini Sesto Elemento",
       "McLaren P1",
       "McLaren MP4-12C",
       "Pagani Huayra",
       "Pagani Zonda R",
       "Porsche 918 Spyder",
       "Lotus Exige 240R",
-      "Lotus Exige S",
+      "Lotus Exige S Roadster",
+      "Lotus Evora GTC",
       "KTM X-Bow R",
       "Alfa Romeo 4C",
       "BMW M4 (F82)",
-      "Abarth 500 Assetto Corse"
+      "BMW 1M Coupe",
+      "Abarth 500 Assetto Corse",
+      "Shelby Cobra 427 S/C"
     ]
   },
+
   "Assetto Corsa Evo": {
-    "GT3 2024": [
+    "GT3 (2024 Spec)": [
       "Audi R8 LMS GT3 EVO II",
       "BMW M4 GT3",
       "Ferrari 296 GT3",
@@ -193,7 +237,7 @@ export const CAR_LISTS = {
     "GTE": [
       "Ferrari 488 GTE Evo",
       "Porsche 911 RSR-19",
-      "Ford GT GTE"
+      "Ford GT GTE (2019)"
     ],
     "GT4": [
       "BMW M4 GT4",
@@ -201,20 +245,34 @@ export const CAR_LISTS = {
       "Mercedes-AMG GT4",
       "Porsche 718 Cayman GT4 MR"
     ],
-    "Road Cars": [
-      "Ferrari Roma",
-      "Lamborghini Huracán EVO",
-      "McLaren 720S",
-      "Porsche 911 GT3 RS (992)",
-      "BMW M4 Competition (G82)",
-      "Abarth 500 Assetto Corse",
-      "Alfa Romeo Giulia GTA"
+    "Cup Cars": [
+      "Porsche 992 GT3 Cup",
+      "Ferrari 488 Challenge EVO",
+      "Lamborghini Huracán ST EVO2"
     ],
     "Touring": [
-      "Honda Civic Type R FK8 BTCC",
-      "BMW 330e M Sport BTCC"
+      "Honda Civic Type R FK8 (BTCC Spec)",
+      "BMW 330e M Sport (BTCC Spec)",
+      "Alfa Romeo Giulia GTA M"
+    ],
+    "Supercars / Road": [
+      "Ferrari Roma",
+      "Ferrari SF90 Stradale",
+      "Lamborghini Huracán EVO",
+      "Lamborghini Huracán Tecnica",
+      "McLaren 720S",
+      "McLaren Artura",
+      "Porsche 911 GT3 RS (992)",
+      "Porsche 911 Turbo S (992)",
+      "BMW M4 Competition (G82)",
+      "BMW M2 (G87)",
+      "Abarth 500 Assetto Corse",
+      "Alfa Romeo Giulia GTA",
+      "Toyota GR86",
+      "Toyota GR Supra"
     ]
   },
+
   "Le Mans Ultimate": {
     "Hypercar (LMH / LMDh)": [
       "Toyota GR010 HYBRID",
@@ -223,7 +281,8 @@ export const CAR_LISTS = {
       "Cadillac V-Series.R",
       "BMW M Hybrid V8",
       "Alpine A424",
-      "Peugeot 9X8 (2023)",
+      "Peugeot 9X8 (2023 Spec)",
+      "Peugeot 9X8 (2024 Spec, with wing)",
       "Lamborghini SC63",
       "Isotta Fraschini Tipo6 LMH Competizione",
       "Vanwall Vandervell 680",
@@ -233,7 +292,7 @@ export const CAR_LISTS = {
       "ORECA 07 Gibson",
       "Ligier JS P217 Gibson"
     ],
-    "LMGT3": [
+    "LMGT3 (2024)": [
       "Aston Martin Vantage GT3 AMR",
       "BMW M4 GT3",
       "Chevrolet Corvette Z06 GT3.R",
@@ -245,162 +304,453 @@ export const CAR_LISTS = {
       "Porsche 911 GT3 R (992)",
       "Toyota GR Supra GT3"
     ],
-    "GTE (Legacy)": [
+    "GTE (Legacy 2022)": [
       "Ferrari 488 GTE Evo",
       "Porsche 911 RSR-19",
       "Ford GT GTE",
       "Chevrolet Corvette C8.R GTE"
     ]
   },
+
   "Automobilista 2": {
     "GT3": [
-      "Audi R8 LMS GT3",
+      "Audi R8 LMS GT3 EVO2",
+      "BMW M4 GT3",
       "BMW M6 GT3",
+      "Chevrolet Camaro GT3.R",
       "Ferrari 488 GT3",
-      "Lamborghini Huracán GT3",
-      "McLaren 650S GT3",
-      "Mercedes-AMG GT3",
-      "Porsche 911 GT3 R"
+      "Lamborghini Huracán GT3 EVO2",
+      "McLaren 720S GT3 EVO",
+      "Mercedes-AMG GT3 EVO",
+      "Porsche 911 GT3 R (992)"
     ],
     "GT4": [
+      "BMW M4 GT4",
       "Ginetta G55 GT4",
-      "Porsche 718 Cayman GT4"
+      "McLaren 570S GT4",
+      "Porsche 718 Cayman GT4",
+      "Toyota GR86 GT4"
     ],
     "GTE": [
       "Chevrolet Corvette C7.R",
       "Ford GT GTE",
-      "Porsche 911 RSR"
+      "Porsche 911 RSR (991.2)"
     ],
-    "Prototype": [
-      "Metalmoro AJR LMP3",
+    "LMP": [
+      "ORECA 07 LMP2",
+      "Dallara P217 LMP2",
+      "Metalmoro AJR P3",
+      "Ligier JS P320 LMP3"
+    ],
+    "Prototype / Group C": [
       "Sigma P1 Group C",
-      "Porsche 919 Hybrid"
+      "Porsche 956 Group C",
+      "Jaguar XJR-9 Group C",
+      "Mercedes C291 Group C"
+    ],
+    "Cup Cars": [
+      "Porsche 992 GT3 Cup",
+      "Lamborghini Huracán Super Trofeo EVO2",
+      "Ferrari 488 Challenge EVO"
     ],
     "Stock Car Brasil": [
-      "Chevrolet Cruze Stock Car V8",
-      "Toyota Corolla Stock Car"
+      "Chevrolet Cruze Stock Car V8 (2022)",
+      "Toyota Corolla Stock Car V8 (2022)",
+      "Chevrolet Cruze Stock Car V8 (2019)",
+      "Toyota Corolla Stock Car V8 (2019)"
     ],
     "Copa Truck": [
-      "Mercedes-Benz Copa Truck",
-      "Volkswagen Copa Truck",
-      "Scania Copa Truck"
+      "Mercedes-Benz Actros Copa Truck",
+      "Volkswagen Constellation Copa Truck",
+      "Scania S Copa Truck",
+      "Iveco Hi-Way Copa Truck"
     ],
-    "Open Wheel": [
-      "Formula 3",
-      "Formula Reiza",
-      "Formula Ultimate Gen 2",
+    "Formula": [
+      "Formula Ultimate Gen 2 (F1 2022 inspired)",
+      "Formula V10 Gen 1 (1998)",
+      "Formula V10 Gen 2 (2005)",
+      "Formula 3 (Dallara F3 2019)",
+      "Formula Reiza (Open Wheel)",
+      "Formula Classic Gen 1 (1967)",
+      "Formula Classic Gen 2 (1975)",
+      "Formula Classic Gen 3 (1979)",
       "Formula Trainer",
-      "Formula V10 Gen 1",
-      "Formula V10 Gen 2",
-      "Formula Classic Gen 3"
+      "Super Formula SF14",
+      "Super V8"
     ],
-    "Touring": [
-      "BMW 2002 Turbo",
-      "Caterhams",
-      "Ginetta G40",
-      "Mini Cooper S",
-      "Opala Stock Car",
-      "Ultima GTR"
+    "Touring / Road": [
+      "BMW 2002 Turbo (1974)",
+      "Caterham 620R",
+      "Caterham Supersport",
+      "Ginetta G40 Junior",
+      "Mini Cooper S (1965)",
+      "Opala Stock Car (1970s)",
+      "Opala Copa Stock (1986)",
+      "Puma GTE",
+      "Radical SR3",
+      "Ultima GTR 720",
+      "Volkswagen Fusca (Beetle)"
     ],
-    "Historic": [
-      "Lotus 49C",
-      "Lotus 72D",
-      "Brabham BT26A",
-      "March 701",
-      "McLaren M23",
-      "Group A Omega",
-      "Group C 962C",
-      "Group C XJR-9"
+    "Historic F1": [
+      "Lotus 49C (1970)",
+      "Lotus 72D (1972)",
+      "Brabham BT26A (1969)",
+      "March 701 (1970)",
+      "McLaren M23 (1974)",
+      "Tyrrell P34 Six-Wheeler (1977)"
+    ],
+    "Touring Car Historic": [
+      "BMW M3 E30 Group A",
+      "Ford Sierra RS500 Cosworth Group A",
+      "Mercedes C-Class (2006 DTM)",
+      "Alfa Romeo 155 V6 Ti DTM"
     ]
   },
+
   "Gran Turismo 7": {
     "Gr.1 Prototype": [
-      "Toyota GR010 HYBRID Race Car",
-      "Nissan GT-R LM NISMO Race Car",
+      "Toyota GR010 HYBRID Race Car '21",
+      "Nissan GT-R LM NISMO Race Car '15",
       "Peugeot L750R Hybrid Race Car",
       "Porsche 919 Hybrid Evo '17",
       "Mazda LM55 Vision Gran Turismo Gr.1",
-      "Bugatti Vision Gran Turismo Gr.1"
+      "Bugatti Vision Gran Turismo Gr.1",
+      "Ferrari Vision Gran Turismo Gr.1",
+      "Lamborghini V12 Vision Gran Turismo",
+      "Aston Martin Valkyrie AMR Pro (Gr.1 spec)"
     ],
     "Gr.2 Touring Car": [
-      "BMW M6 GT3 Touring Car",
+      "BMW M6 GT3 '16 (Touring Car)",
       "Mercedes-AMG C 63 Touring Car",
-      "Audi TT Cup Race Car",
-      "Honda Civic WTCC Race Car",
-      "Alfa Romeo 156 2.5 V6 Touring Car"
+      "Audi TT Cup '16 Race Car",
+      "Honda Civic Type R (FK2) Race Car",
+      "Alfa Romeo 156 2.5 V6 Race Car"
     ],
     "Gr.3 GT Race Car": [
-      "Ferrari 458 Italia GT3",
-      "Lamborghini Huracán GT3",
-      "McLaren 650S GT3",
-      "Porsche 911 RSR (991)",
-      "Aston Martin V12 Vantage GT3",
-      "Audi R8 LMS (2015)",
-      "BMW M6 GT3",
-      "Mercedes-AMG GT3",
+      "Aston Martin V12 Vantage GT3 '12",
+      "Audi R8 LMS (2015) Gr.3",
+      "BMW M6 GT3 '16 Gr.3",
+      "Dodge Viper GTS-R '00 Gr.3",
+      "Ferrari 458 Italia GT3 '13",
+      "Ferrari F430 GT Race Car",
+      "Ford GT Race Car '18",
+      "Honda NSX GT3 '17",
+      "Jaguar F-Type GT3",
+      "Lamborghini Huracán GT3 '15",
+      "Lexus RC F GT3 '17",
+      "McLaren 650S GT3 '15",
+      "Mercedes-AMG GT3 '16",
+      "Nissan GT-R Nismo GT3 '18",
+      "Porsche 911 RSR (991) '17",
       "Subaru BRZ GT300 '21",
       "Toyota GR86 GT300 '21",
-      "Nissan GT-R Nismo GT3",
-      "Honda NSX GT3 (2017)",
-      "Dodge Viper GTS-R '00",
-      "Ford GT Race Car '18",
-      "Lexus RC F GT3"
+      "Toyota Supra GT500 '97"
     ],
     "Gr.4 GT Car": [
-      "Alpine A110 GT4",
-      "BMW M4 GT4",
+      "Alpine A110 GT4 '18",
+      "BMW M4 GT4 '18",
+      "Chevrolet Camaro ZL1 1LE (Gr.4)",
+      "Honda Civic Type R (FK8) Gr.4",
       "Mazda RX-Vision GT3 Concept (Gr.4)",
+      "Mitsubishi Lancer Evo Final Gr.4",
       "Porsche 718 Cayman GT4 Clubsport",
-      "Honda Civic Type R (FK8) Race Car",
-      "Mitsubishi Lancer Evolution Final Edition Race Car",
-      "Renault Sport Mégane R.S. Trophy Race Car",
+      "Renault Mégane RS Trophy R (Gr.4)",
+      "Subaru BRZ (Gr.4)",
       "Toyota GR86 (Gr.4)",
-      "Subaru BRZ (Gr.4)"
+      "Toyota Supra (A90) Gr.4"
     ],
     "Gr.B Rally Car": [
-      "Peugeot 205 Turbo 16 Evo 2 Rally Car",
       "Audi Sport Quattro S1 Evo 2 Rally Car",
-      "Lancia Delta S4 Rally Car",
       "Ford RS200 Rally Car",
-      "MG Metro 6R4 Rally Car"
+      "Lancia Delta S4 Rally Car",
+      "MG Metro 6R4 Rally Car",
+      "Peugeot 205 Turbo 16 Evo 2 Rally Car"
     ],
-    "Road Cars (Japanese)": [
-      "Nissan Skyline GT-R (R34) V-spec II Nür",
-      "Honda NSX Type R (2002)",
-      "Toyota Supra RZ (A80)",
-      "Mazda RX-7 Spirit R Type A",
-      "Mitsubishi Lancer Evolution VI GSR T.M. Edition",
-      "Honda S2000 Type S",
-      "Subaru Impreza WRX STI",
-      "Toyota GR Yaris RZ High Performance",
+    "N100 (Kei Cars)": [
+      "Honda Beat '91",
+      "Honda Life Step Van '72",
+      "Mazda Carol '15",
+      "Suzuki Cappuccino '91",
       "Suzuki Swift Sport '17"
     ],
-    "Road Cars (European)": [
-      "Ferrari F40",
-      "Ferrari Enzo Ferrari",
-      "Lamborghini Countach LP400",
-      "McLaren F1",
-      "Porsche Carrera GT",
-      "BMW M3 (E46)",
-      "Mercedes-AMG GT R",
+    "N200": [
+      "Alfa Romeo MiTo '09",
+      "Honda Fit Hybrid '14",
+      "Mazda Demio XD Touring '15",
+      "MINI Cooper S '05",
+      "Toyota Aqua S '14"
+    ],
+    "N300": [
+      "Abarth 595 SS '69",
+      "Abarth 695 BiAlberto '19",
+      "Honda Civic Type R (EK) '98",
+      "Honda Civic Type R (FK7) '17",
+      "Honda Integra Type R (DC5) '04",
+      "Mazda RX-8 Spirit R '12",
+      "Mazda MX-5 Miata (NA) '89",
+      "Porsche 718 Cayman '16",
+      "Subaru BRZ S '21",
+      "Toyota 86 '15",
+      "Toyota GR Yaris RZ '20",
+      "Toyota GR86 (ZN8) '21",
+      "VW Golf VIII GTI '21",
+      "VW Polo GTI '14"
+    ],
+    "N400": [
+      "BMW M2 Competition '18",
+      "BMW M3 (E46) '03",
+      "BMW M4 (G82) Competition '21",
+      "Ford Mustang Boss 429 '69",
+      "Honda NSX Type R '02",
+      "Honda S2000 Type S '08",
+      "Mazda RX-7 Spirit R Type A '02",
+      "Mercedes-AMG A 45 S '20",
+      "Mitsubishi Lancer Evo VI GSR T.M. Ed.",
+      "Nissan Skyline GT-R (R34) V-spec II",
+      "Subaru Impreza WRX STI '04",
+      "Toyota MR2 GT-S (SW20) '97",
+      "Toyota Supra RZ (JZA80) '97"
+    ],
+    "S (Supercar)": [
+      "Aston Martin DB5 '64",
+      "Aston Martin One-77 '11",
+      "Bugatti Chiron '16",
+      "Bugatti Veyron 16.4 '13",
+      "Ferrari Enzo Ferrari '02",
+      "Ferrari F40 '92",
+      "Ferrari LaFerrari '13",
       "Jaguar XJ13 Race Car '66",
-      "Aston Martin DB5"
+      "Lamborghini Countach LP400 '74",
+      "Lamborghini Miura P400 Sv '71",
+      "Lamborghini Veneno '14",
+      "McLaren F1 '94",
+      "McLaren Senna '18",
+      "Mercedes-AMG GT R '17",
+      "Mercedes-AMG Project ONE '22",
+      "Pagani Huayra '13",
+      "Porsche Carrera GT '04",
+      "Porsche 918 Spyder '13"
     ],
-    "Road Cars (American)": [
-      "Ford GT (2005)",
-      "Chevrolet Corvette C7 Z06",
-      "Dodge Viper ACR (2017)",
-      "Shelby Cobra 427",
-      "Ford Mustang Boss 429"
-    ],
-    "Gr.X / Concept": [
+    "Gr.X / Vision GT": [
       "Red Bull X2019 Competition",
       "Tomahawk X Vision Gran Turismo",
-      "Toyota Gazoo FT-1 Vision Gran Turismo"
+      "Toyota Gazoo FT-1 Vision Gran Turismo",
+      "Daihatsu Copen RJ Vision GT",
+      "Genesis X Gran Berlinetta VGT",
+      "Lamborghini Lambo V12 Vision GT",
+      "Mazda RX-Vision GT3 Concept",
+      "Mercedes-AMG Vision GT"
     ]
   }
 };
 
+// ─────────────────────────────────────────────
+// TRACK LISTS — full accurate lists per sim
+// ─────────────────────────────────────────────
+export const TRACK_LISTS = {
+  "iRacing": [
+    "Autodromo José Carlos Pace (Interlagos)",
+    "Autodromo Nazionale Monza",
+    "Brands Hatch GP",
+    "Brands Hatch Indy",
+    "Charlotte Motor Speedway Road Course",
+    "Circuit de Catalunya GP",
+    "Circuit de la Sarthe (Le Mans)",
+    "Circuit of the Americas",
+    "Circuit Zandvoort",
+    "Daytona International Speedway Road Course",
+    "Donington Park GP",
+    "Donington Park National",
+    "Fuji International Speedway",
+    "Hungaroring",
+    "Imola",
+    "Indianapolis Motor Speedway Road Course",
+    "Iowa Speedway",
+    "Laguna Seca",
+    "Lime Rock Park",
+    "Mid-Ohio Sports Car Course",
+    "Mount Panorama (Bathurst)",
+    "Nürburgring GP",
+    "Nürburgring Nordschleife",
+    "Oulton Park Island",
+    "Oulton Park International",
+    "Phoenix Raceway",
+    "Red Bull Ring GP",
+    "Road America",
+    "Road Atlanta",
+    "Silverstone GP",
+    "Silverstone National",
+    "Snetterton 200",
+    "Snetterton 300",
+    "Spa-Francorchamps",
+    "Suzuka Circuit GP",
+    "Talladega Superspeedway",
+    "Tsukuba Circuit",
+    "Virginia International Raceway Full",
+    "Watkins Glen International",
+    "Watkins Glen Boot"
+  ],
+  "Assetto Corsa Competizione": [
+    "Autodromo di Magione",
+    "Autodromo Nazionale Monza",
+    "Autodromo Vallelunga",
+    "Brands Hatch GP",
+    "Brands Hatch Indy",
+    "Chang International Circuit (Buriram)",
+    "Circuit de Catalunya",
+    "Circuit Paul Ricard",
+    "Circuit Ricardo Tormo (Valencia)",
+    "Circuit Zandvoort",
+    "Donington Park",
+    "Hungaroring",
+    "Imola",
+    "Indianapolis Road Course",
+    "Kyalami",
+    "Laguna Seca",
+    "Misano World Circuit Marco Simoncelli",
+    "Mount Panorama (Bathurst)",
+    "Nürburgring GP",
+    "Oulton Park",
+    "Red Bull Ring GP",
+    "Silverstone GP",
+    "Snetterton 300",
+    "Spa-Francorchamps",
+    "Suzuka Circuit",
+    "Watkins Glen",
+    "Zolder",
+    "Circuit of the Americas (COTA)",
+    "Fuji Speedway"
+  ],
+  "Assetto Corsa": [
+    "Autodromo di Magione",
+    "Autodromo di Modena",
+    "Autodromo Nazionale Monza",
+    "Brands Hatch",
+    "Circuit de Catalunya",
+    "Dragon Trail Seaside",
+    "Dragon Trail Gardens",
+    "Dubai Autodrome",
+    "Imola",
+    "Jerez de la Frontera",
+    "Laguna Seca",
+    "Mugello Circuit",
+    "Nürburgring GP",
+    "Nürburgring Nordschleife",
+    "Road America",
+    "Silverstone GP",
+    "Silverstone International",
+    "Spa-Francorchamps",
+    "Trento-Bondone Hill Climb",
+    "Vallelunga"
+  ],
+  "Assetto Corsa Evo": [
+    "Autodromo di Modena",
+    "Brands Hatch GP",
+    "Circuit de Catalunya",
+    "Imola",
+    "Laguna Seca",
+    "Misano World Circuit",
+    "Mount Panorama (Bathurst)",
+    "Mugello Circuit",
+    "Nürburgring Nordschleife",
+    "Red Bull Ring",
+    "Silverstone GP",
+    "Spa-Francorchamps",
+    "Suzuka Circuit",
+    "Monza"
+  ],
+  "Le Mans Ultimate": [
+    "Circuit de la Sarthe (Le Mans 24h)",
+    "Autodromo José Carlos Pace (Interlagos)",
+    "Autodromo Nazionale Monza",
+    "Bahrain International Circuit",
+    "Circuit de Catalunya (Barcelona)",
+    "Fuji Speedway",
+    "Indianapolis Motor Speedway",
+    "Lusail International Circuit (Qatar)",
+    "Portimão",
+    "Road Atlanta (Petit Le Mans)",
+    "Sebring International Raceway",
+    "Spa-Francorchamps"
+  ],
+  "Automobilista 2": [
+    "Autodromo Ayrton Senna (Londrina)",
+    "Autodromo de Cascavel",
+    "Autodromo de Goiânia",
+    "Autodromo de Potrero de los Funes",
+    "Autodromo de Santa Cruz do Sul",
+    "Autodromo de Tarumã",
+    "Autodromo do Campo Grande",
+    "Autodromo José Carlos Pace (Interlagos)",
+    "Autodromo Lauro Chaves (Velopark)",
+    "Circuit Gilles Villeneuve (Montreal)",
+    "Curitiba Race Track",
+    "Daytona Road Course",
+    "Hockenheimring GP",
+    "Hockenheimring Short",
+    "Imola",
+    "Jerez de la Frontera",
+    "Kyalami",
+    "Laguna Seca",
+    "Long Beach Street Circuit",
+    "Mount Panorama (Bathurst)",
+    "Nürburgring GP",
+    "Nürburgring Nordschleife",
+    "Red Bull Ring GP",
+    "Sebring International Raceway",
+    "Silverstone GP",
+    "Spa-Francorchamps",
+    "Autodromo Internacional de Curitiba"
+  ],
+  "Gran Turismo 7": [
+    "Alsace Village",
+    "Autopolis International Racing Course",
+    "Autodromo de Catalunya (Barcelona)",
+    "Autodromo José Carlos Pace (Interlagos)",
+    "Blue Moon Bay Speedway",
+    "Circuit de la Sarthe (Le Mans)",
+    "Colorado Springs",
+    "Daytona Road Course",
+    "Deep Forest Raceway",
+    "Dragon Trail Gardens",
+    "Dragon Trail Seaside",
+    "Grand Valley Speedway",
+    "High Speed Ring",
+    "Kyoto Driving Park Miyabi",
+    "Kyoto Driving Park Yamagiwa",
+    "Laguna Seca",
+    "Nürburgring GP",
+    "Nürburgring 24h",
+    "Nürburgring Nordschleife",
+    "Red Bull Ring GP",
+    "Sardegna Road Track A",
+    "Sardegna Road Track B",
+    "Silverstone GP",
+    "Silverstone National",
+    "Spa-Francorchamps",
+    "Special Stage Route 5",
+    "Special Stage Route X",
+    "Suzuka Circuit",
+    "Suzuka Circuit East",
+    "Tokyo Expressway Central Outer",
+    "Tokyo Expressway North Outer",
+    "Tokyo Expressway South Outer",
+    "Tsukuba Circuit",
+    "Watkins Glen International",
+    "Willow Springs Raceway",
+    "Autodrome Lago Maggiore GP",
+    "Autodrome Lago Maggiore Centre",
+    "Brands Hatch GP",
+    "Brands Hatch Indy",
+    "Circuit de Sainte-Croix A",
+    "Circuit de Sainte-Croix B",
+    "Circuit de Sainte-Croix C"
+  ]
+};
+
+// ─────────────────────────────────────────────
+// SETUP PARAMETERS (for Setup Guide)
+// ─────────────────────────────────────────────
 export const SETUP_PARAMETERS = [
   {
     category: "Tyres & Pressures",
@@ -413,7 +763,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "More grip in corners, slower on straights, higher tyre wear",
         rightEffect: "Less grip, faster on straights, more responsive turn-in",
         tip: "Start around 26–28 PSI for GT3 cars. Check pressures after 3–4 laps when tyres are up to temperature. Ideal hot pressure varies by sim — in ACC aim for 27.5 PSI, in iRacing check the optimal window per car.",
-        advanced: "Front-to-rear pressure split can tune balance. Slightly lower rear pressures add rear grip."
+        advanced: "Front-to-rear pressure split can tune balance. Slightly lower rear pressures add rear grip. In cold ambient conditions (<10°C), increase starting pressures by 0.5–1.0 PSI to compensate for slower heat build."
       },
       {
         name: "Tyre Compound",
@@ -422,7 +772,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "More peak grip, faster degradation, better in cold conditions",
         rightEffect: "Less peak grip, more durable, better in hot conditions",
         tip: "In most sims, wet compounds exist for rain. In ACC, the standard dry compound works for most conditions. Soft compounds are mainly for qualifying laps.",
-        advanced: "Track temperature heavily influences compound choice. Above 30°C consider going harder."
+        advanced: "Track temperature heavily influences compound choice. Above 30°C consider going harder. Each heat cycle removes grip — tyres that have been heated and cooled repeatedly will never return to peak performance."
       }
     ]
   },
@@ -436,8 +786,8 @@ export const SETUP_PARAMETERS = [
         right: "More negative camber",
         leftEffect: "Better straight-line braking, less cornering grip",
         rightEffect: "Better cornering grip, uneven tyre wear, less braking grip",
-        tip: "GT3 cars typically run -3.0° to -3.8° front camber. Too much and your inner tyre edge wears fast. Use tyre temperature data to confirm — inner/outer temps should be close.",
-        advanced: "More camber helps on tracks with fast sweeping corners. Reduce for tracks with heavy braking zones."
+        tip: "GT3 cars typically run -3.0° to -3.8° front camber. Too much and your inner tyre edge wears fast. Use tyre temperature data to confirm — inner/outer temps should be within 10°C of each other.",
+        advanced: "More camber helps on tracks with fast sweeping corners. On circuits like Monza with heavy braking, reduce camber for better traction under deceleration. Camber loss under steering input is why high caster is valuable."
       },
       {
         name: "Camber (Rear)",
@@ -445,8 +795,8 @@ export const SETUP_PARAMETERS = [
         right: "More negative camber",
         leftEffect: "More rear stability under braking",
         rightEffect: "Better rear grip in corners, potential instability",
-        tip: "Rear camber is usually 1.0°–2.0° less than the front. Rear tyres rely more on mechanical grip from the diffuser.",
-        advanced: "Rear camber affects traction on exit. Less camber = better traction in slow corners."
+        tip: "Rear camber is usually 1.0°–2.0° less negative than the front. Rear tyres rely more on mechanical grip than the front.",
+        advanced: "Rear camber affects traction on exit. Less camber = better traction in slow corners. Excess rear camber causes inner edge graining which progressively degrades rear grip."
       },
       {
         name: "Toe (Front)",
@@ -455,7 +805,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "Sharper turn-in, less straight-line stability",
         rightEffect: "More stable on straights, slower turn-in response",
         tip: "Most GT3 setups use slight front toe-out (0 to -0.5mm per side) for better turn-in. Too much causes tyre scrub and overheating.",
-        advanced: "Toe-out on the front helps the car rotate into corners but can make it nervous on bumpy straights."
+        advanced: "Toe-out on the front helps the car rotate into corners but increases wear rate. The scrub angle creates heat, which is why overheated front edges often point to excessive toe-out."
       },
       {
         name: "Toe (Rear)",
@@ -464,7 +814,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "Rear feels loose, better rotation",
         rightEffect: "Rear feels planted, more stable",
         tip: "Always run rear toe-in (0.5–2.0mm) for stability. Never run rear toe-out on a race car — it creates dangerous oversteer on exit.",
-        advanced: "More rear toe-in helps with stability in high-speed corners but adds drag."
+        advanced: "Rear toe-in creates passive stability by opposing yaw rotation. More toe-in adds drag (slightly hurts top speed) but significantly improves high-speed stability and transitional behavior."
       },
       {
         name: "Caster",
@@ -473,7 +823,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "Lighter steering, less feedback",
         rightEffect: "Heavier steering, more dynamic camber gain in corners",
         tip: "More caster gives better mid-corner grip because the wheel gains negative camber as you steer. Most setups run high caster (10°+).",
-        advanced: "Caster doesn't affect straight-line handling much — it's primarily a cornering tool."
+        advanced: "Caster creates self-centering force and dynamic camber gain. As the wheel turns, the geometry creates additional negative camber on the outside wheel — essentially 'free' cornering grip without the straight-line penalties of static camber."
       }
     ]
   },
@@ -488,7 +838,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "More mechanical grip, more body roll, slower response",
         rightEffect: "Less body roll, faster response, less forgiving over bumps",
         tip: "Stiffer springs improve response but reduce grip on bumpy tracks. Start with the default and adjust ±10% at a time.",
-        advanced: "The front-to-rear spring ratio controls weight transfer. Stiffer front = more initial understeer."
+        advanced: "The front-to-rear spring ratio determines the natural pitch behavior. A stiffer front ratio creates understeer. For high-downforce cars, springs must be stiff enough that aerodynamic loads don't compress the suspension excessively."
       },
       {
         name: "Spring Rate (Rear)",
@@ -497,25 +847,25 @@ export const SETUP_PARAMETERS = [
         leftEffect: "More rear grip, more squat under acceleration",
         rightEffect: "Less rear grip, better rotation, more responsive",
         tip: "Softening the rear springs can help with rear traction out of slow corners. Stiffening helps the car rotate.",
-        advanced: "Rear spring rate interacts heavily with ARB settings — adjust them together."
+        advanced: "On high-downforce platforms, rear spring rate also controls how much the rear squats under aero load at speed. Too soft and the car changes ride height profile dramatically between low and high speed, shifting the aero map."
       },
       {
-        name: "Bump Damping",
+        name: "Bump Damping (Compression)",
         left: "Softer bump",
         right: "Stiffer bump",
-        leftEffect: "Wheel absorbs bumps faster, more compliant",
+        leftEffect: "Wheel absorbs bumps faster, more compliant over kerbs",
         rightEffect: "Wheel resists compression, more stable over crests",
         tip: "Bump (compression) damping controls how fast the suspension compresses. Softer = better over kerbs and bumps. Stiffer = more stability at high speed.",
-        advanced: "Low-speed bump affects body control in corners. High-speed bump affects kerb absorption."
+        advanced: "Most dampers have separate high-speed and low-speed bump settings. Low-speed bump controls body motion in corners and under braking. High-speed bump controls the response to sharp inputs like kerbs and road irregularities — they behave independently."
       },
       {
         name: "Rebound Damping",
         left: "Softer rebound",
         right: "Stiffer rebound",
         leftEffect: "Suspension extends faster, quicker weight transfer",
-        rightEffect: "Suspension extends slower, more controlled, can cause jacking",
-        tip: "Rebound controls how fast the suspension returns after being compressed. Stiffer rebound slows down weight transfer, adding stability but potentially causing the car to 'jack up' over repeated bumps.",
-        advanced: "A good starting ratio is rebound about 60-75% of bump. Too much rebound causes the car to ride progressively higher."
+        rightEffect: "Suspension extends slower, more controlled, can cause hydraulic jacking",
+        tip: "Rebound controls how fast the suspension returns after being compressed. Stiffer rebound slows weight transfer, adding stability but potentially causing 'jacking' over repeated bumps.",
+        advanced: "Hydraulic jacking occurs when rebound is so stiff that the suspension can't return before the next bump — progressively compressing the spring. A rebound-to-bump ratio of roughly 1.5–2:1 is a common starting point. Stiffer rebound on the rear helps prevent rear squat under acceleration."
       }
     ]
   },
@@ -529,8 +879,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer",
         leftEffect: "More front grip, less responsive turn-in",
         rightEffect: "Sharper turn-in, potential mid-corner understeer",
-        tip: "The front ARB is your first adjustment for turn-in feel. Stiffer = the car reacts faster to steering inputs. Too stiff and the front pushes in the middle of the corner.",
-        advanced: "ARBs only affect the car when cornering — they have zero effect in a straight line."
+        tip: "The front ARB is your first adjustment for turn-in feel. Stiffer = the car reacts faster to steering inputs. Too stiff and the front pushes mid-corner.",
+        advanced: "ARBs only work in corners — they transfer load from the compressed (outside) wheel to the extended (inside) wheel. The front-to-rear ARB ratio is more important than absolute values. A stiffer front ARB relative to the rear creates understeer."
       },
       {
         name: "Rear Anti-Roll Bar",
@@ -539,7 +889,7 @@ export const SETUP_PARAMETERS = [
         leftEffect: "More rear stability, less rotation",
         rightEffect: "More rear rotation, potential oversteer on exit",
         tip: "Softening the rear ARB is the safest way to add rear grip without affecting other balance characteristics. Start here before touching springs.",
-        advanced: "Front-to-rear ARB ratio is more important than absolute values. A stiffer front vs rear creates understeer."
+        advanced: "A soft rear ARB allows each rear wheel to work more independently — essential for smooth kerb absorption. On rear-engine cars (Porsche), the rear ARB is particularly sensitive due to the weight distribution over the rear axle."
       }
     ]
   },
@@ -548,13 +898,13 @@ export const SETUP_PARAMETERS = [
     icon: "Wind",
     params: [
       {
-        name: "Front Splitter / Ride Height",
+        name: "Ride Height (Front)",
         left: "Higher front",
         right: "Lower front",
         leftEffect: "Less front downforce, more stable at speed, less kerb risk",
         rightEffect: "More front downforce, sharper turn-in, risk of bottoming out",
         tip: "Front ride height directly affects how much air the splitter catches. Lower = more downforce but risk of bottoming on bumps. In most sims, 1–3mm changes have significant effects.",
-        advanced: "The rake angle (front vs rear ride height) is crucial. More rake = more rear downforce from the diffuser."
+        advanced: "Rake angle (front lower than rear) increases rear diffuser efficiency. The optimal rake varies by car but is usually 3–8mm difference. More rake shifts the aero balance rearward. Lowering the front also reduces the car's center of gravity, improving mechanical grip."
       },
       {
         name: "Rear Wing Angle",
@@ -562,8 +912,17 @@ export const SETUP_PARAMETERS = [
         right: "More wing",
         leftEffect: "Higher top speed, less rear grip in corners",
         rightEffect: "Lower top speed, much more rear grip at high speed",
-        tip: "Start with mid-range wing for a balanced setup. Low-downforce tracks like Monza need minimum wing. High-downforce tracks like Bathurst or Spa need more.",
-        advanced: "Wing angle affects the entire speed range. Even 1 click can shift balance significantly at 200+ km/h."
+        tip: "Start with mid-range wing for a balanced setup. Low-downforce tracks like Monza need minimum wing. High-downforce tracks like Bathurst need more.",
+        advanced: "Wing efficiency (L/D ratio) varies with ride height. Some cars have a 'sweet spot' where small wing changes create disproportionate downforce gains. Stall speed — where the wing loses efficiency — is a real concern in high-speed sims with accurate aero models."
+      },
+      {
+        name: "Aero Balance (F/R Split)",
+        left: "More front aero",
+        right: "More rear aero",
+        leftEffect: "Turn-in improves, high-speed understeer reduces",
+        rightEffect: "Rear stability improves, high-speed oversteer reduces",
+        tip: "Adjust front splitter and rear wing together to tune aero balance without changing total downforce level. Most GT3 cars run 45/55 to 40/60 front/rear aero distribution.",
+        advanced: "Aero balance shifts with speed — a setup that's neutral at 150 km/h may develop understeer at 250 km/h if the rear wing produces more efficient downforce at high speed. Test your setup at the speed of your key corners."
       }
     ]
   },
@@ -577,8 +936,8 @@ export const SETUP_PARAMETERS = [
         right: "Higher preload",
         leftEffect: "Freer differential, easier rotation, less stable under power",
         rightEffect: "More locked feel, more stability under power, harder to rotate",
-        tip: "Preload acts like a minimum locking value. Higher preload means the diff behaves more like it's locked even at low throttle. Start with a moderate value and increase for stability.",
-        advanced: "Preload mainly affects corner entry behavior when coasting — it determines how the car reacts when you lift off the throttle."
+        tip: "Preload acts like a minimum locking value — the diff behaves more locked even at low throttle. Start moderate and increase for stability.",
+        advanced: "Preload mainly affects the transition zone — when you lift off the throttle entering a corner or just before applying power exiting. High preload smooths out the lift-off snap that causes snap oversteer but can make low-speed hairpin rotation difficult."
       },
       {
         name: "Power (Accel) Lock",
@@ -587,16 +946,16 @@ export const SETUP_PARAMETERS = [
         leftEffect: "Less traction, easier rotation on power, potential inside wheelspin",
         rightEffect: "More traction, more stability on exit, harder to rotate",
         tip: "Power lock controls how much the wheels are locked together under acceleration. More lock = better traction but the car wants to go straight on exit. 60–80% is a common GT3 range.",
-        advanced: "On rear-engine cars (Porsche), you can often run higher power lock. Front-engine cars may need less to avoid push on exit."
+        advanced: "On rear-engine cars (Porsche 911), you can often run higher power lock because the rear weight distribution already provides good traction. Mid and front-engine cars often need lower power lock to avoid push on exit."
       },
       {
         name: "Coast (Decel) Lock",
         left: "Less lock",
         right: "More lock",
         leftEffect: "Car rotates more on entry, less engine braking stability",
-        rightEffect: "More stable on turn-in, less rotation under braking into corners",
-        tip: "Coast lock affects corner entry when you lift off the throttle or trail-brake. Lower values let the car rotate naturally. Higher values keep it stable but can cause understeer on entry.",
-        advanced: "Trail braking technique is heavily affected by coast lock. Aggressive trail-brakers often prefer lower coast lock."
+        rightEffect: "More stable on turn-in, less rotation under braking",
+        tip: "Coast lock affects corner entry when you lift off or trail-brake. Lower values let the car rotate naturally. Higher values keep it stable but can cause understeer on entry.",
+        advanced: "Trail-braking technique is heavily affected by coast lock. Aggressive trail-brakers often prefer lower coast lock for the additional rotation when the brake is partially applied into the corner apex."
       }
     ]
   },
@@ -610,8 +969,8 @@ export const SETUP_PARAMETERS = [
         right: "More forward",
         leftEffect: "Rear brakes do more work, potential rear lockup and rotation",
         rightEffect: "Front brakes do more work, more stable braking, potential front lockup",
-        tip: "GT3 cars typically run 55–60% front bias. More forward bias is safer but slower. If you're locking fronts into heavy braking zones, shift bias rearward 0.5% at a time.",
-        advanced: "Brake bias interacts with ABS settings. With strong ABS, you can run more aggressive (rearward) bias."
+        tip: "GT3 cars typically run 55–60% front bias. More forward bias is safer but slower. If locking fronts in heavy braking zones, shift bias rearward 0.5% at a time.",
+        advanced: "Brake bias interacts with ABS settings. With strong ABS, you can run more aggressive (rearward) bias. As tyres wear, the optimal bias may shift — worn rear tyres need more forward bias to avoid rear lockup under heavy braking."
       },
       {
         name: "Brake Duct / Cooling",
@@ -619,8 +978,8 @@ export const SETUP_PARAMETERS = [
         right: "More cooling",
         leftEffect: "Less drag, higher brake temperatures, potential fade",
         rightEffect: "More drag, lower brake temps, consistent braking",
-        tip: "Open brake ducts 1–2 steps at brake-heavy tracks (Barcelona, Nürburgring). Close them at fast tracks with few heavy braking zones for less drag.",
-        advanced: "Monitor brake temps during practice. If they exceed 600°C regularly, open the ducts."
+        tip: "Open brake ducts 1–2 steps at brake-heavy tracks (Barcelona, Nürburgring). Close them at fast tracks with few braking zones for less drag.",
+        advanced: "Monitor brake temps during practice. If they exceed 600°C regularly, open the ducts. Brakes operating too cold (below 200°C) also lose effectiveness — closing ducts slightly in cold, wet conditions can help."
       }
     ]
   },
@@ -634,32 +993,34 @@ export const SETUP_PARAMETERS = [
         right: "More TC",
         leftEffect: "More wheelspin allowed, faster but requires precision",
         rightEffect: "Limits wheelspin aggressively, slower but safer",
-        tip: "Start with medium TC (5–7 in ACC). As you gain confidence, reduce it. In the wet, increase TC significantly. TC is your best friend when learning a new car.",
-        advanced: "TC cut vs TC slip — some sims let you adjust both. Cut reduces power, slip manages wheel speed difference."
+        tip: "Start with medium TC (5–7 in ACC). As you gain confidence, reduce it. In the wet, increase TC significantly.",
+        advanced: "TC cut vs TC slip — some sims let you adjust both. Cut reduces engine power on wheelspin detection. Slip manages the speed differential between drive wheels. In dry conditions, lower TC2 (slip) while keeping TC1 (cut) moderate gives good traction without sacrificing too much lap time."
       },
       {
         name: "ABS",
         left: "Less ABS",
         right: "More ABS",
         leftEffect: "Shorter braking distances, easier to lock wheels",
-        rightEffect: "Harder to lock up, but braking distances may increase",
-        tip: "Lower ABS gives shorter braking distances if you can modulate the pedal well. In the wet, increase ABS. Most setups run 2–4 in ACC.",
-        advanced: "ABS affects how aggressively you can trail-brake. Less ABS = more feel but more risk."
+        rightEffect: "Harder to lock up, longer braking distances possible",
+        tip: "Lower ABS gives shorter braking distances if you can modulate the pedal. In the wet, increase ABS. Most setups run 2–4 in ACC.",
+        advanced: "ABS directly affects trail-braking capability. Less ABS = more pedal feel and ability to modulate, but requires precise inputs. Reduce ABS by 1 as you become more confident with braking technique."
       },
       {
         name: "Engine Map",
-        left: "Lower power",
+        left: "Lower power / economy",
         right: "Full power",
         leftEffect: "Better fuel consumption, smoother delivery, less wear",
         rightEffect: "Maximum performance, higher fuel usage",
-        tip: "Use full power in qualifying and most of the race. Switch to lower maps in the closing laps if you're managing fuel or have a comfortable lead.",
-        advanced: "In endurance races, fuel mapping can save 10–15% fuel which translates to fewer pit stops."
+        tip: "Use full power in qualifying. In races, switch to lower maps to manage fuel or if you have a comfortable lead.",
+        advanced: "In endurance races, fuel mapping can save 10–15% fuel which translates to fewer pit stops. Some cars have maps specifically for wet conditions that reduce torque spikes on corner exit."
       }
     ]
   }
 ];
 
-// Sim-specific setup parameters with ranges and defaults
+// ─────────────────────────────────────────────
+// SIM-SPECIFIC SETUP PARAMETERS with ranges
+// ─────────────────────────────────────────────
 export const SIM_SETUP_PARAMS = {
   "Assetto Corsa Competizione": [
     {
@@ -722,8 +1083,8 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Electronics",
       params: [
-        { key: "tc1", label: "TC 1", unit: "", min: 0, max: 11, step: 1, default: 4 },
-        { key: "tc2", label: "TC 2", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "tc1", label: "TC 1 (Cut)", unit: "", min: 0, max: 11, step: 1, default: 4 },
+        { key: "tc2", label: "TC 2 (Slip)", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
@@ -830,10 +1191,10 @@ export const SIM_SETUP_PARAMS = {
         { key: "arb_rear", label: "ARB Rear", unit: "N/mm", min: 0, max: 50, step: 5, default: 15 },
         { key: "spring_front", label: "Spring Rate F", unit: "N/mm", min: 40, max: 200, step: 5, default: 85 },
         { key: "spring_rear", label: "Spring Rate R", unit: "N/mm", min: 40, max: 200, step: 5, default: 95 },
-        { key: "bump_front", label: "Bump F", unit: "", min: 1000, max: 8000, step: 500, default: 3500 },
-        { key: "bump_rear", label: "Bump R", unit: "", min: 1000, max: 8000, step: 500, default: 3500 },
-        { key: "rebound_front", label: "Rebound F", unit: "", min: 1000, max: 8000, step: 500, default: 4000 },
-        { key: "rebound_rear", label: "Rebound R", unit: "", min: 1000, max: 8000, step: 500, default: 4000 }
+        { key: "bump_front", label: "Bump F", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 3500 },
+        { key: "bump_rear", label: "Bump R", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 3500 },
+        { key: "rebound_front", label: "Rebound F", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 4000 },
+        { key: "rebound_rear", label: "Rebound R", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 4000 }
       ]
     },
     {
@@ -920,8 +1281,8 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Electronics",
       params: [
-        { key: "tc1", label: "TC 1", unit: "", min: 0, max: 11, step: 1, default: 4 },
-        { key: "tc2", label: "TC 2", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "tc1", label: "TC 1 (Cut)", unit: "", min: 0, max: 11, step: 1, default: 4 },
+        { key: "tc2", label: "TC 2 (Slip)", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
         { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
@@ -963,10 +1324,10 @@ export const SIM_SETUP_PARAMS = {
         { key: "spring_rear", label: "Spring R", unit: "N/mm", min: 40, max: 300, step: 5, default: 120 },
         { key: "arb_front", label: "ARB Front", unit: "N/mm", min: 0, max: 80, step: 5, default: 25 },
         { key: "arb_rear", label: "ARB Rear", unit: "N/mm", min: 0, max: 80, step: 5, default: 20 },
-        { key: "bump_front", label: "Bump F", unit: "", min: 1000, max: 10000, step: 500, default: 4000 },
-        { key: "bump_rear", label: "Bump R", unit: "", min: 1000, max: 10000, step: 500, default: 4000 },
-        { key: "rebound_front", label: "Rebound F", unit: "", min: 1000, max: 10000, step: 500, default: 5000 },
-        { key: "rebound_rear", label: "Rebound R", unit: "", min: 1000, max: 10000, step: 500, default: 5000 }
+        { key: "bump_front", label: "Bump F", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 4000 },
+        { key: "bump_rear", label: "Bump R", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 4000 },
+        { key: "rebound_front", label: "Rebound F", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 5000 },
+        { key: "rebound_rear", label: "Rebound R", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 5000 }
       ]
     },
     {
@@ -1007,8 +1368,8 @@ export const SIM_SETUP_PARAMS = {
       params: [
         { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 50, max: 150, step: 1, default: 90 },
         { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 50, max: 150, step: 1, default: 95 },
-        { key: "spring_front", label: "Spring Rate F", unit: "kgf/mm", min: 2, max: 30, step: 1, default: 8 },
-        { key: "spring_rear", label: "Spring Rate R", unit: "kgf/mm", min: 2, max: 30, step: 1, default: 9 }
+        { key: "spring_front", label: "Spring Rate F", unit: "kgf/mm", min: 2, max: 30, step: 0.5, default: 8 },
+        { key: "spring_rear", label: "Spring Rate R", unit: "kgf/mm", min: 2, max: 30, step: 0.5, default: 9 }
       ]
     },
     {
@@ -1042,7 +1403,7 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_balance", label: "Brake Balance", unit: "", min: 1, max: 20, step: 1, default: 10 }
+        { key: "brake_balance", label: "Brake Balance (F→R)", unit: "", min: 1, max: 20, step: 1, default: 10 }
       ]
     },
     {
@@ -1055,117 +1416,280 @@ export const SIM_SETUP_PARAMS = {
   ]
 };
 
-// Tyre pressure base targets by car category (optimal hot PSI / kPa)
+// ─────────────────────────────────────────────
+// TYRE PRESSURE BASES — optimal hot targets by class
+// ─────────────────────────────────────────────
 export const TYRE_PRESSURE_BASES = {
-  "GT3": { acc: 27.5, iracing: 29.0, rf2_kpa: 196, ams2: 27.0, ac: 27.3, ace: 27.5, lmu_kpa: 192, gt7_kpa: 230 },
-  "GT4": { acc: 27.0, iracing: 28.5, rf2_kpa: 192, ams2: 26.5, ac: 27.0, ace: 27.0, lmu_kpa: 190, gt7_kpa: 225 },
-  "LMP / Prototype": { acc: 26.0, iracing: 28.0, rf2_kpa: 188, ams2: 25.5, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 220 },
-  "Open Wheel": { acc: 25.0, iracing: 27.5, rf2_kpa: 182, ams2: 25.0, ac: 25.0, ace: 25.0, lmu_kpa: 180, gt7_kpa: 210 },
-  "Touring / TCR": { acc: 29.0, iracing: 30.0, rf2_kpa: 200, ams2: 29.0, ac: 29.0, ace: 29.0, lmu_kpa: 200, gt7_kpa: 240 },
-  "Cup": { acc: 28.5, iracing: 29.5, rf2_kpa: 196, ams2: 28.0, ac: 28.0, ace: 28.5, lmu_kpa: 196, gt7_kpa: 235 },
-  "GTE": { acc: 27.0, iracing: 28.5, rf2_kpa: 192, ams2: 26.5, ac: 27.0, ace: 27.0, lmu_kpa: 188, gt7_kpa: 225 },
-  "Stock Car": { acc: 30.0, iracing: 34.0, rf2_kpa: 210, ams2: 30.0, ac: 30.0, ace: 30.0, lmu_kpa: 210, gt7_kpa: 250 },
-  "Historic": { acc: 26.0, iracing: 28.0, rf2_kpa: 185, ams2: 26.0, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 215 }
+  "GT3": { acc: 27.5, iracing: 29.0, ams2: 27.0, ac: 27.3, ace: 27.5, lmu_kpa: 192, gt7_kpa: 230 },
+  "GT4": { acc: 27.0, iracing: 28.5, ams2: 26.5, ac: 27.0, ace: 27.0, lmu_kpa: 190, gt7_kpa: 225 },
+  "GTE": { acc: 27.0, iracing: 28.5, ams2: 26.5, ac: 27.0, ace: 27.0, lmu_kpa: 188, gt7_kpa: 225 },
+  "GT2": { acc: 28.0, iracing: 29.5, ams2: 28.0, ac: 28.0, ace: 28.0, lmu_kpa: 195, gt7_kpa: 235 },
+  "LMP / Prototype": { acc: 26.0, iracing: 28.0, ams2: 25.5, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 220 },
+  "Hypercar (LMH/LMDh)": { acc: 26.0, iracing: 27.5, ams2: 25.5, ac: 26.0, ace: 26.0, lmu_kpa: 182, gt7_kpa: 218 },
+  "Open Wheel": { acc: 25.0, iracing: 27.5, ams2: 25.0, ac: 25.0, ace: 25.0, lmu_kpa: 180, gt7_kpa: 210 },
+  "Touring / TCR": { acc: 29.0, iracing: 30.0, ams2: 29.0, ac: 29.0, ace: 29.0, lmu_kpa: 200, gt7_kpa: 240 },
+  "Cup Car": { acc: 28.5, iracing: 29.5, ams2: 28.0, ac: 28.0, ace: 28.5, lmu_kpa: 196, gt7_kpa: 235 },
+  "Stock Car / NASCAR": { acc: 30.0, iracing: 34.0, ams2: 30.0, ac: 30.0, ace: 30.0, lmu_kpa: 210, gt7_kpa: 250 },
+  "Road Car (Sport)": { acc: 30.0, iracing: 32.0, ams2: 30.0, ac: 30.0, ace: 30.0, lmu_kpa: 210, gt7_kpa: 245 },
+  "Historic": { acc: 26.0, iracing: 28.0, ams2: 26.0, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 215 }
 };
 
-export const TRACK_LISTS = {
-  "iRacing": [
-    "Spa-Francorchamps", "Monza", "Nürburgring GP", "Silverstone", "Sebring International Raceway",
-    "Daytona International Speedway Road Course", "Watkins Glen International", "Road America",
-    "Laguna Seca", "Indianapolis Motor Speedway Road Course", "Mid-Ohio Sports Car Course",
-    "Mount Panorama (Bathurst)", "Fuji Speedway", "Suzuka Circuit", "Circuit of the Americas",
-    "Brands Hatch", "Circuit Zandvoort", "Imola", "Hungaroring", "Red Bull Ring",
-    "Circuit de Catalunya", "Jerez de la Frontera", "Snetterton", "Oulton Park", "Donington Park",
-    "Road Atlanta", "Virginia International Raceway", "Lime Rock Park", "Talladega Superspeedway",
-    "Iowa Speedway", "Phoenix Raceway", "Charlotte Motor Speedway"
-  ],
-  "Assetto Corsa Competizione": [
-    "Spa-Francorchamps", "Monza", "Nürburgring GP", "Silverstone", "Misano World Circuit",
-    "Circuit de Catalunya", "Circuit Paul Ricard", "Hungaroring", "Circuit Zandvoort", "Zolder",
-    "Brands Hatch", "Snetterton", "Donington Park", "Oulton Park", "Kyalami",
-    "Mount Panorama (Bathurst)", "Laguna Seca", "Suzuka Circuit", "Fuji Speedway",
-    "Indianapolis Road Course", "Circuit of the Americas", "Circuit Ricardo Tormo",
-    "Watkins Glen", "Imola"
-  ],
-  "Assetto Corsa": [
-    "Monza", "Spa-Francorchamps", "Silverstone GP", "Brands Hatch", "Nürburgring Nordschleife",
-    "Mugello", "Imola", "Vallelunga", "Autodromo di Magione", "Autodromo di Modena",
-    "Trento-Bondone", "Circuit de Catalunya", "Jerez", "Laguna Seca", "Road America",
-    "Nürburgring GP", "Dubai Autodrome", "Dragon Trail Seaside"
-  ],
-  "Assetto Corsa Evo": [
-    "Spa-Francorchamps", "Monza", "Silverstone", "Brands Hatch", "Nürburgring Nordschleife",
-    "Mugello", "Imola", "Laguna Seca", "Mount Panorama (Bathurst)", "Circuit de Catalunya",
-    "Autodromo di Modena"
-  ],
-  "Le Mans Ultimate": [
-    "Circuit de la Sarthe (Le Mans 24h)", "Monza", "Spa-Francorchamps", "Portimão",
-    "Fuji Speedway", "Bahrain International Circuit", "Sebring International Raceway",
-    "Indianapolis Motor Speedway", "Autodromo José Carlos Pace (Interlagos)",
-    "Road Atlanta (Petit Le Mans)", "Circuit de Catalunya"
-  ],
-  "Automobilista 2": [
-    "Autodromo José Carlos Pace (Interlagos)", "Curitiba", "Cascavel", "Goiânia",
-    "Santa Cruz do Sul", "Velopark", "Londrina", "Hockenheimring", "Red Bull Ring",
-    "Imola", "Nürburgring GP", "Spa-Francorchamps", "Silverstone",
-    "Circuit Gilles Villeneuve (Montreal)", "Jerez", "Kyalami", "Mount Panorama (Bathurst)",
-    "Daytona Road Course", "Sebring", "Laguna Seca", "Long Beach",
-    "Autodromo de Potrero de los Funes", "Tarumã", "Campo Grande"
-  ],
-  "Gran Turismo 7": [
-    "Nürburgring Nordschleife", "Spa-Francorchamps", "Suzuka Circuit", "Fuji Speedway",
-    "Brands Hatch", "Monza", "Circuit de la Sarthe (Le Mans)", "Laguna Seca",
-    "Tsukuba Circuit", "Autodromo José Carlos Pace (Interlagos)", "Red Bull Ring",
-    "Dragon Trail Seaside", "Dragon Trail Gardens", "Grand Valley Speedway",
-    "Tokyo Expressway South", "Tokyo Expressway North", "Tokyo Expressway Central",
-    "Kyoto Driving Park Yamagiwa", "Kyoto Driving Park Miyabi", "Daytona Road Course",
-    "Sardegna Road Track A", "Sardegna Road Track B", "Alsace Village",
-    "Autodrome Lago Maggiore", "Blue Moon Bay Speedway", "Colorado Springs",
-    "Deep Forest Raceway", "High Speed Ring", "Autodromo de Catalunya",
-    "Willow Springs Raceway", "Special Stage Route 5", "Special Stage Route X",
-    "Autopolis International Racing Course"
-  ]
-};
-
+// ─────────────────────────────────────────────
+// TRACK TIPS
+// ─────────────────────────────────────────────
 export const TRACK_TIPS = {
   "Spa-Francorchamps": {
-    character: "High-speed, flowing",
+    character: "High-speed, flowing, elevation changes",
     wing: "Medium-high",
-    tips: "Run medium-high downforce for Eau Rouge confidence. Stiffer front ARB helps at the Bus Stop chicane. Watch brake temps on the long descent to Rivage."
+    tips: "Run medium-high downforce for Eau Rouge confidence. Stiffer front ARB helps at the Bus Stop chicane. Watch brake temps on the long descent to Rivage. Pouhon demands rear stability — run sufficient rear wing."
   },
   "Monza": {
     character: "Low downforce, heavy braking",
     wing: "Minimum",
-    tips: "Minimum wing for top speed. Increase brake cooling — the chicanes are brutal on brakes. Stiffer rear springs help stability at Parabolica."
+    tips: "Minimum wing for top speed. Increase brake cooling — the chicanes are brutal. Stiffer rear springs help stability at Parabolica/Ascari. Tyre wear is low so run qualifying-focused pressures."
   },
   "Nürburgring GP": {
-    character: "Technical, heavy braking",
+    character: "Technical, heavy braking, mixed speed",
     wing: "Medium-high",
-    tips: "Brake-heavy track — open cooling ducts. Medium-high downforce works best. Softer front springs for the bumpy final sector."
+    tips: "Brake-heavy track — open cooling ducts. Medium-high downforce works best. Softer front springs for the bumpy final sector (Mercedes arena). The hairpin requires max diff lock for traction."
   },
   "Silverstone": {
-    character: "Fast and flowing",
+    character: "Fast and flowing, smooth surface",
     wing: "Medium",
-    tips: "The fast sweeps reward good aero balance. Run medium wing with a focus on front-end response. Maggots-Becketts is the litmus test for your setup."
+    tips: "The fast sweeps reward good aero balance. Medium wing with a focus on front-end response. Maggots-Becketts-Chapel is the litmus test — the car must be planted without oversteer through this complex."
   },
   "Bathurst": {
-    character: "Extreme elevation, tight sections",
+    character: "Extreme elevation, tight and fast sections",
     wing: "High",
-    tips: "Maximum downforce for mountain confidence. Soft bump damping for the rough surface. Watch ride height — the car can bottom out at the top of the mountain."
-  },
-  "Daytona Road Course": {
-    character: "Mixed speed, banking",
-    wing: "Medium-low",
-    tips: "The banking loads the car differently. Run slightly higher ride height to handle the transition from banking to infield. Moderate brake cooling."
+    tips: "Maximum downforce for mountain confidence. Soft bump damping for the rough surface at the top of the mountain. Watch ride height — cars can bottom out. Conrod Straight requires high top speed but mountain needs grip."
   },
   "Suzuka": {
-    character: "Flowing, technical",
+    character: "Flowing, technical, demanding",
     wing: "Medium-high",
-    tips: "The Esses punish poor aero balance. Prioritize front-end stability through the fast sections. Softer rear ARB helps traction at the Hairpin."
+    tips: "The Esses punish poor aero balance. Prioritize front-end stability through fast sections. Softer rear ARB helps traction at the Hairpin. 130R needs maximum high-speed rear grip — run enough wing."
   },
-  "Brands Hatch": {
-    character: "Short, undulating",
+  "Brands Hatch GP": {
+    character: "Short, undulating, blind crests",
     wing: "Medium-high",
-    tips: "Elevation changes are extreme. Soft bump damping is essential. More front downforce for Paddock Hill Bend. Short track so brake wear is less of a concern."
+    tips: "Elevation changes are extreme. Soft bump damping is essential. More front downforce for Paddock Hill Bend — confidence here is everything. High-speed Druids needs a stable rear."
+  },
+  "Imola": {
+    character: "Technical, bumpy, mixed speed",
+    wing: "Medium",
+    tips: "Bumpy surface means softer bump damping. Technical track with a mix of slow chicanes and fast sweepers. Acque Minerale benefits from good traction setup. Brake balance needs to be carefully tuned."
+  },
+  "Le Mans": {
+    character: "Ultra-high speed, long straights",
+    wing: "Minimum (Hypercars) / Medium (GT)",
+    tips: "Hypercars need DRS/low drag configurations. The Porsche Curves require mechanical grip. Ford Chicanes need a calm, stable car under braking. Mulsanne kink at 330+ km/h demands absolute high-speed rear stability."
+  },
+  "Circuit de Catalunya": {
+    character: "Mixed speed, tyre-punishing",
+    wing: "Medium-high",
+    tips: "Notorious for tyre degradation — especially fronts. Run conservative camber to protect the inner edge. Turn 3 (fast right after the back straight) is critical for aero balance diagnosis."
+  },
+  "Laguna Seca": {
+    character: "Technical, undulating, Corkscrew",
+    wing: "Medium",
+    tips: "The Corkscrew blind crest requires confidence in high-speed stability. Suspension needs to be soft enough to absorb the landing. Turn 2 is the key slow corner for traction setup."
+  },
+  "Red Bull Ring": {
+    character: "Short, elevation, heavy braking",
+    wing: "Medium",
+    tips: "Uphill sections require good traction. Turn 1 and Turn 3 are the two big braking zones — monitor temps. Short track means tyres go through fewer full cycles, so cold-start setup matters."
+  },
+  "Hungaroring": {
+    character: "Twisty, slow-medium, track evolution",
+    wing: "High",
+    tips: "One of the slowest circuits. High downforce helps everywhere. Differential settings matter more here than anywhere else. The track rubbers in significantly over a race — setup that works at the start may be different late."
+  },
+  "Nürburgring Nordschleife": {
+    character: "Extreme variety, 26km, unpredictable",
+    wing: "Medium",
+    tips: "Softest suspension possible for the bumps. Higher ride height than anywhere else. Conservative pressure settings for the 8-min heat cycle. Brake cooling critical over the full distance."
   }
 };
+
+// ─────────────────────────────────────────────
+// GT3 BASELINE SETUPS (starting point references)
+// ─────────────────────────────────────────────
+export const BASELINE_SETUPS = {
+  "Porsche 911 GT3 R (992) — ACC": {
+    car: "Porsche 911 GT3 R (992)",
+    sim: "Assetto Corsa Competizione",
+    notes: "Balanced starting setup. The 992 carries its weight well rearward so power lock can be high. Watch front tyre wear — the car naturally understeers under power.",
+    params: {
+      tyre_pressure_fl: 27.3, tyre_pressure_fr: 27.3, tyre_pressure_rl: 26.8, tyre_pressure_rr: 26.8,
+      front_splitter: 1, rear_wing: 7, ride_height_front: 56, ride_height_rear: 65,
+      camber_front: -3.5, camber_rear: -2.3, toe_front: -0.3, toe_rear: 0.9, caster: 13.0,
+      arb_front: 4, arb_rear: 5, spring_front: 85, spring_rear: 110, bump_front: 4, bump_rear: 5, rebound_front: 5, rebound_rear: 5,
+      diff_preload: 55, diff_power: 75, diff_coast: 45, brake_bias: 57.5, brake_duct_front: 2, brake_duct_rear: 2,
+      tc1: 4, tc2: 3, abs: 3, engine_map: 5
+    }
+  },
+  "Ferrari 296 GT3 — ACC": {
+    car: "Ferrari 296 GT3",
+    sim: "Assetto Corsa Competizione",
+    notes: "Mid-engine, balanced car. Responds well to front splitter adjustments. Monitor rear tyre temps as this car can work the rears hard.",
+    params: {
+      tyre_pressure_fl: 27.5, tyre_pressure_fr: 27.5, tyre_pressure_rl: 27.0, tyre_pressure_rr: 27.0,
+      front_splitter: 2, rear_wing: 6, ride_height_front: 57, ride_height_rear: 63,
+      camber_front: -3.7, camber_rear: -2.5, toe_front: -0.4, toe_rear: 0.8, caster: 12.5,
+      arb_front: 5, arb_rear: 4, spring_front: 95, spring_rear: 100, bump_front: 4, bump_rear: 4, rebound_front: 4, rebound_rear: 5,
+      diff_preload: 60, diff_power: 60, diff_coast: 38, brake_bias: 57.8, brake_duct_front: 2, brake_duct_rear: 1,
+      tc1: 5, tc2: 4, abs: 3, engine_map: 5
+    }
+  },
+  "McLaren 720S GT3 EVO — ACC": {
+    car: "McLaren 720S GT3 EVO",
+    sim: "Assetto Corsa Competizione",
+    notes: "RWD, aggressive aerodynamics. The McLaren loves trail-braking and rewards a lower diff coast setting. Front camber is critical for this car.",
+    params: {
+      tyre_pressure_fl: 27.2, tyre_pressure_fr: 27.2, tyre_pressure_rl: 26.8, tyre_pressure_rr: 26.8,
+      front_splitter: 1, rear_wing: 5, ride_height_front: 59, ride_height_rear: 64,
+      camber_front: -3.8, camber_rear: -2.6, toe_front: -0.5, toe_rear: 0.7, caster: 12.0,
+      arb_front: 6, arb_rear: 3, spring_front: 90, spring_rear: 95, bump_front: 5, bump_rear: 3, rebound_front: 5, rebound_rear: 4,
+      diff_preload: 50, diff_power: 55, diff_coast: 35, brake_bias: 56.5, brake_duct_front: 2, brake_duct_rear: 1,
+      tc1: 4, tc2: 3, abs: 2, engine_map: 5
+    }
+  },
+  "BMW M4 GT3 — ACC": {
+    car: "BMW M4 GT3",
+    sim: "Assetto Corsa Competizione",
+    notes: "Front-engine, planted feel. Higher diff lock works well due to front-engine weight. Stiffer front springs than default help turn-in.",
+    params: {
+      tyre_pressure_fl: 27.4, tyre_pressure_fr: 27.4, tyre_pressure_rl: 27.0, tyre_pressure_rr: 27.0,
+      front_splitter: 2, rear_wing: 6, ride_height_front: 58, ride_height_rear: 62,
+      camber_front: -3.4, camber_rear: -2.3, toe_front: -0.3, toe_rear: 0.9, caster: 13.5,
+      arb_front: 5, arb_rear: 4, spring_front: 100, spring_rear: 95, bump_front: 4, bump_rear: 4, rebound_front: 5, rebound_rear: 4,
+      diff_preload: 70, diff_power: 65, diff_coast: 42, brake_bias: 58.2, brake_duct_front: 2, brake_duct_rear: 2,
+      tc1: 4, tc2: 3, abs: 3, engine_map: 5
+    }
+  }
+};
+
+// ─────────────────────────────────────────────
+// CORNER TYPE GUIDE
+// ─────────────────────────────────────────────
+export const CORNER_TYPE_GUIDE = [
+  {
+    type: "Tight Hairpin",
+    icon: "RotateCcw",
+    description: "Very slow, often 1st or 2nd gear corners at the end of long straights. Maximum rotation required.",
+    exampleCorners: ["La Source (Spa)", "Raidillon Hairpin (Spa)", "Stowe (Silverstone)", "Hairpin (Red Bull Ring)"],
+    setup: {
+      diff: "Low diff power lock (45–55%) to allow rotation. Medium preload.",
+      springs: "Softer rear springs for mechanical grip on exit.",
+      arb: "Softer rear ARB to allow outside wheel to load up.",
+      aero: "Low wing setting has minimal benefit here — mechanical grip dominates.",
+      geometry: "Maximum caster for camber gain. Standard camber values."
+    },
+    technique: "Late apex, maximum throttle at apex or just after. Rotate the car with lift-off if needed. Avoid attacking kerbs that cause wheel hop.",
+    priority: "Traction out of the hairpin is the priority — the approach is sacrificed for exit speed."
+  },
+  {
+    type: "Fast Sweeper",
+    icon: "TrendingRight",
+    description: "High-speed constant-radius bends at 4th gear and above. Taken at near-maximum speed.",
+    exampleCorners: ["Eau Rouge/Raidillon (Spa)", "Maggots-Becketts (Silverstone)", "130R (Suzuka)", "Pouhon (Spa)"],
+    setup: {
+      diff: "Higher diff preload for stability. Medium coast lock.",
+      springs: "Stiffer springs to prevent aero ride height changes at speed.",
+      arb: "Medium-stiff ARB to control body roll at high speed.",
+      aero: "Rear wing is critical here — if you're not confident, add a click.",
+      geometry: "More negative front camber helps. Rear toe-in essential for stability."
+    },
+    technique: "Commit fully and carry maximum speed. These corners separate fast setups from slow ones — if your car isn't planted, don't force it.",
+    priority: "High-speed rear stability. Any instability through these corners indicates an aero or platform problem."
+  },
+  {
+    type: "Chicane / Direction Change",
+    icon: "ArrowLeftRight",
+    description: "Rapid left-right or right-left transitions. Tests transitional stability and mechanical balance.",
+    exampleCorners: ["Bus Stop (Spa)", "Variante Ascari (Monza)", "Variante del Rettifilo (Monza)", "Adelaide (Silverstone)"],
+    setup: {
+      diff: "Medium preload for smooth transitions. Avoid very low preload.",
+      springs: "Stiffer rebound damping to control the side-to-side movement.",
+      arb: "Stiffer rear ARB helps resist the direction change oversteer.",
+      aero: "Not particularly sensitive to aero settings.",
+      geometry: "Rear toe-in is critical for directional stability during direction changes."
+    },
+    technique: "Smooth inputs — don't jerk the wheel. Let the car settle between apices. The second apex is usually more important than the first.",
+    priority: "Transitional stability. If the rear steps out between apex 1 and apex 2, increase rear toe-in and stiffen rear bump/rebound."
+  },
+  {
+    type: "Off-Camber Turn",
+    icon: "TrendingDown",
+    description: "The track surface falls away from the car on the outside of the corner, reducing available grip.",
+    exampleCorners: ["Turn 8 Türkiye (Istanbul)", "Becketts (Silverstone, outer banking)", "Turn 6 Laguna Seca"],
+    setup: {
+      diff: "Lower diff settings to allow the car to follow the road.",
+      springs: "Softer bump damping to keep tyres in contact with the falling surface.",
+      arb: "Softer ARBs allow each wheel to move independently on the variable surface.",
+      aero: "More downforce helps compress the car onto the road surface.",
+      geometry: "Slightly more negative camber on the front compensates for the geometric camber loss."
+    },
+    technique: "Be very smooth on inputs. The grip disappears suddenly if you exceed the limit. Be earlier to the throttle rather than later to maintain downforce.",
+    priority: "Tyre compliance and downforce. Stiff setups lose grip completely in off-camber sections."
+  },
+  {
+    type: "Uphill Corner",
+    icon: "TrendingUp",
+    description: "The track climbs through the corner, adding load to the car through the apex.",
+    exampleCorners: ["Eau Rouge uphill (Spa)", "Mountain section (Bathurst)", "Aintree (Silverstone new section)"],
+    setup: {
+      diff: "Standard diff settings work well — extra grip from the gradient helps.",
+      springs: "Slightly lower rear spring rate to prevent the car from becoming light on exit.",
+      arb: "Rear ARB can be slightly stiffer as the added grip reduces the oversteer risk.",
+      aero: "Less rear wing can work here as the gradient naturally loads the rear.",
+      geometry: "Standard geometry — the car is being pressed into the road."
+    },
+    technique: "Uphill corners feel grippier than flat equivalents — you can carry more speed than you think. Be aggressive on the throttle as the upward gradient helps maintain rear traction.",
+    priority: "Exit speed. These are usually followed by straights or high-speed sections."
+  },
+  {
+    type: "Downhill Corner",
+    icon: "TrendingDown",
+    description: "The track descends through the corner, reducing load and making the car feel light.",
+    exampleCorners: ["Paddock Hill Bend (Brands Hatch)", "Conrod Straight chicane approach (Bathurst)", "Descending to T1 Zandvoort"],
+    setup: {
+      diff: "Higher preload for stability as rear unloads.",
+      springs: "Stiffer front bump to prevent the nose from diving and unloading the rear.",
+      arb: "Stiffer rear ARB helps maintain rear stability as weight moves forward and off the rear.",
+      aero: "More rear wing to compensate for the rear unloading at speed.",
+      geometry: "More rear toe-in for additional directional stability on the downhill approach."
+    },
+    technique: "The car is light and wants to go straight or oversteer. Be patient with steering inputs and avoid sudden direction changes. Braking must be progressive.",
+    priority: "Stability and confidence. A car that's nervous downhill will cost significant lap time due to driver hesitation."
+  },
+  {
+    type: "Long Medium-Speed Corner",
+    icon: "Circle",
+    description: "Long, constant-radius corners taken in 3rd–4th gear. Expose tyre degradation and sustained grip levels.",
+    exampleCorners: ["Copse (Silverstone old layout)", "Turn 3 (Circuit de Catalunya)", "Rivage (Spa)"],
+    setup: {
+      diff: "Medium diff lock — needs rotation but also traction on exit.",
+      springs: "Softer front springs improve sustained front grip over the length of the corner.",
+      arb: "Softer front ARB for more front mechanical grip through the sustained arc.",
+      aero: "Medium wing — these corners reward a balanced car more than maximum downforce.",
+      geometry: "Camber settings are critical — tyres work hard for extended periods. Use tyre temp data from these corners to optimize."
+    },
+    technique: "These corners test your ability to maintain a consistent throttle input. Build up the throttle very smoothly. Pushing the tyre continuously exposes any overheating issues.",
+    priority: "Balanced grip and tyre management. Setup changes that work here often transfer well to the whole lap."
+  },
+  {
+    type: "High-Speed Kink",
+    icon: "Zap",
+    description: "A small direction change at very high speed — often not even a 'corner' in the traditional sense.",
+    exampleCorners: ["Kink at Road America", "Mulsanne Straight kink (Le Mans)", "Fisichella (Spa Eau Rouge flat?)", "Tamburello Chicane approach"],
+    setup: {
+      diff: "High preload for directional stability at speed.",
+      springs: "Stiff springs to prevent any body movement affecting aero efficiency.",
+      arb: "Stiff ARBs maintain platform stability at speed.",
+      aero: "This is where rear wing setting matters most — marginal wing at these speeds can cause instability.",
+      geometry: "Rear toe-in is essential — it creates passive yaw resistance at high speed."
+    },
+    technique: "Many drivers lift slightly before kinks — work on committing flat. The key is a very slight steering input — any abruptness causes instability. Confidence comes from a planted rear.",
+    priority: "High-speed rear stability. This is purely a platform and downforce problem — fix the car before fixing the technique."
+  }
+];
