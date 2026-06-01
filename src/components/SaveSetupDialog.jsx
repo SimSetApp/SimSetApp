@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
 import SetupEditorForm from "./SetupEditorForm";
@@ -31,9 +31,9 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
     }
   }, [editSetup]);
 
-  const carList = sim && CAR_LISTS[sim]
-    ? Object.values(CAR_LISTS[sim]).flat()
-    : [];
+  const carGroups = sim && CAR_LISTS[sim] ? CAR_LISTS[sim] : {};
+  const classNames = Object.keys(carGroups);
+  const [activeClass, setActiveClass] = useState("");
 
   const trackList = sim && TRACK_LISTS[sim] ? TRACK_LISTS[sim] : [];
   const [customTrack, setCustomTrack] = useState(
@@ -61,6 +61,7 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
     setSim(v);
     setCar("");
     setParameters({});
+    setActiveClass("");
   };
 
   return (
@@ -89,10 +90,43 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Car *</label>
+              {classNames.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-1">
+                  <button
+                    type="button"
+                    onClick={() => { setActiveClass(""); setCar(""); }}
+                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+                      activeClass === ""
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    }`}
+                  >All</button>
+                  {classNames.map(cls => (
+                    <button
+                      key={cls}
+                      type="button"
+                      onClick={() => { setActiveClass(cls); setCar(""); }}
+                      className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+                        activeClass === cls
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                      }`}
+                    >{cls}</button>
+                  ))}
+                </div>
+              )}
               <Select value={car} onValueChange={setCar} disabled={!sim}>
                 <SelectTrigger><SelectValue placeholder="Car" /></SelectTrigger>
                 <SelectContent>
-                  {carList.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {Object.entries(carGroups)
+                    .filter(([cls]) => !activeClass || cls === activeClass)
+                    .map(([cls, cars]) => (
+                      <SelectGroup key={cls}>
+                        <SelectLabel className="text-primary text-xs">{cls}</SelectLabel>
+                        {cars.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      </SelectGroup>
+                    ))}
+                  {!sim && <div className="px-3 py-2 text-xs text-muted-foreground">Pick a sim first</div>}
                 </SelectContent>
               </Select>
             </div>

@@ -7,18 +7,25 @@ import { Input } from "@/components/ui/input";
 
 export default function CarSelector({ sim, setSim, car, setCar }) {
   const [search, setSearch] = useState("");
+  const [activeClass, setActiveClass] = useState("All");
+
+  const classNames = useMemo(() => {
+    if (!sim || !CAR_LISTS[sim]) return [];
+    return Object.keys(CAR_LISTS[sim]);
+  }, [sim]);
 
   const carGroups = useMemo(() => {
     if (!sim || !CAR_LISTS[sim]) return {};
-    const groups = CAR_LISTS[sim];
-    if (!search) return groups;
-    const filtered = {};
-    Object.entries(groups).forEach(([category, cars]) => {
-      const matches = cars.filter(c => c.toLowerCase().includes(search.toLowerCase()));
-      if (matches.length > 0) filtered[category] = matches;
+    const result = {};
+    Object.entries(CAR_LISTS[sim]).forEach(([category, cars]) => {
+      if (activeClass !== "All" && category !== activeClass) return;
+      const matches = search
+        ? cars.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+        : cars;
+      if (matches.length > 0) result[category] = matches;
     });
-    return filtered;
-  }, [sim, search]);
+    return result;
+  }, [sim, search, activeClass]);
 
   const totalCars = useMemo(() => {
     if (!sim || !CAR_LISTS[sim]) return 0;
@@ -32,7 +39,7 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Sim Title
           </label>
-          <Select value={sim} onValueChange={(v) => { setSim(v); setCar(""); setSearch(""); }}>
+          <Select value={sim} onValueChange={(v) => { setSim(v); setCar(""); setSearch(""); setActiveClass("All"); }}>
             <SelectTrigger className="bg-secondary border-border">
               <SelectValue placeholder="Choose your sim" />
             </SelectTrigger>
@@ -55,6 +62,36 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Car {totalCars > 0 && <span className="text-primary">({totalCars} available)</span>}
           </label>
+
+          {/* Class filter chips */}
+          {classNames.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => { setActiveClass("All"); setCar(""); }}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                  activeClass === "All"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All
+              </button>
+              {classNames.map(cls => (
+                <button
+                  key={cls}
+                  onClick={() => { setActiveClass(cls); setCar(""); }}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                    activeClass === cls
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {cls}
+                </button>
+              ))}
+            </div>
+          )}
+
           <Select value={car} onValueChange={setCar} disabled={!sim}>
             <SelectTrigger className="bg-secondary border-border">
               <SelectValue placeholder={sim ? "Select a car" : "Pick a sim first"} />

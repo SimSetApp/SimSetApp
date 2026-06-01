@@ -762,8 +762,8 @@ export const SETUP_PARAMETERS = [
         right: "Higher pressure",
         leftEffect: "More grip in corners, slower on straights, higher tyre wear",
         rightEffect: "Less grip, faster on straights, more responsive turn-in",
-        tip: "Start around 26–28 PSI for GT3 cars. Check pressures after 3–4 laps when tyres are up to temperature. Ideal hot pressure varies by sim — in ACC aim for 27.5 PSI, in iRacing check the optimal window per car.",
-        advanced: "Front-to-rear pressure split can tune balance. Slightly lower rear pressures add rear grip. In cold ambient conditions (<10°C), increase starting pressures by 0.5–1.0 PSI to compensate for slower heat build."
+        tip: "Start at 26–28 PSI (GT3). Check after 3–4 laps — tyres need time to heat before readings mean anything. Too low = sloppy and overheating edges. Too high = slippery and nervous.",
+        advanced: "Front-to-rear pressure split can tune balance. Slightly lower rear pressures add rear grip. In cold conditions (<10°C), increase starting pressures by 0.5–1.0 PSI to compensate for slower heat build."
       },
       {
         name: "Tyre Compound",
@@ -771,7 +771,7 @@ export const SETUP_PARAMETERS = [
         right: "Harder compound",
         leftEffect: "More peak grip, faster degradation, better in cold conditions",
         rightEffect: "Less peak grip, more durable, better in hot conditions",
-        tip: "In most sims, wet compounds exist for rain. In ACC, the standard dry compound works for most conditions. Soft compounds are mainly for qualifying laps.",
+        tip: "Softer = more grip but wears faster. Use soft for qualifying, medium or hard for longer races. Always switch to wet tyres when the track is damp — dry tyres on a wet track is a common beginner mistake.",
         advanced: "Track temperature heavily influences compound choice. Above 30°C consider going harder. Each heat cycle removes grip — tyres that have been heated and cooled repeatedly will never return to peak performance."
       }
     ]
@@ -786,8 +786,8 @@ export const SETUP_PARAMETERS = [
         right: "More negative camber",
         leftEffect: "Better straight-line braking, less cornering grip",
         rightEffect: "Better cornering grip, uneven tyre wear, less braking grip",
-        tip: "GT3 cars typically run -3.0° to -3.8° front camber. Too much and your inner tyre edge wears fast. Use tyre temperature data to confirm — inner/outer temps should be within 10°C of each other.",
-        advanced: "More camber helps on tracks with fast sweeping corners. On circuits like Monza with heavy braking, reduce camber for better traction under deceleration. Camber loss under steering input is why high caster is valuable."
+        tip: "GT3 cars typically run -3.0° to -3.8°. If your inner tyre edge wears faster than the outer, you have too much. If the outer wears faster, add more. Aim for even wear across the tyre.",
+        advanced: "More camber helps on fast sweeping tracks. On circuits like Monza with heavy braking, reduce camber for better traction. Camber loss under steering input is why high caster is valuable."
       },
       {
         name: "Camber (Rear)",
@@ -795,7 +795,7 @@ export const SETUP_PARAMETERS = [
         right: "More negative camber",
         leftEffect: "More rear stability under braking",
         rightEffect: "Better rear grip in corners, potential instability",
-        tip: "Rear camber is usually 1.0°–2.0° less negative than the front. Rear tyres rely more on mechanical grip than the front.",
+        tip: "Run 1–2° less negative than the front (around -1.5° to -2.5°). Too much rear camber causes inner edge overheating and kills traction on exit.",
         advanced: "Rear camber affects traction on exit. Less camber = better traction in slow corners. Excess rear camber causes inner edge graining which progressively degrades rear grip."
       },
       {
@@ -804,7 +804,7 @@ export const SETUP_PARAMETERS = [
         right: "Toe in",
         leftEffect: "Sharper turn-in, less straight-line stability",
         rightEffect: "More stable on straights, slower turn-in response",
-        tip: "Most GT3 setups use slight front toe-out (0 to -0.5mm per side) for better turn-in. Too much causes tyre scrub and overheating.",
+        tip: "Slight toe-out (-0.1 to -0.5mm) gives sharper turn-in. More toe-out = quicker reactions but more tyre wear. If your front tyres are overheating, excessive toe-out may be the cause.",
         advanced: "Toe-out on the front helps the car rotate into corners but increases wear rate. The scrub angle creates heat, which is why overheated front edges often point to excessive toe-out."
       },
       {
@@ -813,7 +813,7 @@ export const SETUP_PARAMETERS = [
         right: "Toe in",
         leftEffect: "Rear feels loose, better rotation",
         rightEffect: "Rear feels planted, more stable",
-        tip: "Always run rear toe-in (0.5–2.0mm) for stability. Never run rear toe-out on a race car — it creates dangerous oversteer on exit.",
+        tip: "Always keep rear toe pointing inward (0.5–2.0mm). This keeps the car stable at speed. Rear toe-out will make the car snap sideways — avoid it entirely.",
         advanced: "Rear toe-in creates passive stability by opposing yaw rotation. More toe-in adds drag (slightly hurts top speed) but significantly improves high-speed stability and transitional behavior."
       },
       {
@@ -822,7 +822,7 @@ export const SETUP_PARAMETERS = [
         right: "More caster",
         leftEffect: "Lighter steering, less feedback",
         rightEffect: "Heavier steering, more dynamic camber gain in corners",
-        tip: "More caster gives better mid-corner grip because the wheel gains negative camber as you steer. Most setups run high caster (10°+).",
+        tip: "More caster means the wheel leans into the corner as you steer — giving free extra grip. Most competitive setups run high caster (10°+). It makes steering heavier but more planted.",
         advanced: "Caster creates self-centering force and dynamic camber gain. As the wheel turns, the geometry creates additional negative camber on the outside wheel — essentially 'free' cornering grip without the straight-line penalties of static camber."
       }
     ]
@@ -837,8 +837,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer springs",
         leftEffect: "More mechanical grip, more body roll, slower response",
         rightEffect: "Less body roll, faster response, less forgiving over bumps",
-        tip: "Stiffer springs improve response but reduce grip on bumpy tracks. Start with the default and adjust ±10% at a time.",
-        advanced: "The front-to-rear spring ratio determines the natural pitch behavior. A stiffer front ratio creates understeer. For high-downforce cars, springs must be stiff enough that aerodynamic loads don't compress the suspension excessively."
+        tip: "Stiffer = crisper response but less comfortable over bumps. Softer = more grip on rough tracks but more body roll. Start from the default and make small changes — one step at a time.",
+        advanced: "The front-to-rear spring ratio determines the natural pitch behavior. A stiffer front ratio creates understeer. For high-downforce cars, springs must be stiff enough that aero loads don't compress the suspension excessively."
       },
       {
         name: "Spring Rate (Rear)",
@@ -846,8 +846,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer springs",
         leftEffect: "More rear grip, more squat under acceleration",
         rightEffect: "Less rear grip, better rotation, more responsive",
-        tip: "Softening the rear springs can help with rear traction out of slow corners. Stiffening helps the car rotate.",
-        advanced: "On high-downforce platforms, rear spring rate also controls how much the rear squats under aero load at speed. Too soft and the car changes ride height profile dramatically between low and high speed, shifting the aero map."
+        tip: "Soft rear springs help the car hook up on corner exit. Stiffer rear springs help the car rotate and change direction quicker. If you're sliding on exit, try going softer first.",
+        advanced: "On high-downforce platforms, rear spring rate also controls how much the rear squats under aero load at speed. Too soft and the car's ride height changes dramatically between low and high speed, shifting the aero balance."
       },
       {
         name: "Bump Damping (Compression)",
@@ -855,8 +855,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer bump",
         leftEffect: "Wheel absorbs bumps faster, more compliant over kerbs",
         rightEffect: "Wheel resists compression, more stable over crests",
-        tip: "Bump (compression) damping controls how fast the suspension compresses. Softer = better over kerbs and bumps. Stiffer = more stability at high speed.",
-        advanced: "Most dampers have separate high-speed and low-speed bump settings. Low-speed bump controls body motion in corners and under braking. High-speed bump controls the response to sharp inputs like kerbs and road irregularities — they behave independently."
+        tip: "Controls how fast the suspension squashes down. Go softer if the car bounces over kerbs or feels harsh. Go stiffer if the car dives too much under braking or feels loose over crests.",
+        advanced: "Most dampers have separate high-speed and low-speed bump settings. Low-speed bump controls body motion in corners and under braking. High-speed bump controls the response to sharp inputs like kerbs — they behave independently."
       },
       {
         name: "Rebound Damping",
@@ -864,8 +864,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer rebound",
         leftEffect: "Suspension extends faster, quicker weight transfer",
         rightEffect: "Suspension extends slower, more controlled, can cause hydraulic jacking",
-        tip: "Rebound controls how fast the suspension returns after being compressed. Stiffer rebound slows weight transfer, adding stability but potentially causing 'jacking' over repeated bumps.",
-        advanced: "Hydraulic jacking occurs when rebound is so stiff that the suspension can't return before the next bump — progressively compressing the spring. A rebound-to-bump ratio of roughly 1.5–2:1 is a common starting point. Stiffer rebound on the rear helps prevent rear squat under acceleration."
+        tip: "Controls how fast the suspension bounces back after a bump. Too stiff and the car feels planted but harsh over repeated bumps. Start at mid-range — it's not usually the first adjustment to make.",
+        advanced: "Hydraulic jacking occurs when rebound is so stiff the suspension can't return before the next bump. A rebound-to-bump ratio of roughly 1.5–2:1 is a common starting point. Stiffer rear rebound helps prevent squat under acceleration."
       }
     ]
   },
@@ -879,8 +879,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer",
         leftEffect: "More front grip, less responsive turn-in",
         rightEffect: "Sharper turn-in, potential mid-corner understeer",
-        tip: "The front ARB is your first adjustment for turn-in feel. Stiffer = the car reacts faster to steering inputs. Too stiff and the front pushes mid-corner.",
-        advanced: "ARBs only work in corners — they transfer load from the compressed (outside) wheel to the extended (inside) wheel. The front-to-rear ARB ratio is more important than absolute values. A stiffer front ARB relative to the rear creates understeer."
+        tip: "This is your main tool for turn-in sharpness. Stiffer = snappier response but can cause understeer mid-corner. If the car pushes (understeers) in the middle of corners, soften the front ARB first.",
+        advanced: "ARBs only work in corners — they transfer load from the compressed (outside) wheel to the extended (inside) wheel. The front-to-rear ARB ratio matters more than absolute values. A stiffer front ARB relative to the rear creates understeer."
       },
       {
         name: "Rear Anti-Roll Bar",
@@ -888,8 +888,8 @@ export const SETUP_PARAMETERS = [
         right: "Stiffer",
         leftEffect: "More rear stability, less rotation",
         rightEffect: "More rear rotation, potential oversteer on exit",
-        tip: "Softening the rear ARB is the safest way to add rear grip without affecting other balance characteristics. Start here before touching springs.",
-        advanced: "A soft rear ARB allows each rear wheel to work more independently — essential for smooth kerb absorption. On rear-engine cars (Porsche), the rear ARB is particularly sensitive due to the weight distribution over the rear axle."
+        tip: "Softening the rear ARB is usually the first fix for oversteer. It lets the rear wheels work more independently, increasing rear grip. Start here before changing springs.",
+        advanced: "A soft rear ARB allows each rear wheel to work more independently — essential for smooth kerb absorption. On rear-engine cars (Porsche), the rear ARB is particularly sensitive due to the weight over the rear axle."
       }
     ]
   },
@@ -903,8 +903,8 @@ export const SETUP_PARAMETERS = [
         right: "Lower front",
         leftEffect: "Less front downforce, more stable at speed, less kerb risk",
         rightEffect: "More front downforce, sharper turn-in, risk of bottoming out",
-        tip: "Front ride height directly affects how much air the splitter catches. Lower = more downforce but risk of bottoming on bumps. In most sims, 1–3mm changes have significant effects.",
-        advanced: "Rake angle (front lower than rear) increases rear diffuser efficiency. The optimal rake varies by car but is usually 3–8mm difference. More rake shifts the aero balance rearward. Lowering the front also reduces the car's center of gravity, improving mechanical grip."
+        tip: "Lower front = more front downforce, sharper turn-in — but too low and you'll bottom out on bumps. Start with the default and go 1–2mm lower at smooth tracks. Keep it higher at bumpy circuits.",
+        advanced: "Rake angle (front lower than rear) increases rear diffuser efficiency. The optimal rake varies by car but is usually 3–8mm difference. More rake shifts the aero balance rearward. Lowering the front also reduces the centre of gravity."
       },
       {
         name: "Rear Wing Angle",
@@ -912,8 +912,8 @@ export const SETUP_PARAMETERS = [
         right: "More wing",
         leftEffect: "Higher top speed, less rear grip in corners",
         rightEffect: "Lower top speed, much more rear grip at high speed",
-        tip: "Start with mid-range wing for a balanced setup. Low-downforce tracks like Monza need minimum wing. High-downforce tracks like Bathurst need more.",
-        advanced: "Wing efficiency (L/D ratio) varies with ride height. Some cars have a 'sweet spot' where small wing changes create disproportionate downforce gains. Stall speed — where the wing loses efficiency — is a real concern in high-speed sims with accurate aero models."
+        tip: "More wing = more grip but lower top speed. Less wing = faster straights but slippery in fast corners. Long straight tracks like Monza need low wing. Fast, flowing tracks like Spa or Bathurst need more.",
+        advanced: "Wing efficiency (L/D ratio) varies with ride height. Some cars have a 'sweet spot' where small changes create disproportionate downforce gains. Stall speed — where the wing loses efficiency — is a real concern in accurate aero models."
       },
       {
         name: "Aero Balance (F/R Split)",
@@ -921,8 +921,8 @@ export const SETUP_PARAMETERS = [
         right: "More rear aero",
         leftEffect: "Turn-in improves, high-speed understeer reduces",
         rightEffect: "Rear stability improves, high-speed oversteer reduces",
-        tip: "Adjust front splitter and rear wing together to tune aero balance without changing total downforce level. Most GT3 cars run 45/55 to 40/60 front/rear aero distribution.",
-        advanced: "Aero balance shifts with speed — a setup that's neutral at 150 km/h may develop understeer at 250 km/h if the rear wing produces more efficient downforce at high speed. Test your setup at the speed of your key corners."
+        tip: "Use this to shift grip balance front-to-rear without changing total downforce. Oversteer in fast corners? Add more rear wing. Understeer through fast bends? Add more front splitter.",
+        advanced: "Aero balance shifts with speed — a setup neutral at 150 km/h may develop understeer at 250 km/h if the rear wing produces more efficient downforce at speed. Test your setup at the speed of your key corners."
       }
     ]
   },
@@ -936,8 +936,8 @@ export const SETUP_PARAMETERS = [
         right: "Higher preload",
         leftEffect: "Freer differential, easier rotation, less stable under power",
         rightEffect: "More locked feel, more stability under power, harder to rotate",
-        tip: "Preload acts like a minimum locking value — the diff behaves more locked even at low throttle. Start moderate and increase for stability.",
-        advanced: "Preload mainly affects the transition zone — when you lift off the throttle entering a corner or just before applying power exiting. High preload smooths out the lift-off snap that causes snap oversteer but can make low-speed hairpin rotation difficult."
+        tip: "Think of preload as the baseline stiffness of the diff. Higher = more stable and consistent, but harder to rotate in tight hairpins. Start around 50–70Nm for GT3 cars.",
+        advanced: "Preload mainly affects the transition zone — when you lift off entering a corner or just before applying power on exit. High preload smooths out lift-off snap oversteer but can make slow hairpin rotation difficult."
       },
       {
         name: "Power (Accel) Lock",
@@ -945,8 +945,8 @@ export const SETUP_PARAMETERS = [
         right: "More lock",
         leftEffect: "Less traction, easier rotation on power, potential inside wheelspin",
         rightEffect: "More traction, more stability on exit, harder to rotate",
-        tip: "Power lock controls how much the wheels are locked together under acceleration. More lock = better traction but the car wants to go straight on exit. 60–80% is a common GT3 range.",
-        advanced: "On rear-engine cars (Porsche 911), you can often run higher power lock because the rear weight distribution already provides good traction. Mid and front-engine cars often need lower power lock to avoid push on exit."
+        tip: "Controls traction on corner exit. More lock = both rear wheels work together = better traction, but the car can push wide. Less lock = easier rotation. 60–75% is a typical GT3 starting point.",
+        advanced: "On rear-engine cars (Porsche 911), you can run higher power lock because the rear weight already provides good traction. Mid and front-engine cars often need lower power lock to avoid push on exit."
       },
       {
         name: "Coast (Decel) Lock",
@@ -954,7 +954,7 @@ export const SETUP_PARAMETERS = [
         right: "More lock",
         leftEffect: "Car rotates more on entry, less engine braking stability",
         rightEffect: "More stable on turn-in, less rotation under braking",
-        tip: "Coast lock affects corner entry when you lift off or trail-brake. Lower values let the car rotate naturally. Higher values keep it stable but can cause understeer on entry.",
+        tip: "Affects the car on the way into a corner when you lift off. Lower = the car rotates more naturally. Higher = more stable but can cause the nose to push. Start at 30–45%.",
         advanced: "Trail-braking technique is heavily affected by coast lock. Aggressive trail-brakers often prefer lower coast lock for the additional rotation when the brake is partially applied into the corner apex."
       }
     ]
@@ -969,8 +969,8 @@ export const SETUP_PARAMETERS = [
         right: "More forward",
         leftEffect: "Rear brakes do more work, potential rear lockup and rotation",
         rightEffect: "Front brakes do more work, more stable braking, potential front lockup",
-        tip: "GT3 cars typically run 55–60% front bias. More forward bias is safer but slower. If locking fronts in heavy braking zones, shift bias rearward 0.5% at a time.",
-        advanced: "Brake bias interacts with ABS settings. With strong ABS, you can run more aggressive (rearward) bias. As tyres wear, the optimal bias may shift — worn rear tyres need more forward bias to avoid rear lockup under heavy braking."
+        tip: "55–60% front is the safe starting point for GT3. If fronts are locking, move it slightly rearward. If the rear snaps sideways under braking, move it more forward. Change by 0.5–1% at a time.",
+        advanced: "Brake bias interacts with ABS settings. With strong ABS, you can run more rearward bias. As tyres wear, the optimal bias shifts — worn rear tyres need more forward bias to avoid rear lockup."
       },
       {
         name: "Brake Duct / Cooling",
@@ -978,7 +978,7 @@ export const SETUP_PARAMETERS = [
         right: "More cooling",
         leftEffect: "Less drag, higher brake temperatures, potential fade",
         rightEffect: "More drag, lower brake temps, consistent braking",
-        tip: "Open brake ducts 1–2 steps at brake-heavy tracks (Barcelona, Nürburgring). Close them at fast tracks with few braking zones for less drag.",
+        tip: "More cooling = consistent brakes all race, but slightly more drag. Less cooling = tiny speed boost but brakes can fade. Open them at tracks with many heavy braking zones. Close them at fast tracks like Monza.",
         advanced: "Monitor brake temps during practice. If they exceed 600°C regularly, open the ducts. Brakes operating too cold (below 200°C) also lose effectiveness — closing ducts slightly in cold, wet conditions can help."
       }
     ]
@@ -993,8 +993,8 @@ export const SETUP_PARAMETERS = [
         right: "More TC",
         leftEffect: "More wheelspin allowed, faster but requires precision",
         rightEffect: "Limits wheelspin aggressively, slower but safer",
-        tip: "Start with medium TC (5–7 in ACC). As you gain confidence, reduce it. In the wet, increase TC significantly.",
-        advanced: "TC cut vs TC slip — some sims let you adjust both. Cut reduces engine power on wheelspin detection. Slip manages the speed differential between drive wheels. In dry conditions, lower TC2 (slip) while keeping TC1 (cut) moderate gives good traction without sacrificing too much lap time."
+        tip: "Higher TC = the electronics manage wheelspin for you — easier but slightly slower. Start at 5–7 in ACC, 3–4 in iRacing. Reduce gradually as you gain confidence. Always turn it up in wet conditions.",
+        advanced: "TC cut vs TC slip — some sims let you adjust both. Cut reduces engine power on wheelspin detection. Slip manages the speed differential between drive wheels. In dry, lower TC2 (slip) while keeping TC1 (cut) moderate."
       },
       {
         name: "ABS",
@@ -1002,7 +1002,7 @@ export const SETUP_PARAMETERS = [
         right: "More ABS",
         leftEffect: "Shorter braking distances, easier to lock wheels",
         rightEffect: "Harder to lock up, longer braking distances possible",
-        tip: "Lower ABS gives shorter braking distances if you can modulate the pedal. In the wet, increase ABS. Most setups run 2–4 in ACC.",
+        tip: "Higher ABS = harder to lock wheels — safer for beginners. Lower = shorter braking distances but requires precise pedal control. Beginners: start at 5–6. Reduce it gradually as your braking improves. Always increase in the wet.",
         advanced: "ABS directly affects trail-braking capability. Less ABS = more pedal feel and ability to modulate, but requires precise inputs. Reduce ABS by 1 as you become more confident with braking technique."
       },
       {
@@ -1011,7 +1011,7 @@ export const SETUP_PARAMETERS = [
         right: "Full power",
         leftEffect: "Better fuel consumption, smoother delivery, less wear",
         rightEffect: "Maximum performance, higher fuel usage",
-        tip: "Use full power in qualifying. In races, switch to lower maps to manage fuel or if you have a comfortable lead.",
+        tip: "Use the highest map in qualifying. In a race, dropping one map lower can save enough fuel to skip an extra pit stop. Only use the lowest maps as a last resort — it costs noticeable pace.",
         advanced: "In endurance races, fuel mapping can save 10–15% fuel which translates to fewer pit stops. Some cars have maps specifically for wet conditions that reduce torque spikes on corner exit."
       }
     ]
