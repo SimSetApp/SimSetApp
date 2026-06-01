@@ -106,30 +106,30 @@ export default function SavedSetups() {
         </div>
 
         <Tabs defaultValue="garage">
-          <TabsList className="bg-secondary mb-6 w-full sm:w-auto">
-            <TabsTrigger value="garage" className="font-heading text-xs tracking-wider">
-              <FolderOpen className="w-3.5 h-3.5 mr-1.5" /> Garage
+          <TabsList className="bg-secondary mb-6 w-full">
+            <TabsTrigger value="garage" className="flex-1 font-heading text-xs tracking-wider">
+              <FolderOpen className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Garage</span>
             </TabsTrigger>
-            <TabsTrigger value="tyres" className="font-heading text-xs tracking-wider">
-              <Circle className="w-3.5 h-3.5 mr-1.5" /> Tyre Pressures
+            <TabsTrigger value="tyres" className="flex-1 font-heading text-xs tracking-wider">
+              <Circle className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Tyre Pressures</span>
             </TabsTrigger>
-            <TabsTrigger value="fuel" className="font-heading text-xs tracking-wider">
-              <Fuel className="w-3.5 h-3.5 mr-1.5" /> Fuel Strategy
+            <TabsTrigger value="fuel" className="flex-1 font-heading text-xs tracking-wider">
+              <Fuel className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Fuel Strategy</span>
             </TabsTrigger>
-            <TabsTrigger value="compare" className="font-heading text-xs tracking-wider">
-              <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Compare
+            <TabsTrigger value="compare" className="flex-1 font-heading text-xs tracking-wider">
+              <GitCompare className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Compare</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Garage tab */}
           <TabsContent value="garage">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 {/* Sim filter */}
                 <select
                   value={filterSim}
                   onChange={e => { setFilterSim(e.target.value); setFilterCar(""); setFilterTrack(""); }}
-                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="col-span-2 h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">All Sims</option>
                   {allSims.map(s => <option key={s} value={s}>{s}</option>)}
@@ -139,7 +139,7 @@ export default function SavedSetups() {
                   value={filterCar}
                   onChange={e => setFilterCar(e.target.value)}
                   disabled={!filterSim}
-                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <option value="">{filterSim ? "All Cars" : "Select sim first"}</option>
                   {allCars.map(c => <option key={c} value={c}>{c}</option>)}
@@ -149,7 +149,7 @@ export default function SavedSetups() {
                   value={filterTrack}
                   onChange={e => setFilterTrack(e.target.value)}
                   disabled={!filterSim}
-                  className="h-8 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <option value="">{filterSim ? "All Tracks" : "Select sim first"}</option>
                   {allTracks.map(t => <option key={t} value={t}>{t}</option>)}
@@ -157,13 +157,13 @@ export default function SavedSetups() {
                 {(filterSim || filterCar || filterTrack) && (
                   <button
                     onClick={() => { setFilterSim(""); setFilterCar(""); setFilterTrack(""); }}
-                    className="h-8 px-2 rounded-lg border border-border bg-secondary text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground"
+                    className="h-9 px-3 rounded-lg border border-border bg-secondary text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground"
                   >
                     <X className="w-3 h-3" /> Clear
                   </button>
                 )}
               </div>
-              <Button onClick={openCreate} className="font-heading text-xs tracking-wider">
+              <Button onClick={openCreate} className="w-full sm:w-auto font-heading text-xs tracking-wider">
                 <Plus className="w-4 h-4 mr-1.5" /> New Setup
               </Button>
             </div>
@@ -225,16 +225,19 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                    <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground" onClick={() => openDetail(setup)}>
-                      <Clock className="w-3.5 h-3.5 mr-1" /> Sessions
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
-                      <Pencil className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
+                      <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground hidden sm:inline-flex" onClick={() => openDetail(setup)}>
+                        <Clock className="w-3.5 h-3.5 mr-1" /> Sessions
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 sm:hidden" onClick={() => openDetail(setup)}>
+                        <Clock className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(setup)}>
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                     </div>
                   </div>
                 ))}
