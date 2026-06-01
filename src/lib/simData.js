@@ -1488,6 +1488,20 @@ SIM_SETUP_PARAMS["Automobilista 2"] = [
 ];
 
 // ─────────────────────────────────────────────
+// SIM → TYRE CLASS MAPPING
+// Maps each sim to the relevant TYRE_PRESSURE_BASES keys
+// ─────────────────────────────────────────────
+export const SIM_TYRE_CLASSES = {
+  "iRacing": ["GT3", "GT4", "GTE", "LMP / Prototype", "Open Wheel", "Touring / TCR", "Stock Car / NASCAR"],
+  "Assetto Corsa Competizione": ["GT3", "GT4", "GT2", "GTE", "Cup Car"],
+  "Assetto Corsa": ["GT3", "GT4", "GTE", "LMP / Prototype", "Touring / TCR", "Road Car (Sport)"],
+  "Assetto Corsa Evo": ["GT3", "GT4", "GTE", "Cup Car", "Touring / TCR", "Road Car (Sport)"],
+  "Le Mans Ultimate": ["Hypercar (LMH/LMDh)", "LMP / Prototype", "GT3", "GTE"],
+  "Automobilista 2": ["GT3", "GT4", "GTE", "LMP / Prototype", "Cup Car", "Touring / TCR", "Open Wheel", "Stock Car / NASCAR", "Historic"],
+  "Gran Turismo 7": ["GT3", "GT4", "Touring / TCR", "Road Car (Sport)", "Historic"]
+};
+
+// ─────────────────────────────────────────────
 // TYRE PRESSURE BASES — optimal hot targets by class
 // ─────────────────────────────────────────────
 export const TYRE_PRESSURE_BASES = {

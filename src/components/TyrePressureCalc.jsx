@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
-import { SIM_TITLES, TYRE_PRESSURE_BASES } from "../lib/simData";
+import { SIM_TITLES, TYRE_PRESSURE_BASES, SIM_TYRE_CLASSES } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Thermometer, Circle } from "lucide-react";
 
-const CAR_CLASSES = Object.keys(TYRE_PRESSURE_BASES);
+// Derived per-sim inside the component — removed static const
 
 const SIM_UNIT = {
   "Assetto Corsa Competizione": { unit: "PSI", key: "acc", decimals: 1 },
@@ -27,6 +27,15 @@ function pressureColor(target, value) {
 export default function TyrePressureCalc() {
   const [sim, setSim] = useState("Assetto Corsa Competizione");
   const [carClass, setCarClass] = useState("GT3");
+
+  const carClasses = SIM_TYRE_CLASSES[sim] || Object.keys(TYRE_PRESSURE_BASES);
+
+  const handleSimChange = (v) => {
+    const classes = SIM_TYRE_CLASSES[v] || Object.keys(TYRE_PRESSURE_BASES);
+    setSim(v);
+    if (!classes.includes(carClass)) setCarClass(classes[0] || "GT3");
+  };
+
   const [trackTemp, setTrackTemp] = useState(30);
   const [ambientTemp, setAmbientTemp] = useState(22);
   const [isWet, setIsWet] = useState(false);
@@ -74,7 +83,7 @@ export default function TyrePressureCalc() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Sim</label>
-          <Select value={sim} onValueChange={setSim}>
+          <Select value={sim} onValueChange={handleSimChange}>
             <SelectTrigger className="bg-secondary"><SelectValue /></SelectTrigger>
             <SelectContent>
               {SIM_TITLES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -86,7 +95,7 @@ export default function TyrePressureCalc() {
           <Select value={carClass} onValueChange={setCarClass}>
             <SelectTrigger className="bg-secondary"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {CAR_CLASSES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {carClasses.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
