@@ -7,11 +7,12 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { SIM_SETUP_PARAMS } from "../lib/simData";
 import SetupDetailSheet from "../components/SetupDetailSheet";
+import SetupComparison from "../components/SetupComparison";
 
 function SetupParamsSummary({ sim, parameters }) {
   const groups = sim && SIM_SETUP_PARAMS[sim];
@@ -81,6 +82,9 @@ export default function SavedSetups() {
             </TabsTrigger>
             <TabsTrigger value="fuel" className="font-heading text-xs tracking-wider">
               <Fuel className="w-3.5 h-3.5 mr-1.5" /> Fuel Strategy
+            </TabsTrigger>
+            <TabsTrigger value="compare" className="font-heading text-xs tracking-wider">
+              <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Compare
             </TabsTrigger>
           </TabsList>
 
@@ -178,6 +182,15 @@ export default function SavedSetups() {
               <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Fuel Strategy Calculator</h2>
               <p className="text-xs text-muted-foreground mb-6">Work out exactly how much fuel you need for any race format.</p>
               <FuelCalc />
+            </div>
+          </TabsContent>
+
+          {/* Compare tab */}
+          <TabsContent value="compare">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Setup Comparison</h2>
+              <p className="text-xs text-muted-foreground mb-6">Side-by-side diff of any two saved setups with deltas on every parameter.</p>
+              <SetupComparison />
             </div>
           </TabsContent>
         </Tabs>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TUNING_ARTICLES } from "../lib/tuningGuideData";
 import Navbar from "../components/Navbar";
 import { BookOpen, Clock, ChevronRight, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -57,6 +58,7 @@ function ArticleView({ article, onBack }) {
 export default function TuningGuide() {
   const [selected, setSelected] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
+  const navigate = useNavigate();
 
   const categories = ["All", ...new Set(TUNING_ARTICLES.map(a => a.category))];
   const filtered = activeCategory === "All" ? TUNING_ARTICLES : TUNING_ARTICLES.filter(a => a.category === activeCategory);
@@ -78,6 +80,9 @@ export default function TuningGuide() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-primary" />

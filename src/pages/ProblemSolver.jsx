@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { PROBLEMS, PROBLEM_CATEGORIES } from "../lib/problemSolverData";
 import Navbar from "../components/Navbar";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Filter, Search, Wrench } from "lucide-react";
+import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Filter, Search, Wrench, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -106,6 +107,7 @@ function ProblemCard({ problem }) {
 export default function ProblemSolver() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     return PROBLEMS.filter(p => {
@@ -122,6 +124,9 @@ export default function ProblemSolver() {
       <Navbar />
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header */}
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">

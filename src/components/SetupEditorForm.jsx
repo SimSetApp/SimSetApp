@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const GROUP_COLORS = [
   { bg: "bg-amber-400/10",  border: "border-amber-400/30",  text: "text-amber-400",  slider: "[&_[role=slider]]:bg-amber-400" },
@@ -16,13 +16,52 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function ParamRow({ param, value, onChange }) {
+  const [inputVal, setInputVal] = useState("");
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
+
+  const decimals = param.step < 1 ? 1 : 0;
+  const displayVal = typeof value === "number" ? value.toFixed(decimals) : String(value);
+
+  const commitInput = (raw) => {
+    const n = parseFloat(raw);
+    if (!isNaN(n)) {
+      const clamped = Math.min(param.max, Math.max(param.min, n));
+      const rounded = Math.round(clamped / param.step) * param.step;
+      onChange(param.key, parseFloat(rounded.toFixed(decimals)));
+    }
+    setEditing(false);
+  };
+
   return (
     <div className="py-2">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs text-muted-foreground">{param.label}</span>
-        <Badge variant="outline" className="text-xs font-mono min-w-[56px] text-center">
-          {value.toFixed(param.step < 1 ? 1 : 0)}{param.unit}
-        </Badge>
+      <div className="flex items-center justify-between mb-1.5 gap-2">
+        <span className="text-xs text-muted-foreground flex-1 truncate">{param.label}</span>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {editing ? (
+            <input
+              ref={inputRef}
+              type="number"
+              className="w-20 h-7 rounded-md border border-primary/50 bg-background px-2 text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-primary"
+              value={inputVal}
+              onChange={e => setInputVal(e.target.value)}
+              onBlur={e => commitInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") commitInput(inputVal); if (e.key === "Escape") setEditing(false); }}
+              min={param.min}
+              max={param.max}
+              step={param.step}
+              autoFocus
+            />
+          ) : (
+            <button
+              className="min-w-[60px] h-7 rounded-md border border-border bg-secondary px-2 text-xs font-mono hover:border-primary/50 hover:bg-primary/5 transition-colors text-center"
+              onClick={() => { setInputVal(displayVal); setEditing(true); }}
+              title="Click to type a value"
+            >
+              {displayVal}{param.unit}
+            </button>
+          )}
+        </div>
       </div>
       <Slider
         value={[value]}

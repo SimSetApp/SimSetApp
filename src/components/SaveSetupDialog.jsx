@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SIM_TITLES, CAR_LISTS } from "../lib/simData";
+import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
 import SetupEditorForm from "./SetupEditorForm";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +34,11 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
   const carList = sim && CAR_LISTS[sim]
     ? Object.values(CAR_LISTS[sim]).flat()
     : [];
+
+  const trackList = sim && TRACK_LISTS[sim] ? TRACK_LISTS[sim] : [];
+  const [customTrack, setCustomTrack] = useState(
+    editSetup?.track && TRACK_LISTS[editSetup?.sim_title] && !TRACK_LISTS[editSetup?.sim_title]?.includes(editSetup.track)
+  );
 
   const mutation = useMutation({
     mutationFn: (data) => {
@@ -94,7 +99,30 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
           </div>
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground">Track</label>
-            <Input value={track} onChange={e => setTrack(e.target.value)} placeholder="Spa-Francorchamps" />
+            {trackList.length > 0 ? (
+              <>
+                <Select
+                  value={customTrack ? "__custom__" : (track || "__none__")}
+                  onValueChange={v => {
+                    if (v === "__none__") { setTrack(""); setCustomTrack(false); }
+                    else if (v === "__custom__") { setCustomTrack(true); setTrack(""); }
+                    else { setCustomTrack(false); setTrack(v); }
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select track…" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— No track —</SelectItem>
+                    {trackList.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    <SelectItem value="__custom__">Other / Custom…</SelectItem>
+                  </SelectContent>
+                </Select>
+                {customTrack && (
+                  <Input value={track} onChange={e => setTrack(e.target.value)} placeholder="Type track name…" />
+                )}
+              </>
+            ) : (
+              <Input value={track} onChange={e => setTrack(e.target.value)} placeholder="Track name" />
+            )}
           </div>
 
           {/* Tabs for notes vs setup params */}

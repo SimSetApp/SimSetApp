@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import { CheckCircle, Circle, ChevronDown, ChevronUp, ListOrdered } from "lucide-react";
+import { CheckCircle, Circle, ChevronDown, ChevronUp, ListOrdered, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STEPS = [
@@ -254,6 +255,7 @@ function StepCard({ step, isCompleted, onToggle }) {
 
 export default function SetupMethodology() {
   const [completed, setCompleted] = useState(new Set());
+  const navigate = useNavigate();
 
   const toggle = (order) => {
     const next = new Set(completed);
@@ -269,6 +271,9 @@ export default function SetupMethodology() {
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <ListOrdered className="w-4 h-4 text-primary" />

@@ -5,18 +5,23 @@ import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
 import { SETUP_PARAMETERS } from "../lib/simData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, MapPin, Car, Thermometer } from "lucide-react";
+import { BookOpen, MapPin, Car, Thermometer, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import TyreAnalyzer from "../components/TyreAnalyzer";
 
 export default function SetupGuide() {
   const [sim, setSim] = useState("");
   const [car, setCar] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
             Setup Guide
           </h1>
