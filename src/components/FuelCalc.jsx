@@ -41,12 +41,25 @@ export default function FuelCalc() {
     </div>
   );
 
+  const NumInput = ({ value, onChange, min, max, step = 1 }) => (
+    <Input
+      type="number"
+      value={value}
+      onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) onChange(Math.min(max, Math.max(min, v))); }}
+      className="w-20 h-7 text-xs text-right bg-secondary px-2"
+      step={step}
+    />
+  );
+
   const SharedInputs = () => (
     <div className="space-y-5 mb-6">
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-muted-foreground">Fuel Per Lap</label>
-          <span className="text-sm font-semibold text-primary">{fuelPerLap.toFixed(1)} L</span>
+          <div className="flex items-center gap-1.5">
+            <NumInput value={fuelPerLap} onChange={setFuelPerLap} min={1} max={10} step={0.1} />
+            <span className="text-xs text-muted-foreground">L</span>
+          </div>
         </div>
         <Slider value={[fuelPerLap]} onValueChange={([v]) => setFuelPerLap(v)} min={1} max={10} step={0.1} />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -57,14 +70,17 @@ export default function FuelCalc() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-medium text-muted-foreground">Safety Margin</label>
-            <span className="text-sm font-semibold">{safetyMargin} lap{safetyMargin !== 1 ? "s" : ""}</span>
+            <div className="flex items-center gap-1.5">
+              <NumInput value={safetyMargin} onChange={v => setSafetyMargin(Math.round(v))} min={0} max={5} step={1} />
+              <span className="text-xs text-muted-foreground">laps</span>
+            </div>
           </div>
           <Slider value={[safetyMargin]} onValueChange={([v]) => setSafetyMargin(v)} min={0} max={5} step={1} />
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-medium text-muted-foreground">Pit Stops</label>
-            <span className="text-sm font-semibold">{pitStops}</span>
+            <NumInput value={pitStops} onChange={v => setPitStops(Math.round(v))} min={0} max={5} step={1} />
           </div>
           <Slider value={[pitStops]} onValueChange={([v]) => setPitStops(v)} min={0} max={5} step={1} />
         </div>
@@ -72,7 +88,10 @@ export default function FuelCalc() {
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-muted-foreground">Fuel Tank Size</label>
-          <span className="text-sm font-semibold">{tankSize} L</span>
+          <div className="flex items-center gap-1.5">
+            <NumInput value={tankSize} onChange={setTankSize} min={40} max={200} step={5} />
+            <span className="text-xs text-muted-foreground">L</span>
+          </div>
         </div>
         <Slider value={[tankSize]} onValueChange={([v]) => setTankSize(v)} min={40} max={200} step={5} />
       </div>
@@ -96,7 +115,10 @@ export default function FuelCalc() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-muted-foreground">Race Laps</label>
-              <span className="text-sm font-semibold text-primary">{lapCount} laps</span>
+              <div className="flex items-center gap-1.5">
+                <NumInput value={lapCount} onChange={v => setLapCount(Math.round(v))} min={1} max={200} step={1} />
+                <span className="text-xs text-muted-foreground">laps</span>
+              </div>
             </div>
             <Slider value={[lapCount]} onValueChange={([v]) => setLapCount(v)} min={1} max={200} step={1} />
           </div>

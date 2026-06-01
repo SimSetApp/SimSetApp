@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import { CAR_LISTS } from "../lib/simData";
 
-const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/520ec606f_generated_image.png";
+const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/032abc5d6_generated_image.png";
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
 
 const simStats = Object.entries(CAR_LISTS).map(([name, groups]) => ({
@@ -27,7 +27,7 @@ export default function Home() {
         <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-24 sm:pt-28 sm:pb-32">
           <div className="max-w-2xl">
             <div className="mb-6">
-              <img src={LOGO_URL} alt="SimSetApp" className="h-14 w-auto" />
+              <img src={LOGO_URL} alt="SimSetApp" className="h-20 sm:h-24 w-auto" />
             </div>
             <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
               Your racing engineer in your pocket. Understand every setup parameter,

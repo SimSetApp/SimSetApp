@@ -21,7 +21,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link to="/" className="flex items-center flex-shrink-0" onClick={() => setMobileOpen(false)}>
-          <img src={LOGO_URL} alt="SimSetApp" className="h-7 w-auto" />
+          <img src={LOGO_URL} alt="SimSetApp" className="h-9 w-auto" />
         </Link>
 
         {/* Desktop nav */}
