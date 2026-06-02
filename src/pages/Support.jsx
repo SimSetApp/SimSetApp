@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Lightbulb, Loader2, CheckCircle2 } from "lucide-react";
+import { Heart, Lightbulb, Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ export default function Support() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const navigate = useNavigate();
   const finalAmount = customAmount ? parseFloat(customAmount) : amount;
 
   const handleDonate = async () => {
@@ -64,6 +66,14 @@ export default function Support() {
       <Navbar />
       <MobileHeader title="Support Us" />
       <div className="max-w-2xl mx-auto px-4 py-10 pb-24">
+
+        {/* Back button - desktop only */}
+        <button
+          onClick={() => navigate(-1)}
+          className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
 
         {/* Header */}
         <div className="text-center mb-10">

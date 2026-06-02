@@ -16,6 +16,7 @@ const navItems = [
   { path: "/race-engineer", label: "Race Engineer" },
   { path: "/saved-setups", label: "My Garage" },
   { path: "/community-library", label: "Community" },
+  { path: "/support", label: "❤ Support" },
 ];
 
 export default function Navbar() {
