@@ -1,5 +1,6 @@
 import { TRACK_TIPS } from "../lib/simData";
 import { MapPin, Wind, Lightbulb } from "lucide-react";
+import TrackWeatherTips from "./TrackWeatherTips";
 
 export default function TrackTips() {
   return (
@@ -26,6 +27,7 @@ export default function TrackTips() {
             <Lightbulb className="w-3 h-3 text-primary mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">{data.tips}</p>
           </div>
+          <TrackWeatherTips track={track} />
         </div>
       ))}
     </div>
