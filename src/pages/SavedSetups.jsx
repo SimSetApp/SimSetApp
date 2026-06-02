@@ -60,8 +60,9 @@ export default function SavedSetups() {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     base44.auth.me().then(user => setUserId(user?.id || null));
-  }, []);
+  }, [isAuthenticated]);
 
   const { data: setups = [], isLoading } = useQuery({
     queryKey: ["saved-setups"],
