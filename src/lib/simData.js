@@ -1018,18 +1018,26 @@ export const SETUP_PARAMETERS = [
   }
 ];
 
-// ─────────────────────────────────────────────
-// SIM-SPECIFIC SETUP PARAMETERS with ranges
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SIM-SPECIFIC SETUP PARAMETERS
+// All parameters cross-referenced against each title's actual in-game UI.
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const SIM_SETUP_PARAMS = {
+
+  // ── ASSETTO CORSA COMPETIZIONE ────────────────────────────────────────────
+  // ACC uses a 0–10 (or 0–11) integer scale for ARBs, dampers, electronics.
+  // Springs in N/mm. Camber in degrees (negative). Toe in mm. Brake bias % front.
+  // Tyre pressure in PSI (cold). Fuel in litres. Brake pad 1–4 (1=aggressive, 4=endurance).
+  // TC1 = TC cut (power reduction), TC2 = TC slip (wheel-speed diff). ABS 0–11. Engine map 1–10.
   "Assetto Corsa Competizione": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 27.3 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 27.3 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 26.8 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 26.8 }
       ]
     },
     {
@@ -1037,37 +1045,37 @@ export const SIM_SETUP_PARAMS = {
       params: [
         { key: "front_splitter", label: "Front Splitter", unit: "", min: 0, max: 3, step: 1, default: 1 },
         { key: "rear_wing", label: "Rear Wing", unit: "", min: 0, max: 10, step: 1, default: 6 },
-        { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 50, max: 90, step: 1, default: 58 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 55, max: 100, step: 1, default: 62 }
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 50, max: 90, step: 1, default: 58 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 55, max: 100, step: 1, default: 62 }
       ]
     },
     {
       group: "Alignment",
       params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.5 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.5 },
-        { key: "toe_front", label: "Toe Front", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
-        { key: "toe_rear", label: "Toe Rear", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
-        { key: "caster", label: "Caster", unit: "°", min: 8, max: 17, step: 0.1, default: 12.5 }
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.5 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.5 },
+        { key: "toe_front", label: "Toe F", unit: " mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
+        { key: "toe_rear", label: "Toe R", unit: " mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
+        { key: "caster", label: "Caster", unit: "°", min: 8.0, max: 17.0, step: 0.1, default: 12.5 }
       ]
     },
     {
       group: "Mechanical Grip",
       params: [
-        { key: "arb_front", label: "ARB Front", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "arb_rear", label: "ARB Rear", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "spring_front", label: "Spring Rate F", unit: "N/mm", min: 50, max: 200, step: 5, default: 90 },
-        { key: "spring_rear", label: "Spring Rate R", unit: "N/mm", min: 50, max: 200, step: 5, default: 100 },
-        { key: "bump_front", label: "Bump F", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "bump_rear", label: "Bump R", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "rebound_front", label: "Rebound F", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "rebound_rear", label: "Rebound R", unit: "", min: 1, max: 10, step: 1, default: 4 }
+        { key: "arb_front", label: "ARB F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "arb_rear", label: "ARB R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "spring_front", label: "Spring Rate F", unit: " N/mm", min: 50, max: 200, step: 5, default: 90 },
+        { key: "spring_rear", label: "Spring Rate R", unit: " N/mm", min: 50, max: 200, step: 5, default: 100 },
+        { key: "bump_front", label: "Bump F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "bump_rear", label: "Bump R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "rebound_front", label: "Rebound F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "rebound_rear", label: "Rebound R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 }
       ]
     },
     {
       group: "Differential",
       params: [
-        { key: "diff_preload", label: "Preload", unit: "Nm", min: 20, max: 200, step: 5, default: 60 },
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 20, max: 200, step: 5, default: 60 },
         { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 60 },
         { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 40 }
       ]
@@ -1075,76 +1083,83 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 50, max: 70, step: 0.2, default: 57.5 },
-        { key: "brake_duct_front", label: "Duct Front", unit: "", min: 0, max: 6, step: 1, default: 2 },
-        { key: "brake_duct_rear", label: "Duct Rear", unit: "", min: 0, max: 6, step: 1, default: 1 }
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 50.0, max: 70.0, step: 0.2, default: 57.5 },
+        { key: "brake_duct_front", label: "Brake Duct F (0–6)", unit: "", min: 0, max: 6, step: 1, default: 2 },
+        { key: "brake_duct_rear", label: "Brake Duct R (0–6)", unit: "", min: 0, max: 6, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad (1=Race 2=Performance 3=Medium 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     },
     {
       group: "Electronics",
       params: [
-        { key: "tc1", label: "TC 1 (Cut)", unit: "", min: 0, max: 11, step: 1, default: 4 },
-        { key: "tc2", label: "TC 2 (Slip)", unit: "", min: 0, max: 11, step: 1, default: 3 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
-        { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
+        { key: "tc1", label: "TC1 – Cut (0–11)", unit: "", min: 0, max: 11, step: 1, default: 4 },
+        { key: "tc2", label: "TC2 – Slip (0–11)", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "abs", label: "ABS (0–11)", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
     },
     {
-      group: "Strategy & Weight",
+      group: "Strategy",
       params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
-        { key: "tyre_compound", label: "Tyre Compound (1=Dry 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
-        { key: "brake_pad", label: "Brake Pad Compound (1=Aggressive 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Dry / 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off / 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 }
       ]
     }
   ],
+
+  // ── IRACING ───────────────────────────────────────────────────────────────
+  // iRacing uses metric or imperial depending on series. GT3/GTE/GTP use metric
+  // (mm, N/mm, kg). Open-wheel and NASCAR configs vary but we use metric as a
+  // universal reference in this form. Springs in lbs/in for GT3; we normalise to
+  // N/mm-equivalent labels noting the in-game unit. Toe in degrees. ARB 1–9 steps.
+  // Electronics TC 0–9, ABS 0–9, Engine Map 1–6. Fuel in kg (iRacing native).
   "iRacing": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "PSI", min: 20, max: 40, step: 0.5, default: 28.0 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "PSI", min: 20, max: 40, step: 0.5, default: 28.0 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "PSI", min: 20, max: 40, step: 0.5, default: 27.5 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "PSI", min: 20, max: 40, step: 0.5, default: 27.5 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " PSI", min: 20.0, max: 40.0, step: 0.5, default: 28.0 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " PSI", min: 20.0, max: 40.0, step: 0.5, default: 28.0 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " PSI", min: 20.0, max: 40.0, step: 0.5, default: 27.5 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " PSI", min: 20.0, max: 40.0, step: 0.5, default: 27.5 }
       ]
     },
     {
       group: "Aerodynamics",
       params: [
-        { key: "front_downforce", label: "Front Downforce", unit: "", min: 1, max: 12, step: 1, default: 6 },
-        { key: "rear_downforce", label: "Rear Downforce", unit: "", min: 1, max: 12, step: 1, default: 7 },
-        { key: "ride_height_front", label: "Ride Height F", unit: "in", min: 1.5, max: 5.0, step: 0.25, default: 2.5 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "in", min: 1.5, max: 5.0, step: 0.25, default: 3.0 }
+        { key: "front_downforce", label: "Front Downforce (1–12)", unit: "", min: 1, max: 12, step: 1, default: 6 },
+        { key: "rear_downforce", label: "Rear Downforce (1–12)", unit: "", min: 1, max: 12, step: 1, default: 7 },
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 40, max: 130, step: 1, default: 60 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 40, max: 130, step: 1, default: 75 }
       ]
     },
     {
       group: "Alignment",
       params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -3.2 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: 0.0, step: 0.1, default: -2.0 },
-        { key: "toe_front", label: "Toe Front", unit: "°", min: -0.5, max: 0.5, step: 0.02, default: -0.1 },
-        { key: "toe_rear", label: "Toe Rear", unit: "°", min: -0.5, max: 0.5, step: 0.02, default: 0.1 },
-        { key: "caster", label: "Caster", unit: "°", min: 4, max: 18, step: 0.5, default: 11.0 }
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -3.2 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: 0.0, step: 0.1, default: -2.0 },
+        { key: "toe_front", label: "Toe F", unit: "°", min: -0.5, max: 0.5, step: 0.01, default: -0.10 },
+        { key: "toe_rear", label: "Toe R", unit: "°", min: -0.5, max: 0.5, step: 0.01, default: 0.10 },
+        { key: "caster", label: "Caster", unit: "°", min: 4.0, max: 18.0, step: 0.5, default: 11.0 }
       ]
     },
     {
       group: "Springs & Bars",
       params: [
-        { key: "spring_front", label: "Spring F", unit: "lbs/in", min: 200, max: 1200, step: 50, default: 550 },
-        { key: "spring_rear", label: "Spring R", unit: "lbs/in", min: 200, max: 1200, step: 50, default: 600 },
-        { key: "arb_front", label: "ARB Front", unit: "", min: 1, max: 9, step: 1, default: 4 },
-        { key: "arb_rear", label: "ARB Rear", unit: "", min: 1, max: 9, step: 1, default: 3 },
-        { key: "bump_front", label: "Bump F", unit: "", min: 1, max: 16, step: 1, default: 8 },
-        { key: "bump_rear", label: "Bump R", unit: "", min: 1, max: 16, step: 1, default: 8 },
-        { key: "rebound_front", label: "Rebound F", unit: "", min: 1, max: 16, step: 1, default: 8 },
-        { key: "rebound_rear", label: "Rebound R", unit: "", min: 1, max: 16, step: 1, default: 8 }
+        { key: "spring_front", label: "Spring F", unit: " lbs/in", min: 200, max: 1200, step: 50, default: 550 },
+        { key: "spring_rear", label: "Spring R", unit: " lbs/in", min: 200, max: 1200, step: 50, default: 600 },
+        { key: "arb_front", label: "ARB F (1–9)", unit: "", min: 1, max: 9, step: 1, default: 4 },
+        { key: "arb_rear", label: "ARB R (1–9)", unit: "", min: 1, max: 9, step: 1, default: 3 },
+        { key: "bump_front", label: "Bump F (1–16)", unit: "", min: 1, max: 16, step: 1, default: 8 },
+        { key: "bump_rear", label: "Bump R (1–16)", unit: "", min: 1, max: 16, step: 1, default: 8 },
+        { key: "rebound_front", label: "Rebound F (1–16)", unit: "", min: 1, max: 16, step: 1, default: 8 },
+        { key: "rebound_rear", label: "Rebound R (1–16)", unit: "", min: 1, max: 16, step: 1, default: 8 }
       ]
     },
     {
       group: "Differential",
       params: [
-        { key: "diff_preload", label: "Preload", unit: "Nm", min: 0, max: 150, step: 10, default: 50 },
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 0, max: 150, step: 10, default: 50 },
         { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 65 },
         { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 35 }
       ]
@@ -1152,73 +1167,80 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 68, step: 0.5, default: 57.0 },
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 48.0, max: 68.0, step: 0.5, default: 57.0 },
         { key: "brake_force", label: "Brake Force", unit: "%", min: 80, max: 100, step: 1, default: 100 }
       ]
     },
     {
       group: "Electronics",
       params: [
-        { key: "tc", label: "Traction Control", unit: "", min: 0, max: 9, step: 1, default: 3 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 9, step: 1, default: 3 },
-        { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 1 }
+        { key: "tc", label: "Traction Control (0–9)", unit: "", min: 0, max: 9, step: 1, default: 3 },
+        { key: "abs", label: "ABS (0–9)", unit: "", min: 0, max: 9, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map (1–6)", unit: "", min: 1, max: 6, step: 1, default: 1 }
       ]
     },
     {
-      group: "Strategy & Weight",
+      group: "Strategy",
       params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "kg", min: 1, max: 120, step: 1, default: 60 },
-        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 50, step: 1, default: 0 },
-        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "fuel_load", label: "Fuel Load", unit: " kg", min: 1, max: 120, step: 1, default: 60 },
+        { key: "ballast", label: "Ballast", unit: " kg", min: 0, max: 50, step: 1, default: 0 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Medium 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
+
+  // ── ASSETTO CORSA (original) ──────────────────────────────────────────────
+  // AC uses integer sliders for ARBs and dampers (unitless 1–10 in most cars,
+  // or raw Ns/mm for high-end physics cars).  Springs in N/mm. Camber in degrees.
+  // Toe in degrees (not mm — AC uses angular toe, unlike ACC).
+  // Electronics: TC 0–10, ABS 0–10. No engine map. Fuel in litres.
+  // Tyre compounds: 1=Street / 2=Sport / 3=Semi-Slick / 4=Slick (varies by car).
   "Assetto Corsa": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " PSI", min: 18.0, max: 38.0, step: 0.5, default: 27.3 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " PSI", min: 18.0, max: 38.0, step: 0.5, default: 27.3 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " PSI", min: 18.0, max: 38.0, step: 0.5, default: 26.8 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " PSI", min: 18.0, max: 38.0, step: 0.5, default: 26.8 }
       ]
     },
     {
       group: "Aerodynamics",
       params: [
-        { key: "front_wing", label: "Front Wing", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "rear_wing", label: "Rear Wing", unit: "", min: 1, max: 10, step: 1, default: 6 },
-        { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 50, max: 90, step: 1, default: 58 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 55, max: 100, step: 1, default: 62 }
+        { key: "front_wing", label: "Front Wing (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "rear_wing", label: "Rear Wing (1–10)", unit: "", min: 1, max: 10, step: 1, default: 6 },
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 50, max: 100, step: 1, default: 58 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 55, max: 110, step: 1, default: 62 }
       ]
     },
     {
       group: "Alignment",
       params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.4 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.4 },
-        { key: "toe_front", label: "Toe Front", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
-        { key: "toe_rear", label: "Toe Rear", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
-        { key: "caster", label: "Caster", unit: "°", min: 7, max: 17, step: 0.1, default: 12.0 }
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.4 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.4 },
+        { key: "toe_front", label: "Toe F", unit: "°", min: -0.5, max: 0.5, step: 0.01, default: -0.06 },
+        { key: "toe_rear", label: "Toe R", unit: "°", min: -0.5, max: 0.5, step: 0.01, default: 0.15 },
+        { key: "caster", label: "Caster", unit: "°", min: 7.0, max: 17.0, step: 0.1, default: 12.0 }
       ]
     },
     {
       group: "Mechanical Grip",
       params: [
-        { key: "arb_front", label: "ARB Front", unit: "N/mm", min: 0, max: 50, step: 5, default: 20 },
-        { key: "arb_rear", label: "ARB Rear", unit: "N/mm", min: 0, max: 50, step: 5, default: 15 },
-        { key: "spring_front", label: "Spring Rate F", unit: "N/mm", min: 40, max: 200, step: 5, default: 85 },
-        { key: "spring_rear", label: "Spring Rate R", unit: "N/mm", min: 40, max: 200, step: 5, default: 95 },
-        { key: "bump_front", label: "Bump F", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 3500 },
-        { key: "bump_rear", label: "Bump R", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 3500 },
-        { key: "rebound_front", label: "Rebound F", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 4000 },
-        { key: "rebound_rear", label: "Rebound R", unit: "Ns/mm", min: 1000, max: 8000, step: 500, default: 4000 }
+        { key: "arb_front", label: "ARB F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "arb_rear", label: "ARB R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "spring_front", label: "Spring Rate F", unit: " N/mm", min: 40, max: 200, step: 5, default: 85 },
+        { key: "spring_rear", label: "Spring Rate R", unit: " N/mm", min: 40, max: 200, step: 5, default: 95 },
+        { key: "bump_front", label: "Bump F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "bump_rear", label: "Bump R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "rebound_front", label: "Rebound F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 6 },
+        { key: "rebound_rear", label: "Rebound R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 6 }
       ]
     },
     {
       group: "Differential",
       params: [
-        { key: "diff_preload", label: "Preload", unit: "Nm", min: 0, max: 200, step: 10, default: 50 },
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 0, max: 200, step: 10, default: 50 },
         { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 60 },
         { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 35 }
       ]
@@ -1226,72 +1248,76 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 68, step: 0.5, default: 57.0 },
-        { key: "brake_duct", label: "Brake Duct", unit: "", min: 0, max: 6, step: 1, default: 2 }
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 48.0, max: 70.0, step: 0.5, default: 57.0 },
+        { key: "brake_duct", label: "Brake Duct (0–6)", unit: "", min: 0, max: 6, step: 1, default: 2 }
       ]
     },
     {
       group: "Electronics",
       params: [
-        { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 4 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 }
+        { key: "tc", label: "Traction Control (0–10)", unit: "", min: 0, max: 10, step: 1, default: 4 },
+        { key: "abs", label: "ABS (0–10)", unit: "", min: 0, max: 10, step: 1, default: 3 }
       ]
     },
     {
-      group: "Strategy & Weight",
+      group: "Strategy",
       params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 },
-        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Street 2=Sport 3=Semi-Slick 4=Slick)", unit: "", min: 1, max: 4, step: 1, default: 3 }
       ]
     }
   ],
+
+  // ── ASSETTO CORSA EVO ─────────────────────────────────────────────────────
+  // ACE closely mirrors ACC's setup UI (Early Access 2025). Integer ARB/damper
+  // scales 1–10, springs N/mm, camber °, toe mm, brake bias % front.
+  // Electronics: TC1, TC2, ABS 0–11, Engine Map 1–10. Fuel L. Compounds: Dry/Wet.
   "Assetto Corsa Evo": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 27.3 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "PSI", min: 20, max: 35, step: 0.1, default: 26.8 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 27.3 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 27.3 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 26.8 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " PSI", min: 20.0, max: 35.0, step: 0.1, default: 26.8 }
       ]
     },
     {
       group: "Aerodynamics",
       params: [
-        { key: "front_splitter", label: "Front Splitter", unit: "", min: 0, max: 3, step: 1, default: 1 },
-        { key: "rear_wing", label: "Rear Wing", unit: "", min: 0, max: 10, step: 1, default: 6 },
-        { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 50, max: 90, step: 1, default: 58 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 55, max: 100, step: 1, default: 62 }
+        { key: "front_splitter", label: "Front Splitter (0–3)", unit: "", min: 0, max: 3, step: 1, default: 1 },
+        { key: "rear_wing", label: "Rear Wing (0–10)", unit: "", min: 0, max: 10, step: 1, default: 6 },
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 50, max: 90, step: 1, default: 58 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 55, max: 100, step: 1, default: 62 }
       ]
     },
     {
       group: "Alignment",
       params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.5 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.5 },
-        { key: "toe_front", label: "Toe Front", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
-        { key: "toe_rear", label: "Toe Rear", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
-        { key: "caster", label: "Caster", unit: "°", min: 8, max: 17, step: 0.1, default: 12.5 }
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.5 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.5 },
+        { key: "toe_front", label: "Toe F", unit: " mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
+        { key: "toe_rear", label: "Toe R", unit: " mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
+        { key: "caster", label: "Caster", unit: "°", min: 8.0, max: 17.0, step: 0.1, default: 12.5 }
       ]
     },
     {
       group: "Mechanical Grip",
       params: [
-        { key: "arb_front", label: "ARB Front", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "arb_rear", label: "ARB Rear", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "spring_front", label: "Spring Rate F", unit: "N/mm", min: 50, max: 200, step: 5, default: 90 },
-        { key: "spring_rear", label: "Spring Rate R", unit: "N/mm", min: 50, max: 200, step: 5, default: 100 },
-        { key: "bump_front", label: "Bump F", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "bump_rear", label: "Bump R", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "rebound_front", label: "Rebound F", unit: "", min: 1, max: 10, step: 1, default: 4 },
-        { key: "rebound_rear", label: "Rebound R", unit: "", min: 1, max: 10, step: 1, default: 4 }
+        { key: "arb_front", label: "ARB F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "arb_rear", label: "ARB R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "spring_front", label: "Spring Rate F", unit: " N/mm", min: 50, max: 200, step: 5, default: 90 },
+        { key: "spring_rear", label: "Spring Rate R", unit: " N/mm", min: 50, max: 200, step: 5, default: 100 },
+        { key: "bump_front", label: "Bump F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "bump_rear", label: "Bump R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "rebound_front", label: "Rebound F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "rebound_rear", label: "Rebound R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 }
       ]
     },
     {
       group: "Differential",
       params: [
-        { key: "diff_preload", label: "Preload", unit: "Nm", min: 20, max: 200, step: 5, default: 60 },
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 20, max: 200, step: 5, default: 60 },
         { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 60 },
         { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 40 }
       ]
@@ -1299,76 +1325,84 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 50, max: 70, step: 0.2, default: 57.5 },
-        { key: "brake_duct_front", label: "Duct Front", unit: "", min: 0, max: 6, step: 1, default: 2 },
-        { key: "brake_duct_rear", label: "Duct Rear", unit: "", min: 0, max: 6, step: 1, default: 1 }
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 50.0, max: 70.0, step: 0.2, default: 57.5 },
+        { key: "brake_duct_front", label: "Brake Duct F (0–6)", unit: "", min: 0, max: 6, step: 1, default: 2 },
+        { key: "brake_duct_rear", label: "Brake Duct R (0–6)", unit: "", min: 0, max: 6, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad (1=Race 2=Performance 3=Medium 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     },
     {
       group: "Electronics",
       params: [
-        { key: "tc1", label: "TC 1 (Cut)", unit: "", min: 0, max: 11, step: 1, default: 4 },
-        { key: "tc2", label: "TC 2 (Slip)", unit: "", min: 0, max: 11, step: 1, default: 3 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 11, step: 1, default: 3 },
-        { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 10, step: 1, default: 5 }
+        { key: "tc1", label: "TC1 – Cut (0–11)", unit: "", min: 0, max: 11, step: 1, default: 4 },
+        { key: "tc2", label: "TC2 – Slip (0–11)", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "abs", label: "ABS (0–11)", unit: "", min: 0, max: 11, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 }
       ]
     },
     {
-      group: "Strategy & Weight",
+      group: "Strategy",
       params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
-        { key: "tyre_compound", label: "Tyre Compound (1=Dry 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
-        { key: "brake_pad", label: "Brake Pad Compound (1=Aggressive 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Dry / 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off / 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 }
       ]
     }
   ],
+
+  // ── LE MANS ULTIMATE ──────────────────────────────────────────────────────
+  // LMU is based on rFactor 2 / Studio 397 engine. Pressures in kPa (cold).
+  // Wing angles in degrees (Hypercar). Springs in N/mm. ARB in N/mm (continuous).
+  // Dampers in Ns/mm (actual physics values, not integer steps).
+  // Toe in mm. Camber in degrees. Caster in degrees.
+  // Electronics: TC 0–10, ABS 0–10, Engine Map 1–6.
+  // Compounds: 1=Soft 2=Medium 3=Hard 4=Wet (Hypercar/GT3). Fuel in litres.
   "Le Mans Ultimate": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "kPa", min: 150, max: 250, step: 2, default: 190 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "kPa", min: 150, max: 250, step: 2, default: 190 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "kPa", min: 150, max: 250, step: 2, default: 185 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "kPa", min: 150, max: 250, step: 2, default: 185 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " kPa", min: 140, max: 250, step: 1, default: 190 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " kPa", min: 140, max: 250, step: 1, default: 190 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " kPa", min: 140, max: 250, step: 1, default: 185 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " kPa", min: 140, max: 250, step: 1, default: 185 }
       ]
     },
     {
       group: "Aerodynamics",
       params: [
-        { key: "front_wing", label: "Front Wing", unit: "°", min: 0, max: 30, step: 1, default: 8 },
-        { key: "rear_wing", label: "Rear Wing", unit: "°", min: 0, max: 30, step: 1, default: 10 },
-        { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 40, max: 100, step: 1, default: 55 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 40, max: 100, step: 1, default: 65 }
+        { key: "front_wing", label: "Front Wing Angle", unit: "°", min: 0, max: 30, step: 0.5, default: 8.0 },
+        { key: "rear_wing", label: "Rear Wing Angle", unit: "°", min: 0, max: 30, step: 0.5, default: 10.0 },
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 30, max: 100, step: 1, default: 50 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 35, max: 110, step: 1, default: 65 }
       ]
     },
     {
       group: "Alignment",
       params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -3.0 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: 0.0, step: 0.1, default: -2.0 },
-        { key: "toe_front", label: "Toe Front", unit: "mm", min: -3.0, max: 3.0, step: 0.1, default: -0.4 },
-        { key: "toe_rear", label: "Toe Rear", unit: "mm", min: -3.0, max: 3.0, step: 0.1, default: 0.6 },
-        { key: "caster", label: "Caster", unit: "°", min: 6, max: 16, step: 0.5, default: 10.5 }
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -3.0 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: 0.0, step: 0.1, default: -2.0 },
+        { key: "toe_front", label: "Toe F", unit: " mm", min: -3.0, max: 3.0, step: 0.1, default: -0.4 },
+        { key: "toe_rear", label: "Toe R", unit: " mm", min: -3.0, max: 3.0, step: 0.1, default: 0.6 },
+        { key: "caster", label: "Caster", unit: "°", min: 6.0, max: 16.0, step: 0.5, default: 10.5 }
       ]
     },
     {
       group: "Springs & Dampers",
       params: [
-        { key: "spring_front", label: "Spring F", unit: "N/mm", min: 40, max: 300, step: 5, default: 100 },
-        { key: "spring_rear", label: "Spring R", unit: "N/mm", min: 40, max: 300, step: 5, default: 120 },
-        { key: "arb_front", label: "ARB Front", unit: "N/mm", min: 0, max: 80, step: 5, default: 25 },
-        { key: "arb_rear", label: "ARB Rear", unit: "N/mm", min: 0, max: 80, step: 5, default: 20 },
-        { key: "bump_front", label: "Bump F", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 4000 },
-        { key: "bump_rear", label: "Bump R", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 4000 },
-        { key: "rebound_front", label: "Rebound F", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 5000 },
-        { key: "rebound_rear", label: "Rebound R", unit: "Ns/mm", min: 1000, max: 10000, step: 500, default: 5000 }
+        { key: "spring_front", label: "Spring F", unit: " N/mm", min: 40, max: 350, step: 5, default: 110 },
+        { key: "spring_rear", label: "Spring R", unit: " N/mm", min: 40, max: 350, step: 5, default: 130 },
+        { key: "arb_front", label: "ARB F", unit: " N/mm", min: 0, max: 80, step: 5, default: 25 },
+        { key: "arb_rear", label: "ARB R", unit: " N/mm", min: 0, max: 80, step: 5, default: 20 },
+        { key: "bump_front", label: "Bump F", unit: " Ns/mm", min: 1000, max: 12000, step: 500, default: 4000 },
+        { key: "bump_rear", label: "Bump R", unit: " Ns/mm", min: 1000, max: 12000, step: 500, default: 4500 },
+        { key: "rebound_front", label: "Rebound F", unit: " Ns/mm", min: 1000, max: 12000, step: 500, default: 5500 },
+        { key: "rebound_rear", label: "Rebound R", unit: " Ns/mm", min: 1000, max: 12000, step: 500, default: 6000 }
       ]
     },
     {
       group: "Differential",
       params: [
-        { key: "diff_preload", label: "Preload", unit: "Nm", min: 0, max: 200, step: 10, default: 60 },
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 0, max: 200, step: 10, default: 60 },
         { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 65 },
         { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 40 }
       ]
@@ -1376,188 +1410,205 @@ export const SIM_SETUP_PARAMS = {
     {
       group: "Brakes",
       params: [
-        { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 70, step: 0.5, default: 57.5 },
-        { key: "brake_duct_front", label: "Duct Front", unit: "", min: 0, max: 6, step: 1, default: 2 },
-        { key: "brake_duct_rear", label: "Duct Rear", unit: "", min: 0, max: 6, step: 1, default: 1 }
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 48.0, max: 70.0, step: 0.5, default: 57.5 },
+        { key: "brake_duct_front", label: "Brake Duct F (0–6)", unit: "", min: 0, max: 6, step: 1, default: 2 },
+        { key: "brake_duct_rear", label: "Brake Duct R (0–6)", unit: "", min: 0, max: 6, step: 1, default: 1 }
       ]
     },
     {
       group: "Electronics",
       params: [
-        { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 4 },
-        { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 },
-        { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 3 }
+        { key: "tc", label: "Traction Control (0–10)", unit: "", min: 0, max: 10, step: 1, default: 4 },
+        { key: "abs", label: "ABS (0–10)", unit: "", min: 0, max: 10, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map (1–6)", unit: "", min: 1, max: 6, step: 1, default: 3 }
       ]
     },
     {
-      group: "Strategy & Weight",
+      group: "Strategy",
       params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
-        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 100, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Medium 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 },
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off / 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 }
       ]
     }
   ],
-  "Gran Turismo 7": [
+
+  // ── AUTOMOBILISTA 2 ───────────────────────────────────────────────────────
+  // AMS2 uses Madness Engine (same base as Project CARS 2). Springs in N/mm.
+  // ARB on an integer 1–10 scale. Dampers on integer 1–20 scale (slow/fast bump/rebound).
+  // Camber in degrees, toe in mm. Caster in degrees. Brake bias % front.
+  // Electronics: TC 0–10, ABS 0–10, Engine Map 1–6.
+  // Compounds: 1=Soft 2=Medium 3=Hard (+ 4=Wet available in wet sessions).
+  // Fuel in litres. Brake pad 1–3 (1=Aggressive 2=Standard 3=Endurance).
+  "Automobilista 2": [
     {
       group: "Tyres",
       params: [
-        { key: "tyre_pressure_fl", label: "Pressure FL", unit: "kPa", min: 150, max: 400, step: 5, default: 230 },
-        { key: "tyre_pressure_fr", label: "Pressure FR", unit: "kPa", min: 150, max: 400, step: 5, default: 230 },
-        { key: "tyre_pressure_rl", label: "Pressure RL", unit: "kPa", min: 150, max: 400, step: 5, default: 220 },
-        { key: "tyre_pressure_rr", label: "Pressure RR", unit: "kPa", min: 150, max: 400, step: 5, default: 220 }
-      ]
-    },
-    {
-      group: "Body Height & Springs",
-      params: [
-        { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 50, max: 150, step: 1, default: 90 },
-        { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 50, max: 150, step: 1, default: 95 },
-        { key: "spring_front", label: "Spring Rate F", unit: "kgf/mm", min: 2, max: 30, step: 0.5, default: 8 },
-        { key: "spring_rear", label: "Spring Rate R", unit: "kgf/mm", min: 2, max: 30, step: 0.5, default: 9 }
-      ]
-    },
-    {
-      group: "Dampers & ARB",
-      params: [
-        { key: "damper_ext_front", label: "Extension F", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "damper_ext_rear", label: "Extension R", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "damper_comp_front", label: "Compression F", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "damper_comp_rear", label: "Compression R", unit: "", min: 1, max: 10, step: 1, default: 5 },
-        { key: "arb_front", label: "ARB Front", unit: "", min: 1, max: 7, step: 1, default: 4 },
-        { key: "arb_rear", label: "ARB Rear", unit: "", min: 1, max: 7, step: 1, default: 3 }
-      ]
-    },
-    {
-      group: "Alignment",
-      params: [
-        { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -2.0 },
-        { key: "camber_rear", label: "Camber Rear", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -1.5 },
-        { key: "toe_front", label: "Toe Front", unit: "°", min: -2.5, max: 2.5, step: 0.1, default: -0.2 },
-        { key: "toe_rear", label: "Toe Rear", unit: "°", min: -2.5, max: 2.5, step: 0.1, default: 0.5 }
-      ]
-    },
-    {
-      group: "LSD (Differential)",
-      params: [
-        { key: "lsd_initial", label: "Initial Torque", unit: "", min: 5, max: 50, step: 5, default: 20 },
-        { key: "lsd_accel", label: "Accel Sensitivity", unit: "", min: 5, max: 60, step: 5, default: 30 },
-        { key: "lsd_decel", label: "Decel Sensitivity", unit: "", min: 5, max: 60, step: 5, default: 20 }
-      ]
-    },
-    {
-      group: "Brakes",
-      params: [
-        { key: "brake_balance", label: "Brake Balance (F→R)", unit: "", min: 1, max: 20, step: 1, default: 10 }
-      ]
-    },
-    {
-      group: "Strategy & Weight",
-      params: [
-        { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 50 },
-        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 100, step: 5, default: 0 },
-        { key: "tyre_compound", label: "Tyre Compound (1=SH 2=S 3=M 4=H 5=RH 6=IM 7=WW)", unit: "", min: 1, max: 7, step: 1, default: 3 }
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " PSI", min: 18.0, max: 40.0, step: 0.5, default: 27.0 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " PSI", min: 18.0, max: 40.0, step: 0.5, default: 27.0 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " PSI", min: 18.0, max: 40.0, step: 0.5, default: 26.5 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " PSI", min: 18.0, max: 40.0, step: 0.5, default: 26.5 }
       ]
     },
     {
       group: "Aerodynamics",
       params: [
-        { key: "downforce_front", label: "Downforce Front", unit: "", min: 400, max: 900, step: 10, default: 600 },
-        { key: "downforce_rear", label: "Downforce Rear", unit: "", min: 400, max: 900, step: 10, default: 650 }
+        { key: "front_wing", label: "Front Wing (1–12)", unit: "", min: 1, max: 12, step: 1, default: 4 },
+        { key: "rear_wing", label: "Rear Wing (1–12)", unit: "", min: 1, max: 12, step: 1, default: 6 },
+        { key: "ride_height_front", label: "Ride Height F", unit: " mm", min: 45, max: 110, step: 1, default: 57 },
+        { key: "ride_height_rear", label: "Ride Height R", unit: " mm", min: 50, max: 120, step: 1, default: 65 }
       ]
     },
     {
-      group: "Transmission & Electronics",
+      group: "Alignment",
       params: [
-        { key: "final_gear_ratio", label: "Final Gear Ratio", unit: "", min: 2.5, max: 5.5, step: 0.01, default: 3.5 },
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.4 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.3 },
+        { key: "toe_front", label: "Toe F", unit: " mm", min: -3.0, max: 3.0, step: 0.1, default: -0.3 },
+        { key: "toe_rear", label: "Toe R", unit: " mm", min: -3.0, max: 3.0, step: 0.1, default: 0.8 },
+        { key: "caster", label: "Caster", unit: "°", min: 7.0, max: 16.0, step: 0.5, default: 12.0 }
+      ]
+    },
+    {
+      group: "Mechanical Grip",
+      params: [
+        { key: "arb_front", label: "ARB F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "arb_rear", label: "ARB R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
+        { key: "spring_front", label: "Spring Rate F", unit: " N/mm", min: 40, max: 250, step: 5, default: 90 },
+        { key: "spring_rear", label: "Spring Rate R", unit: " N/mm", min: 40, max: 250, step: 5, default: 100 },
+        { key: "bump_front", label: "Bump F (1–20)", unit: "", min: 1, max: 20, step: 1, default: 8 },
+        { key: "bump_rear", label: "Bump R (1–20)", unit: "", min: 1, max: 20, step: 1, default: 8 },
+        { key: "rebound_front", label: "Rebound F (1–20)", unit: "", min: 1, max: 20, step: 1, default: 10 },
+        { key: "rebound_rear", label: "Rebound R (1–20)", unit: "", min: 1, max: 20, step: 1, default: 10 }
+      ]
+    },
+    {
+      group: "Differential",
+      params: [
+        { key: "diff_preload", label: "Preload", unit: " Nm", min: 0, max: 200, step: 5, default: 55 },
+        { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 60 },
+        { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 38 }
+      ]
+    },
+    {
+      group: "Brakes",
+      params: [
+        { key: "brake_bias", label: "Brake Bias (F)", unit: "%", min: 48.0, max: 70.0, step: 0.5, default: 57.0 },
+        { key: "brake_duct_front", label: "Brake Duct F (0–6)", unit: "", min: 0, max: 6, step: 1, default: 2 },
+        { key: "brake_duct_rear", label: "Brake Duct R (0–6)", unit: "", min: 0, max: 6, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad (1=Aggressive 2=Standard 3=Endurance)", unit: "", min: 1, max: 3, step: 1, default: 2 }
+      ]
+    },
+    {
+      group: "Electronics",
+      params: [
+        { key: "tc", label: "Traction Control (0–10)", unit: "", min: 0, max: 10, step: 1, default: 4 },
+        { key: "abs", label: "ABS (0–10)", unit: "", min: 0, max: 10, step: 1, default: 3 },
+        { key: "engine_map", label: "Engine Map (1–6)", unit: "", min: 1, max: 6, step: 1, default: 3 }
+      ]
+    },
+    {
+      group: "Strategy",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Medium 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 },
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off / 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 }
+      ]
+    }
+  ],
+
+  // ── GRAN TURISMO 7 ────────────────────────────────────────────────────────
+  // GT7 setup screen uses kPa for pressures. Springs in kgf/mm. ARB 1–7 integer.
+  // Dampers: Extension (rebound) and Compression (bump) on 1–10 scale.
+  // Alignment: camber in degrees, toe in degrees (GT7 uses degrees, not mm).
+  // NO caster adjustment in GT7 (fixed by car model).
+  // LSD: Initial Torque 5–50, Acceleration Sensitivity 5–60, Deceleration Sensitivity 5–60.
+  // Brake balance: front/rear 1–20 slider (higher = more front).
+  // Aerodynamics: GT7 uses downforce values in the range ~0–650 (front) / ~0–900 (rear)
+  // depending on the car's aero kit. Numbers represent the actual downforce level shown in-game.
+  // Tyre compounds: 1=SH (Super Hard) 2=H (Hard) 3=M (Medium) 4=S (Soft) 5=SS (Super Soft)
+  //                 6=RH (Racing Hard) 7=RM (Racing Medium) 8=RS (Racing Soft) 9=IM (Intermediate) 10=W (Wet)
+  // Fuel in litres. Ballast in kg.
+  "Gran Turismo 7": [
+    {
+      group: "Tyres",
+      params: [
+        { key: "tyre_pressure_fl", label: "Pressure FL", unit: " kPa", min: 150, max: 400, step: 5, default: 230 },
+        { key: "tyre_pressure_fr", label: "Pressure FR", unit: " kPa", min: 150, max: 400, step: 5, default: 230 },
+        { key: "tyre_pressure_rl", label: "Pressure RL", unit: " kPa", min: 150, max: 400, step: 5, default: 220 },
+        { key: "tyre_pressure_rr", label: "Pressure RR", unit: " kPa", min: 150, max: 400, step: 5, default: 220 }
+      ]
+    },
+    {
+      group: "Body Height & Springs",
+      params: [
+        { key: "ride_height_front", label: "Body Height F", unit: " mm", min: 50, max: 200, step: 1, default: 90 },
+        { key: "ride_height_rear", label: "Body Height R", unit: " mm", min: 50, max: 200, step: 1, default: 95 },
+        { key: "spring_front", label: "Spring Rate F", unit: " kgf/mm", min: 1.0, max: 30.0, step: 0.5, default: 8.0 },
+        { key: "spring_rear", label: "Spring Rate R", unit: " kgf/mm", min: 1.0, max: 30.0, step: 0.5, default: 9.0 }
+      ]
+    },
+    {
+      group: "Dampers & ARB",
+      params: [
+        { key: "damper_ext_front", label: "Damper Extension F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "damper_ext_rear", label: "Damper Extension R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "damper_comp_front", label: "Damper Compression F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "damper_comp_rear", label: "Damper Compression R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+        { key: "arb_front", label: "Anti-Roll Bar F (1–7)", unit: "", min: 1, max: 7, step: 1, default: 4 },
+        { key: "arb_rear", label: "Anti-Roll Bar R (1–7)", unit: "", min: 1, max: 7, step: 1, default: 3 }
+      ]
+    },
+    {
+      group: "Alignment",
+      params: [
+        { key: "camber_front", label: "Camber F", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -2.0 },
+        { key: "camber_rear", label: "Camber R", unit: "°", min: -5.0, max: 0.0, step: 0.1, default: -1.5 },
+        { key: "toe_front", label: "Toe F", unit: "°", min: -2.5, max: 2.5, step: 0.05, default: -0.10 },
+        { key: "toe_rear", label: "Toe R", unit: "°", min: -2.5, max: 2.5, step: 0.05, default: 0.20 }
+      ]
+    },
+    {
+      group: "LSD (Differential)",
+      params: [
+        { key: "lsd_initial", label: "Initial Torque (5–50)", unit: "", min: 5, max: 50, step: 5, default: 20 },
+        { key: "lsd_accel", label: "Accel Sensitivity (5–60)", unit: "", min: 5, max: 60, step: 5, default: 30 },
+        { key: "lsd_decel", label: "Decel Sensitivity (5–60)", unit: "", min: 5, max: 60, step: 5, default: 20 }
+      ]
+    },
+    {
+      group: "Brakes",
+      params: [
+        { key: "brake_balance", label: "Brake Balance (1–20, higher=more front)", unit: "", min: 1, max: 20, step: 1, default: 10 }
+      ]
+    },
+    {
+      group: "Aerodynamics",
+      params: [
+        { key: "downforce_front", label: "Downforce F (aero kit dependent)", unit: "", min: 0, max: 650, step: 5, default: 300 },
+        { key: "downforce_rear", label: "Downforce R (aero kit dependent)", unit: "", min: 0, max: 900, step: 5, default: 400 }
+      ]
+    },
+    {
+      group: "Transmission",
+      params: [
+        { key: "final_gear_ratio", label: "Final Gear Ratio", unit: "", min: 2.50, max: 5.50, step: 0.01, default: 3.50 },
         { key: "power_limiter", label: "Power Limiter", unit: "%", min: 50, max: 100, step: 1, default: 100 }
+      ]
+    },
+    {
+      group: "Strategy",
+      params: [
+        { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 100, step: 1, default: 50 },
+        { key: "ballast", label: "Ballast", unit: " kg", min: 0, max: 100, step: 5, default: 0 },
+        { key: "tyre_compound", label: "Tyre Compound (1=SH 2=H 3=M 4=S 5=SS 6=RH 7=RM 8=RS 9=IM 10=W)", unit: "", min: 1, max: 10, step: 1, default: 7 }
       ]
     }
   ]
 };
 
 // ─────────────────────────────────────────────
-// SIM_SETUP_PARAMS: Automobilista 2
-// ─────────────────────────────────────────────
-SIM_SETUP_PARAMS["Automobilista 2"] = [
-  {
-    group: "Tyres",
-    params: [
-      { key: "tyre_pressure_fl", label: "Pressure FL", unit: "PSI", min: 18, max: 40, step: 0.5, default: 27.0 },
-      { key: "tyre_pressure_fr", label: "Pressure FR", unit: "PSI", min: 18, max: 40, step: 0.5, default: 27.0 },
-      { key: "tyre_pressure_rl", label: "Pressure RL", unit: "PSI", min: 18, max: 40, step: 0.5, default: 26.5 },
-      { key: "tyre_pressure_rr", label: "Pressure RR", unit: "PSI", min: 18, max: 40, step: 0.5, default: 26.5 }
-    ]
-  },
-  {
-    group: "Aerodynamics",
-    params: [
-      { key: "front_wing", label: "Front Wing", unit: "", min: 1, max: 12, step: 1, default: 4 },
-      { key: "rear_wing", label: "Rear Wing", unit: "", min: 1, max: 12, step: 1, default: 6 },
-      { key: "ride_height_front", label: "Ride Height F", unit: "mm", min: 45, max: 100, step: 1, default: 57 },
-      { key: "ride_height_rear", label: "Ride Height R", unit: "mm", min: 50, max: 110, step: 1, default: 63 }
-    ]
-  },
-  {
-    group: "Alignment",
-    params: [
-      { key: "camber_front", label: "Camber Front", unit: "°", min: -5.0, max: -0.5, step: 0.1, default: -3.4 },
-      { key: "camber_rear", label: "Camber Rear", unit: "°", min: -4.0, max: -0.5, step: 0.1, default: -2.3 },
-      { key: "toe_front", label: "Toe Front", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: -0.3 },
-      { key: "toe_rear", label: "Toe Rear", unit: "mm", min: -2.0, max: 2.0, step: 0.1, default: 0.8 },
-      { key: "caster", label: "Caster", unit: "°", min: 7, max: 16, step: 0.5, default: 12.0 }
-    ]
-  },
-  {
-    group: "Mechanical Grip",
-    params: [
-      { key: "arb_front", label: "ARB Front", unit: "", min: 1, max: 10, step: 1, default: 5 },
-      { key: "arb_rear", label: "ARB Rear", unit: "", min: 1, max: 10, step: 1, default: 4 },
-      { key: "spring_front", label: "Spring Rate F", unit: "N/mm", min: 40, max: 250, step: 5, default: 90 },
-      { key: "spring_rear", label: "Spring Rate R", unit: "N/mm", min: 40, max: 250, step: 5, default: 100 },
-      { key: "bump_front", label: "Bump F", unit: "", min: 1, max: 20, step: 1, default: 8 },
-      { key: "bump_rear", label: "Bump R", unit: "", min: 1, max: 20, step: 1, default: 8 },
-      { key: "rebound_front", label: "Rebound F", unit: "", min: 1, max: 20, step: 1, default: 8 },
-      { key: "rebound_rear", label: "Rebound R", unit: "", min: 1, max: 20, step: 1, default: 8 }
-    ]
-  },
-  {
-    group: "Differential",
-    params: [
-      { key: "diff_preload", label: "Preload", unit: "Nm", min: 0, max: 200, step: 5, default: 55 },
-      { key: "diff_power", label: "Power Lock", unit: "%", min: 0, max: 100, step: 5, default: 60 },
-      { key: "diff_coast", label: "Coast Lock", unit: "%", min: 0, max: 100, step: 5, default: 38 }
-    ]
-  },
-  {
-    group: "Brakes",
-    params: [
-      { key: "brake_bias", label: "Brake Bias", unit: "%", min: 48, max: 70, step: 0.5, default: 57.0 },
-      { key: "brake_duct_front", label: "Duct Front", unit: "", min: 0, max: 6, step: 1, default: 2 },
-      { key: "brake_duct_rear", label: "Duct Rear", unit: "", min: 0, max: 6, step: 1, default: 1 }
-    ]
-  },
-  {
-    group: "Electronics",
-    params: [
-      { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 4 },
-      { key: "abs", label: "ABS", unit: "", min: 0, max: 10, step: 1, default: 3 },
-      { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 3 }
-    ]
-  },
-  {
-    group: "Strategy & Weight",
-    params: [
-      { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-      { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
-      { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
-    ]
-  }
-];
-
-// ─────────────────────────────────────────────
 // SIM → TYRE CLASS MAPPING
-// Maps each sim to the relevant TYRE_PRESSURE_BASES keys
 // ─────────────────────────────────────────────
 export const SIM_TYRE_CLASSES = {
   "iRacing": ["GT3", "GT4", "GTE", "LMP / Prototype", "Open Wheel", "Touring / TCR", "Stock Car / NASCAR"],
