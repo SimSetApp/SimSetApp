@@ -81,16 +81,17 @@ export default function Home() {
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" />
+          <img src={HERO_IMG} alt="Sim racing car on track" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
           <div className="absolute bottom-0 left-0 w-2/3 h-72 bg-primary/5 blur-3xl rounded-full" />
         </div>
         <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-32 sm:pt-28 sm:pb-40">
           <div className="max-w-2xl">
-            <img src={LOGO_URL} alt="SimSetApp" className="h-16 sm:h-20 w-auto drop-shadow-lg mb-5" />
+            <img src={LOGO_URL} alt="SimSetApp — Sim Racing Setup Tool" className="h-16 sm:h-20 w-auto drop-shadow-lg mb-5" />
+            <h1 className="sr-only">SimSetApp — Sim Racing Setup Guide, AI Race Engineer &amp; Community Setups</h1>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
-              The complete sim racing companion. Understand every setup parameter,
-              get AI-powered engineering advice, and save your best setups.
+              The complete sim racing setup companion. Understand every parameter,
+              get AI-powered race engineer advice, and save your best setups for iRacing, ACC, Assetto Corsa, GT7 &amp; more.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="font-heading text-sm tracking-wider shadow-lg shadow-primary/20">
@@ -129,9 +130,9 @@ export default function Home() {
                     <Zap className="w-3 h-3" /> Headline Feature
                   </span>
                 </div>
-                <h2 className="font-heading text-xl sm:text-2xl font-bold">AI Race Engineer</h2>
+                <h2 className="font-heading text-xl sm:text-2xl font-bold">AI Race Engineer for Sim Racing</h2>
                 <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-2xl">
-                  Describe your handling problem and get instant, specific setup changes — understeer, snap oversteer, tyre overheating, braking instability and more. Select your sim and car for targeted advice.
+                  Describe your handling problem and get instant, specific setup changes — understeer, snap oversteer, tyre overheating, braking instability and more. Works with iRacing, ACC, Assetto Corsa, GT7 and more.
                 </p>
               </div>
               <div className="flex items-center gap-2 text-sm text-primary font-semibold group-hover:gap-3 transition-all flex-shrink-0 whitespace-nowrap">
@@ -145,7 +146,7 @@ export default function Home() {
         <div>
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
-            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Supported Sims</h2>
+            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Supported Sim Racing Games</h2>
             <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -177,7 +178,7 @@ export default function Home() {
         <div>
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
-            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Everything You Need</h2>
+            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Sim Racing Setup Tools</h2>
             <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
