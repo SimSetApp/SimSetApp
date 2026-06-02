@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Star, Download, Upload, Filter, TrendingUp, Clock } from "lucide-react";
+import { Star, Download, Filter, TrendingUp, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -185,19 +184,11 @@ export default function CommunityLibrary() {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-foreground">Community Setup Library</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Browse and share setups from the sim racing community
-            </p>
-          </div>
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link to="/community-library/upload">
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Setup
-            </Link>
-          </Button>
+        <div className="mb-6">
+          <h1 className="font-heading text-2xl font-bold text-foreground">Community Setup Library</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Browse and share setups from the sim racing community
+          </p>
         </div>
 
         {/* Filters */}

@@ -15,7 +15,6 @@ import SetupMethodology from './pages/SetupMethodology';
 import RaceEngineer from './pages/RaceEngineer';
 import ShareSetup from './pages/ShareSetup';
 import CommunityLibrary from './pages/CommunityLibrary';
-import UploadCommunitySetup from './pages/UploadCommunitySetup';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,7 +51,6 @@ const AuthenticatedApp = () => {
       <Route path="/race-engineer" element={<RaceEngineer />} />
       <Route path="/share" element={<ShareSetup />} />
       <Route path="/community-library" element={<CommunityLibrary />} />
-      <Route path="/upload-setup" element={<UploadCommunitySetup />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
