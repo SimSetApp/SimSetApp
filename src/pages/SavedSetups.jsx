@@ -71,8 +71,11 @@ export default function SavedSetups() {
     },
   });
 
+  const [sharingId, setSharingId] = useState(null);
+
   const shareToCommunityMutation = useMutation({
     mutationFn: async (setup) => {
+      setSharingId(setup.id);
       const user = await base44.auth.me();
       return await base44.entities.CommunitySetup.create({
         title: setup.title,
@@ -92,9 +95,11 @@ export default function SavedSetups() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
       toast.success("Setup shared to community!");
+      setSharingId(null);
     },
     onError: () => {
       toast.error("Failed to share to community");
+      setSharingId(null);
     }
   });
 
@@ -273,9 +278,9 @@ export default function SavedSetups() {
                         className="h-8 w-8" 
                         title="Share to community" 
                         onClick={(e) => { e.stopPropagation(); shareToCommunityMutation.mutate(setup); }}
-                        disabled={shareToCommunityMutation.isPending}
+                        disabled={sharingId === setup.id}
                       >
-                        {shareToCommunityMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+                        {sharingId === setup.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>
                         {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Link className="w-3.5 h-3.5" />}
