@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Star, Download, TrendingUp, Clock } from "lucide-react";
+import { Star, Download, TrendingUp, Clock, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/AuthContext";
 
 const COMMUNITY_SETUPS_LIMIT = 50;
 
@@ -175,6 +175,7 @@ export default function CommunityLibrary() {
   const [searchQuery, setSearchQuery] = useState("");
   const [simFilter, setSimFilter] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
+  const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
 
   const { data: setups, isLoading } = useQuery({
     queryKey: ["communitySetups"],
@@ -205,6 +206,29 @@ export default function CommunityLibrary() {
   });
 
   const sims = ["all", ...new Set((setups || []).map(s => s.sim_title))];
+
+  if (!isLoadingAuth && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="max-w-md mx-auto px-4 py-24 text-center">
+          <div className="rounded-2xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+              <Globe className="w-7 h-7 text-primary" />
+            </div>
+            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Sign in to access the Community</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Browse, save, and rate community setups — all require a free account.
+            </p>
+            <Button onClick={navigateToLogin} className="w-full font-heading text-xs tracking-wider">
+              Sign In / Register
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

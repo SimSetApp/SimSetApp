@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/AuthContext";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
 
@@ -18,6 +19,7 @@ const navItems = [
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAuthenticated, logout, navigateToLogin } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
@@ -44,6 +46,25 @@ export default function Navbar() {
               </Link>
             );
           })}
+        </div>
+
+        {/* Auth button - desktop */}
+        <div className="hidden md:flex items-center ml-2 border-l border-border pl-2">
+          {isAuthenticated ? (
+            <button
+              onClick={() => logout()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={navigateToLogin}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+            >
+              <LogIn className="w-3.5 h-3.5" /> Sign In
+            </button>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -77,6 +98,23 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <div className="pt-2 border-t border-border mt-1">
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { logout(); setMobileOpen(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                >
+                  <LogOut className="w-4 h-4" /> Sign Out
+                </button>
+              ) : (
+                <button
+                  onClick={() => { navigateToLogin(); setMobileOpen(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground"
+                >
+                  <LogIn className="w-4 h-4" /> Sign In / Register
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -15,6 +15,10 @@ import SetupMethodology from './pages/SetupMethodology';
 import RaceEngineer from './pages/RaceEngineer';
 import ShareSetup from './pages/ShareSetup';
 import CommunityLibrary from './pages/CommunityLibrary';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -42,6 +46,10 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Home />} />
       <Route path="/setup-guide" element={<SetupGuide />} />
       <Route path="/saved-setups" element={<SavedSetups />} />
