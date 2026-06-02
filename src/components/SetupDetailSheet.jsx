@@ -6,9 +6,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { SIM_SETUP_PARAMS } from "../lib/simData";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Loader2, SlidersHorizontal, Clock, Car, MapPin } from "lucide-react";
+import { Plus, Loader2, SlidersHorizontal, Clock, Car, MapPin, GitBranch } from "lucide-react";
 import SessionForm from "./SessionForm";
 import SessionCard from "./SessionCard";
+import SetupVersionHistory from "./SetupVersionHistory";
 
 function SetupParamsReadOnly({ sim, parameters }) {
   const groups = sim && SIM_SETUP_PARAMS[sim];
@@ -101,6 +102,10 @@ export default function SetupDetailSheet({ setup, open, onOpenChange }) {
                   <SlidersHorizontal className="w-3.5 h-3.5 mr-1.5" />
                   Setup
                 </TabsTrigger>
+                <TabsTrigger value="versions" className="flex-1 text-xs font-heading tracking-wider">
+                  <GitBranch className="w-3.5 h-3.5 mr-1.5" />
+                  History
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="sessions">
@@ -149,6 +154,10 @@ export default function SetupDetailSheet({ setup, open, onOpenChange }) {
                     <p className="text-sm leading-relaxed">{setup.notes}</p>
                   </div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="versions">
+                <SetupVersionHistory setup={setup} />
               </TabsContent>
             </Tabs>
           )}

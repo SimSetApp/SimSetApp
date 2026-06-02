@@ -1,0 +1,32 @@
+{
+  "name": "SetupVersion",
+  "type": "object",
+  "properties": {
+    "setup_id": {
+      "type": "string",
+      "title": "Setup ID"
+    },
+    "version_name": {
+      "type": "string",
+      "title": "Version Name"
+    },
+    "parameters": {
+      "type": "object",
+      "title": "Parameters Snapshot",
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "string",
+      "title": "Version Notes"
+    },
+    "version_number": {
+      "type": "number",
+      "title": "Version Number"
+    }
+  },
+  "required": [
+    "setup_id",
+    "version_name",
+    "parameters"
+  ]
+}
