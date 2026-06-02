@@ -71,5 +71,12 @@
     "car",
     "author_id",
     "author_name"
-  ]
+  ],
+  "access_control": {
+    "list": "public",
+    "get": "public",
+    "create": "authenticated",
+    "update": "authenticated",
+    "delete": "authenticated"
+  }
 }

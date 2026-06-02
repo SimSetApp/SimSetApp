@@ -85,14 +85,14 @@ export default function SavedSetups() {
 
   const shareToCommunityMutation = useMutation({
     mutationFn: async (setup) => {
-      setSharingId(setup.id);
       const user = await base44.auth.me();
+      if (!user) throw new Error("Not authenticated");
       return await base44.entities.CommunitySetup.create({
         title: setup.title,
         sim_title: setup.sim_title,
         car: setup.car,
-        track: setup.track || "N/A",
-        notes: setup.notes || "Shared from My Garage",
+        track: setup.track || "",
+        notes: setup.notes || "",
         parameters: setup.parameters || {},
         author_id: user.id,
         author_name: user.full_name || user.email?.split('@')[0] || "Anonymous",
@@ -107,21 +107,20 @@ export default function SavedSetups() {
       toast.success("Setup shared to community!");
       setSharingId(null);
     },
-    onError: () => {
-      toast.error("Failed to share to community");
+    onError: (err) => {
+      toast.error("Failed to share: " + err.message);
       setSharingId(null);
     }
   });
 
   const removeFromCommunityMutation = useMutation({
     mutationFn: async (setup) => {
-      const user = await base44.auth.me();
-      const communitySetups = await base44.entities.CommunitySetup.list();
-      const matchingSetup = communitySetups.find(
+      // Use already-fetched communitySetups from query cache
+      const allCommunity = await base44.entities.CommunitySetup.filter({ author_id: userId });
+      const matchingSetup = allCommunity.find(
         cs => cs.title === setup.title && 
               cs.car === setup.car && 
-              cs.sim_title === setup.sim_title && 
-              cs.author_id === user.id
+              cs.sim_title === setup.sim_title
       );
       if (!matchingSetup) throw new Error("Setup not found in community");
       return await base44.entities.CommunitySetup.delete(matchingSetup.id);
@@ -130,8 +129,8 @@ export default function SavedSetups() {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
       toast.success("Setup removed from community");
     },
-    onError: () => {
-      toast.error("Failed to remove from community");
+    onError: (err) => {
+      toast.error("Failed to remove from community: " + err.message);
     }
   });
 
@@ -327,10 +326,10 @@ export default function SavedSetups() {
                           size="icon" 
                           className="h-8 w-8" 
                           title="Share to community" 
-                          onClick={(e) => { e.stopPropagation(); shareToCommunityMutation.mutate(setup); }}
-                          disabled={sharingId === setup.id}
+                          onClick={(e) => { e.stopPropagation(); setSharingId(setup.id); shareToCommunityMutation.mutate(setup); }}
+                          disabled={sharingId === setup.id || shareToCommunityMutation.isPending}
                         >
-                          {sharingId === setup.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+                          {sharingId === setup.id && shareToCommunityMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
                         </Button>
                       )}
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>

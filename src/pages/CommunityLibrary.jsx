@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Download, Filter, TrendingUp, Clock } from "lucide-react";
+import { Star, Download, TrendingUp, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -44,54 +44,67 @@ function StarRating({ rating, onRate, interactive = false }) {
 
 function CommunitySetupCard({ setup }) {
   const queryClient = useQueryClient();
+  const [showRating, setShowRating] = useState(false);
+  const [pendingRating, setPendingRating] = useState(0);
+  const [saved, setSaved] = useState(false);
 
-  const downloadMutation = useMutation({
+  const saveMutation = useMutation({
     mutationFn: async () => {
+      await base44.entities.SavedSetup.create({
+        title: setup.title,
+        sim_title: setup.sim_title,
+        car: setup.car,
+        track: setup.track || "",
+        parameters: setup.parameters || {},
+        notes: `Imported from Community Library (by ${setup.author_name || "Community"})`
+      });
       await base44.entities.CommunitySetup.update(setup.id, {
-        download_count: (setup.download_count || 0) + 1
+        download_count: (setup.download_count || 0) + 1,
+        popularity_score: (setup.popularity_score || 0) + 1
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+      setSaved(true);
       toast.success("Setup saved to your garage!");
-    }
+    },
+    onError: () => toast.error("Failed to save setup")
   });
 
-  const handleSave = () => {
-    const savedSetup = {
-      title: setup.title,
-      sim_title: setup.sim_title,
-      car: setup.car,
-      track: setup.track || "N/A",
-      parameters: setup.parameters || {},
-      notes: `Imported from Community Library (by ${setup.author_name || "Community"})`
-    };
-    base44.entities.SavedSetup.create(savedSetup);
-    downloadMutation.mutate();
-  };
+  const rateMutation = useMutation({
+    mutationFn: async (stars) => {
+      await base44.entities.CommunitySetup.update(setup.id, {
+        rating_sum: (setup.rating_sum || 0) + stars,
+        rating_count: (setup.rating_count || 0) + 1,
+        popularity_score: (setup.popularity_score || 0) + stars
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+      setShowRating(false);
+      toast.success("Rating submitted!");
+    },
+    onError: () => toast.error("Failed to submit rating")
+  });
 
   const avgRating = setup.rating_count > 0 ? (setup.rating_sum || 0) / setup.rating_count : 0;
 
   return (
-    <Card className="bg-card border-border hover:border-primary/40 transition-all duration-200 group">
+    <Card className="bg-card border-border hover:border-primary/40 transition-all duration-200">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="font-heading text-sm font-semibold truncate">{setup.title}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              by {setup.author_name || "Anonymous"}
-            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">by {setup.author_name || "Anonymous"}</p>
           </div>
-          <Badge variant="outline" className="text-xs">
-            {setup.sim_title}
-          </Badge>
+          <Badge variant="outline" className="text-xs shrink-0">{setup.sim_title}</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2">
           <StarRating rating={Math.round(avgRating)} />
           <span className="text-xs text-muted-foreground">
-            ({setup.rating_count || 0})
+            {setup.rating_count > 0 ? `${avgRating.toFixed(1)} (${setup.rating_count})` : "No ratings"}
           </span>
         </div>
         
@@ -106,33 +119,48 @@ function CommunitySetupCard({ setup }) {
               <span className="truncate">{setup.track}</span>
             </div>
           )}
+          {setup.notes && (
+            <p className="text-muted-foreground italic line-clamp-2">{setup.notes}</p>
+          )}
         </div>
 
-        <div className="flex items-center gap-3 pt-2 border-t border-border">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Download className="w-3 h-3" />
-            {setup.download_count || 0}
+        {showRating && (
+          <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+            <p className="text-xs font-medium">Select your rating:</p>
+            <StarRating rating={pendingRating} onRate={setPendingRating} interactive />
+            <div className="flex gap-2 pt-1">
+              <Button size="sm" variant="ghost" className="text-xs h-7 flex-1" onClick={() => setShowRating(false)}>Cancel</Button>
+              <Button
+                size="sm"
+                className="text-xs h-7 flex-1"
+                disabled={!pendingRating || rateMutation.isPending}
+                onClick={() => rateMutation.mutate(pendingRating)}
+              >Submit</Button>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <TrendingUp className="w-3 h-3" />
-            Score: {Math.round(setup.popularity_score || 0)}
-          </div>
+        )}
+
+        <div className="flex items-center gap-3 pt-1 border-t border-border text-xs text-muted-foreground">
+          <span className="flex items-center gap-1"><Download className="w-3 h-3" />{setup.download_count || 0}</span>
+          <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" />Score: {Math.round(setup.popularity_score || 0)}</span>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2">
           <Button
             size="sm"
             variant="outline"
             className="flex-1 text-xs"
-            onClick={handleSave}
+            onClick={() => saveMutation.mutate()}
+            disabled={saveMutation.isPending || saved}
           >
             <Download className="w-3 h-3 mr-1" />
-            Save
+            {saved ? "Saved!" : "Save to Garage"}
           </Button>
           <Button
             size="sm"
-            className="flex-1 text-xs bg-primary/10 text-primary hover:bg-primary/20"
-            onClick={() => {}}
+            variant="ghost"
+            className="flex-1 text-xs text-primary hover:bg-primary/10"
+            onClick={() => { setShowRating(!showRating); setPendingRating(0); }}
           >
             <Star className="w-3 h-3 mr-1" />
             Rate

@@ -1093,8 +1093,9 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 },
-        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Dry 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad Compound (1=Aggressive 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
@@ -1167,7 +1168,8 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "kg", min: 1, max: 120, step: 1, default: 60 },
-        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 50, step: 1, default: 0 }
+        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 50, step: 1, default: 0 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
@@ -1239,6 +1241,7 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 },
         { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
@@ -1314,8 +1317,9 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 },
-        { key: "brake_pad", label: "Brake Pad Compound", unit: "", min: 1, max: 4, step: 1, default: 2 }
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Dry 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 },
+        { key: "brake_pad", label: "Brake Pad Compound (1=Aggressive 4=Endurance)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
@@ -1389,7 +1393,8 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 60 },
-        { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 }
+        { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
+        { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
       ]
     }
   ],
@@ -1450,7 +1455,8 @@ export const SIM_SETUP_PARAMS = {
       group: "Strategy & Weight",
       params: [
         { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 100, step: 1, default: 50 },
-        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 100, step: 5, default: 0 }
+        { key: "ballast", label: "Ballast", unit: "kg", min: 0, max: 100, step: 5, default: 0 },
+        { key: "tyre_compound", label: "Tyre Compound (1=SH 2=S 3=M 4=H 5=RH 6=IM 7=WW)", unit: "", min: 1, max: 7, step: 1, default: 3 }
       ]
     },
     {
@@ -1458,6 +1464,13 @@ export const SIM_SETUP_PARAMS = {
       params: [
         { key: "downforce_front", label: "Downforce Front", unit: "", min: 400, max: 900, step: 10, default: 600 },
         { key: "downforce_rear", label: "Downforce Rear", unit: "", min: 400, max: 900, step: 10, default: 650 }
+      ]
+    },
+    {
+      group: "Transmission & Electronics",
+      params: [
+        { key: "final_gear_ratio", label: "Final Gear Ratio", unit: "", min: 2.5, max: 5.5, step: 0.01, default: 3.5 },
+        { key: "power_limiter", label: "Power Limiter", unit: "%", min: 50, max: 100, step: 1, default: 100 }
       ]
     }
   ]
@@ -1536,7 +1549,8 @@ SIM_SETUP_PARAMS["Automobilista 2"] = [
     group: "Strategy & Weight",
     params: [
       { key: "fuel_load", label: "Fuel Load", unit: "L", min: 1, max: 120, step: 1, default: 60 },
-      { key: "tyre_blankets", label: "Tyre Blankets", unit: "", min: 0, max: 1, step: 1, default: 1 }
+      { key: "tyre_blankets", label: "Tyre Blankets (0=Off 1=On)", unit: "", min: 0, max: 1, step: 1, default: 1 },
+      { key: "tyre_compound", label: "Tyre Compound (1=Soft 2=Med 3=Hard 4=Wet)", unit: "", min: 1, max: 4, step: 1, default: 2 }
     ]
   }
 ];
@@ -1620,7 +1634,7 @@ export const TRACK_TIPS = {
   "Le Mans": {
     character: "Ultra-high speed, long straights",
     wing: "Minimum (Hypercars) / Medium (GT)",
-    tips: "Hypercars need DRS/low drag configurations. The Porsche Curves require mechanical grip. Ford Chicanes need a calm, stable car under braking. Mulsanne kink at 330+ km/h demands absolute high-speed rear stability."
+    tips: "Hypercars need minimum drag configurations on the Mulsanne. The Porsche Curves require mechanical grip. Ford Chicanes need a calm, stable car under braking. Mulsanne kink at 330+ km/h demands absolute high-speed rear stability."
   },
   "Circuit de Catalunya": {
     character: "Mixed speed, tyre-punishing",
