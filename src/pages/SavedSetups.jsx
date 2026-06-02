@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
+import usePullToRefresh from "../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../components/PullToRefreshIndicator";
 import SaveSetupDialog from "../components/SaveSetupDialog";
 import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
@@ -177,6 +180,12 @@ export default function SavedSetups() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
+  }, [queryClient]);
+
+  const { containerRef, pullY, refreshing } = usePullToRefresh(handleRefresh);
+
   const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
   const openDetail = (setup) => setDetailSetup(setup);
   const openCreate = () => { setEditSetup(null); setDialogOpen(true); };
@@ -208,7 +217,9 @@ export default function SavedSetups() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <MobileHeader title="My Garage" />
+      <div ref={containerRef} className="max-w-4xl mx-auto px-4 py-8 pb-24">
+        <PullToRefreshIndicator pullY={pullY} refreshing={refreshing} />
         <div className="mb-8">
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">My Garage</h1>
           <p className="text-sm text-muted-foreground mt-1">Setups, tyre pressures, and fuel strategy — all in one place.</p>
@@ -401,7 +412,6 @@ export default function SavedSetups() {
           </TabsContent>
         </Tabs>
       </div>
-
       <SetupDetailSheet
         setup={detailSetup}
         open={!!detailSetup}

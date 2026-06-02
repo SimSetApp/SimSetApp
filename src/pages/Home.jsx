@@ -110,7 +110,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 pb-24 space-y-20">
+      <div className="max-w-6xl mx-auto px-4 pb-32 md:pb-24 space-y-20">
 
         {/* AI Race Engineer Highlight */}
         <div className="-mt-16 relative z-10">

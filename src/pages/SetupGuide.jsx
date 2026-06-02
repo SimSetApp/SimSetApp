@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
 import CarSelector from "../components/CarSelector";
 import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
@@ -18,9 +19,10 @@ export default function SetupGuide() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <MobileHeader title="Setup Guide" />
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
         <div className="mb-8">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors">
+          <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">

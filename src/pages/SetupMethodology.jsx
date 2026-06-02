@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
 import { CheckCircle, Circle, ChevronDown, ChevronUp, ListOrdered, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -269,10 +270,11 @@ export default function SetupMethodology() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <MobileHeader title="Setup Methodology" />
+      <div className="max-w-2xl mx-auto px-4 py-8 pb-24">
         {/* Header */}
         <div className="mb-8">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <div className="flex items-center gap-2 mb-3">

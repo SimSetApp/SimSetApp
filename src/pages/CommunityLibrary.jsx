@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Star, Download, TrendingUp, Clock, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
+import usePullToRefresh from "../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../components/PullToRefreshIndicator";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -207,6 +210,12 @@ export default function CommunityLibrary() {
 
   const sims = ["all", ...new Set((setups || []).map(s => s.sim_title))];
 
+  const queryClient = useQueryClient();
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+  }, [queryClient]);
+  const { containerRef, pullY, refreshing } = usePullToRefresh(handleRefresh);
+
   if (!isLoadingAuth && !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
@@ -233,8 +242,9 @@ export default function CommunityLibrary() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <MobileHeader title="Community Library" />
+      <div ref={containerRef} className="max-w-6xl mx-auto px-4 py-8 pb-24">
+        <PullToRefreshIndicator pullY={pullY} refreshing={refreshing} />
         {/* Header */}
         <div className="mb-6">
           <h1 className="font-heading text-2xl font-bold text-foreground">Community Setup Library</h1>

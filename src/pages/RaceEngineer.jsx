@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
 import { base44 } from "@/api/base44Client";
 import { SIM_TITLES, CAR_LISTS } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
@@ -132,7 +133,8 @@ Do not be overly verbose. Quality over quantity.`;
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 gap-4">
+      <MobileHeader title="AI Race Engineer" />
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 pb-24 gap-4">
 
         {/* Header */}
         <div className="flex items-center justify-between">

@@ -128,8 +128,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const navigateToLogin = () => {
-    // Use the SDK's redirectToLogin method
     base44.auth.redirectToLogin(window.location.href);
+  };
+
+  const deleteAccount = async () => {
+    if (!user) return;
+    await base44.entities.User.delete(user.id);
+    base44.auth.logout("/");
   };
 
   return (
@@ -143,6 +148,7 @@ export const AuthProvider = ({ children }) => {
       authChecked,
       logout,
       navigateToLogin,
+      deleteAccount,
       checkUserAuth,
       checkAppState
     }}>

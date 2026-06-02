@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TUNING_ARTICLES } from "../lib/tuningGuideData";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
 import { BookOpen, Clock, ChevronRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -68,7 +69,8 @@ export default function TuningGuide() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="max-w-3xl mx-auto px-4 py-8">
+        <MobileHeader title={selected.title} />
+        <div className="max-w-3xl mx-auto px-4 py-8 pb-24">
           <ArticleView article={selected} onBack={() => setSelected(null)} />
         </div>
       </div>
@@ -78,10 +80,11 @@ export default function TuningGuide() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <MobileHeader title="Tuning Guide" />
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
         {/* Header */}
         <div className="mb-8">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <div className="flex items-center gap-2 mb-3">

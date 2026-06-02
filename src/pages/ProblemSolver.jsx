@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { PROBLEMS, PROBLEM_CATEGORIES } from "../lib/problemSolverData";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileHeader from "../components/MobileHeader";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Filter, Search, Wrench, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -123,9 +124,10 @@ export default function ProblemSolver() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <MobileHeader title="Problem Solver" />
+      <div className="max-w-3xl mx-auto px-4 py-8 pb-24">
         {/* Header */}
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <div className="mb-8">
