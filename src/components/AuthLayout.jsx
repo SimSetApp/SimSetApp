@@ -9,7 +9,8 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         <div className="mb-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors touch-manipulation active:opacity-60 py-2 pr-4"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
           >
             <ArrowLeft className="w-4 h-4" />
             Back to home
