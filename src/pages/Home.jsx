@@ -87,7 +87,7 @@ export default function Home() {
         </div>
         <div className="relative max-w-6xl mx-auto px-4 pt-20 pb-32 sm:pt-28 sm:pb-40">
           <div className="max-w-2xl">
-            <img src={LOGO_URL} alt="SimSetApp — Sim Racing Setup Tool" className="h-16 sm:h-20 w-auto drop-shadow-lg mb-5" />
+            <img src={LOGO_URL} alt="SimSetApp — Sim Racing Setup Tool" className="h-24 sm:h-32 w-auto mb-6" style={{ filter: "drop-shadow(0 0 18px rgba(255,255,255,0.35)) drop-shadow(0 0 40px rgba(255,255,255,0.15))" }} />
             <h1 className="sr-only">SimSetApp — Sim Racing Setup Guide, AI Race Engineer &amp; Community Setups</h1>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
               The complete sim racing setup companion. Understand every parameter,
