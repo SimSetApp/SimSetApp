@@ -1,0 +1,24 @@
+{
+  "name": "Suggestion",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "title": "Suggestion"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email (optional)"
+    }
+  },
+  "required": [
+    "message"
+  ],
+  "access_control": {
+    "list": "admin",
+    "get": "admin",
+    "create": "public",
+    "update": "admin",
+    "delete": "admin"
+  }
+}

@@ -18,6 +18,8 @@ import SetupMethodology from './pages/SetupMethodology';
 import RaceEngineer from './pages/RaceEngineer';
 import ShareSetup from './pages/ShareSetup';
 import CommunityLibrary from './pages/CommunityLibrary';
+import Support from './pages/Support';
+import ThankYou from './pages/ThankYou';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -73,6 +75,8 @@ const AuthenticatedApp = () => {
           <Route path="/race-engineer" element={<RaceEngineer />} />
           <Route path="/share" element={<ShareSetup />} />
           <Route path="/community-library" element={<CommunityLibrary />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/thank-you" element={<ThankYou />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </motion.div>

@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, FolderOpen, Bot, BookOpen } from "lucide-react";
+import { Home, FolderOpen, Bot, BookOpen, Heart } from "lucide-react";
 
 const TABS = [
   { path: "/", label: "Home", icon: Home },
   { path: "/setup-guide", label: "Setup Guide", icon: BookOpen },
   { path: "/race-engineer", label: "Engineer", icon: Bot },
   { path: "/saved-setups", label: "My Garage", icon: FolderOpen },
+  { path: "/support", label: "Support", icon: Heart },
 ];
 
 export default function BottomTabBar() {
