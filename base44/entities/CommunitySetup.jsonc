@@ -1,0 +1,75 @@
+{
+  "name": "CommunitySetup",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Setup Title"
+    },
+    "sim_title": {
+      "type": "string",
+      "title": "Sim Title",
+      "enum": [
+        "iRacing",
+        "Assetto Corsa Competizione",
+        "Assetto Corsa",
+        "Assetto Corsa Evo",
+        "Le Mans Ultimate",
+        "Automobilista 2",
+        "Gran Turismo 7"
+      ]
+    },
+    "car": {
+      "type": "string",
+      "title": "Car"
+    },
+    "track": {
+      "type": "string",
+      "title": "Track"
+    },
+    "parameters": {
+      "type": "object",
+      "title": "Setup Parameters",
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "string",
+      "title": "Setup Notes"
+    },
+    "author_id": {
+      "type": "string",
+      "title": "Author ID"
+    },
+    "author_name": {
+      "type": "string",
+      "title": "Author Name"
+    },
+    "rating_sum": {
+      "type": "number",
+      "title": "Rating Sum",
+      "default": 0
+    },
+    "rating_count": {
+      "type": "number",
+      "title": "Rating Count",
+      "default": 0
+    },
+    "download_count": {
+      "type": "number",
+      "title": "Download Count",
+      "default": 0
+    },
+    "popularity_score": {
+      "type": "number",
+      "title": "Popularity Score",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "sim_title",
+    "car",
+    "author_id",
+    "author_name"
+  ]
+}

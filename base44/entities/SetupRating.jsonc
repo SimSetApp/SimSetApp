@@ -1,0 +1,23 @@
+{
+  "name": "SetupRating",
+  "type": "object",
+  "properties": {
+    "setup_id": {
+      "type": "string",
+      "title": "Setup ID"
+    },
+    "user_id": {
+      "type": "string",
+      "title": "User ID"
+    },
+    "rating": {
+      "type": "number",
+      "title": "Rating (1-5)"
+    }
+  },
+  "required": [
+    "setup_id",
+    "user_id",
+    "rating"
+  ]
+}

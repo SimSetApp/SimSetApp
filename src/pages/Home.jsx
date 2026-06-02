@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -62,6 +62,14 @@ const FEATURES = [
     accent: "text-primary",
     bg: "bg-primary/10",
     href: "/tuning-guide",
+  },
+  {
+    icon: Users,
+    title: "Community Library",
+    desc: "Browse and share setups from the community. Rate, download, and improve your lap times.",
+    accent: "text-chart-1",
+    bg: "bg-chart-1/10",
+    href: "/community-library",
   },
 ];
 
