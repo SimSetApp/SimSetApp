@@ -64,9 +64,11 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
   const handleSimChange = (v) => {
     setSim(v);
     setCar("");
+    setTrack("");
     setParameters({});
     setActiveClass("");
     setCustomCar(false);
+    setCustomTrack(false);
   };
 
   const handleCarChange = (carName) => {

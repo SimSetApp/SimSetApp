@@ -13,7 +13,7 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History } from "lucide-react";
 import ReplayUploader from "../components/ReplayUploader";
 
 import { Input } from "@/components/ui/input";
@@ -363,6 +363,15 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-primary"
+                          title="View sessions & history"
+                          onClick={(e) => { e.stopPropagation(); openDetail(setup); }}
+                        >
+                          <History className="w-3.5 h-3.5" />
+                        </Button>
                       {sharedSetupIds.has(`${setup.title}-${setup.car}-${setup.sim_title}`) ? (
                         <Button 
                           variant="ghost" 
