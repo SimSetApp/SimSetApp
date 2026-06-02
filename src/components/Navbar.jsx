@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -16,7 +16,6 @@ const navItems = [
   { path: "/race-engineer", label: "Race Engineer" },
   { path: "/saved-setups", label: "My Garage" },
   { path: "/community-library", label: "Community" },
-  { path: "/support", label: "❤ Support" },
 ];
 
 export default function Navbar() {
@@ -60,6 +59,18 @@ export default function Navbar() {
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
+
+        {/* Support link - desktop */}
+        <Link
+          to="/support"
+          className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ml-1 ${
+            location.pathname === "/support"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          }`}
+        >
+          <Heart className="w-3.5 h-3.5" /> Support
+        </Link>
 
         {/* Auth button - desktop */}
         <div className="hidden md:flex items-center gap-1 ml-2 border-l border-border pl-2">
