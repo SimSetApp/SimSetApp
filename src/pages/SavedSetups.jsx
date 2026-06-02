@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SaveSetupDialog from "../components/SaveSetupDialog";
@@ -45,6 +46,7 @@ function SetupParamsSummary({ sim, parameters }) {
 
 export default function SavedSetups() {
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editSetup, setEditSetup] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -178,6 +180,30 @@ export default function SavedSetups() {
   const openEdit = (setup) => { setEditSetup(setup); setDialogOpen(true); };
   const openDetail = (setup) => setDetailSetup(setup);
   const openCreate = () => { setEditSetup(null); setDialogOpen(true); };
+
+  // Show login gate for unauthenticated users
+  if (!isLoadingAuth && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="max-w-md mx-auto px-4 py-24 text-center">
+          <div className="rounded-2xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+              <FolderOpen className="w-7 h-7 text-primary" />
+            </div>
+            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Sign in to access My Garage</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Save setups, share to the community, and track your session history — all require a free account.
+            </p>
+            <Button onClick={navigateToLogin} className="w-full font-heading text-xs tracking-wider">
+              Sign In / Register
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
