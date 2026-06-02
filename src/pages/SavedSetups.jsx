@@ -386,9 +386,8 @@ export default function SavedSetups() {
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>
                         {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Link className="w-3.5 h-3.5" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive group" onClick={(e) => { e.stopPropagation(); setDeleteId(setup.id); }}>
-                        <Trash2 className="w-3.5 h-3.5 group-hover:hidden" />
-                        <X className="w-3.5 h-3.5 hidden group-hover:block" />
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={(e) => { e.stopPropagation(); setDeleteId(setup.id); }}>
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                     </div>
