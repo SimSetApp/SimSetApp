@@ -66,16 +66,19 @@ export default function SavedSetups() {
   const { data: setups = [], isLoading } = useQuery({
     queryKey: ["saved-setups"],
     queryFn: () => base44.entities.SavedSetup.list("-created_date"),
+    enabled: !!isAuthenticated,
   });
 
   const { data: customVehicles = [] } = useQuery({
     queryKey: ["custom-vehicles"],
     queryFn: () => base44.entities.CustomVehicle.list(),
+    enabled: !!isAuthenticated,
   });
 
   const { data: communitySetups = [] } = useQuery({
     queryKey: ["communitySetups"],
     queryFn: () => base44.entities.CommunitySetup.list(),
+    enabled: !!isAuthenticated,
   });
 
   const deleteMutation = useMutation({
