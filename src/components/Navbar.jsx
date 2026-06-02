@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2 } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
+import { useTheme } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
@@ -21,6 +22,7 @@ export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, logout, navigateToLogin, deleteAccount } = useAuth();
+  const { isDark, toggle } = useTheme();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
@@ -48,6 +50,15 @@ export default function Navbar() {
             );
           })}
         </div>
+
+        {/* Theme toggle - desktop */}
+        <button
+          onClick={toggle}
+          className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
 
         {/* Auth button - desktop */}
         <div className="hidden md:flex items-center gap-1 ml-2 border-l border-border pl-2">
@@ -125,6 +136,15 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <div className="pt-2 border-t border-border mt-1">
+              <button
+                onClick={toggle}
+                className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              >
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {isDark ? 'Light Mode' : 'Dark Mode'}
+              </button>
+            </div>
             <div className="pt-2 border-t border-border mt-1 space-y-1">
               {isAuthenticated ? (
                 <>
