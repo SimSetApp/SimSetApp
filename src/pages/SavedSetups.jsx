@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -52,6 +52,11 @@ export default function SavedSetups() {
   const [filterSim, setFilterSim] = useState("");
   const [filterCar, setFilterCar] = useState("");
   const [filterTrack, setFilterTrack] = useState("");
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(user => setUserId(user?.id || null));
+  }, []);
 
   const { data: setups = [], isLoading } = useQuery({
     queryKey: ["saved-setups"],
@@ -61,6 +66,11 @@ export default function SavedSetups() {
   const { data: customVehicles = [] } = useQuery({
     queryKey: ["custom-vehicles"],
     queryFn: () => base44.entities.CustomVehicle.list(),
+  });
+
+  const { data: communitySetups = [] } = useQuery({
+    queryKey: ["communitySetups"],
+    queryFn: () => base44.entities.CommunitySetup.list(),
   });
 
   const deleteMutation = useMutation({
@@ -103,6 +113,28 @@ export default function SavedSetups() {
     }
   });
 
+  const removeFromCommunityMutation = useMutation({
+    mutationFn: async (setup) => {
+      const user = await base44.auth.me();
+      const communitySetups = await base44.entities.CommunitySetup.list();
+      const matchingSetup = communitySetups.find(
+        cs => cs.title === setup.title && 
+              cs.car === setup.car && 
+              cs.sim_title === setup.sim_title && 
+              cs.author_id === user.id
+      );
+      if (!matchingSetup) throw new Error("Setup not found in community");
+      return await base44.entities.CommunitySetup.delete(matchingSetup.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+      toast.success("Setup removed from community");
+    },
+    onError: () => {
+      toast.error("Failed to remove from community");
+    }
+  });
+
   // Full lists from simData + any custom cars saved in setups for this sim
   const allSims = SIM_TITLES;
   const savedCarsForSim = filterSim
@@ -125,6 +157,12 @@ export default function SavedSetups() {
     (!filterSim || s.sim_title === filterSim) &&
     (!filterCar || s.car === filterCar) &&
     (!filterTrack || s.track === filterTrack)
+  );
+
+  const sharedSetupIds = new Set(
+    communitySetups
+      .filter(cs => cs.author_id === userId)
+      .map(cs => `${cs.title}-${cs.car}-${cs.sim_title}`)
   );
 
   const [copiedId, setCopiedId] = useState(null);
@@ -272,16 +310,29 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8" 
-                        title="Share to community" 
-                        onClick={(e) => { e.stopPropagation(); shareToCommunityMutation.mutate(setup); }}
-                        disabled={sharingId === setup.id}
-                      >
-                        {sharingId === setup.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
-                      </Button>
+                      {sharedSetupIds.has(`${setup.title}-${setup.car}-${setup.sim_title}`) ? (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-orange-500 hover:text-orange-500" 
+                          title="Remove from community" 
+                          onClick={(e) => { e.stopPropagation(); removeFromCommunityMutation.mutate(setup); }}
+                          disabled={removeFromCommunityMutation.isPending}
+                        >
+                          {removeFromCommunityMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash className="w-3.5 h-3.5" />}
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8" 
+                          title="Share to community" 
+                          onClick={(e) => { e.stopPropagation(); shareToCommunityMutation.mutate(setup); }}
+                          disabled={sharingId === setup.id}
+                        >
+                          {sharingId === setup.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>
                         {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Link className="w-3.5 h-3.5" />}
                       </Button>
