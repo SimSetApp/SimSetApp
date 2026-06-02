@@ -63,11 +63,8 @@ export default function Navbar() {
         {/* Support link - desktop */}
         <Link
           to="/support"
-          className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ml-1 ${
-            location.pathname === "/support"
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-          }`}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ml-1 bg-primary/10 text-primary border border-primary/30"
+          style={{ boxShadow: "0 0 10px hsl(var(--primary) / 0.35), 0 0 20px hsl(var(--primary) / 0.15)" }}
         >
           <Heart className="w-3.5 h-3.5" /> Support
         </Link>
