@@ -195,6 +195,7 @@ export default function CommunityLibrary() {
   const [searchQuery, setSearchQuery] = useState("");
   const [simFilter, setSimFilter] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
+  const [replayFilter, setReplayFilter] = useState(false);
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
 
   const { data: setups, isLoading } = useQuery({
@@ -207,7 +208,8 @@ export default function CommunityLibrary() {
                          setup.car.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (setup.track && setup.track.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesSim = simFilter === "all" || setup.sim_title === simFilter;
-    return matchesSearch && matchesSim;
+    const matchesReplay = !replayFilter || (setup.replay_urls?.length > 0);
+    return matchesSearch && matchesSim && matchesReplay;
   });
 
   const sortedSetups = [...filteredSetups].sort((a, b) => {
@@ -297,6 +299,16 @@ export default function CommunityLibrary() {
               { value: "recent", label: "Most Recent" },
             ]}
           />
+          <button
+            onClick={() => setReplayFilter(r => !r)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+              replayFilter
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            🎬 Has Replay
+          </button>
         </div>
 
         {/* Stats */}
