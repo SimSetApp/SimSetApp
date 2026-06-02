@@ -2,9 +2,9 @@ import { useState, useCallback } from "react";
 import { Star, Download, TrendingUp, Clock, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import MobileSelect from "@/components/MobileSelect";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MobileHeader from "../components/MobileHeader";
@@ -66,12 +66,17 @@ function CommunitySetupCard({ setup }) {
         popularity_score: (setup.popularity_score || 0) + 1
       });
     },
+    onMutate: async () => {
+      setSaved(true);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
-      setSaved(true);
       toast.success("Setup saved to your garage!");
     },
-    onError: () => toast.error("Failed to save setup")
+    onError: () => {
+      setSaved(false);
+      toast.error("Failed to save setup");
+    }
   });
 
   const rateMutation = useMutation({
@@ -82,12 +87,17 @@ function CommunitySetupCard({ setup }) {
         popularity_score: (setup.popularity_score || 0) + stars
       });
     },
+    onMutate: async () => {
+      setShowRating(false);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
-      setShowRating(false);
       toast.success("Rating submitted!");
     },
-    onError: () => toast.error("Failed to submit rating")
+    onError: () => {
+      setShowRating(true);
+      toast.error("Failed to submit rating");
+    }
   });
 
   const avgRating = setup.rating_count > 0 ? (setup.rating_sum || 0) / setup.rating_count : 0;
@@ -261,49 +271,25 @@ export default function CommunityLibrary() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full sm:w-64"
           />
-          <Select value={simFilter} onValueChange={setSimFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Sims" />
-            </SelectTrigger>
-            <SelectContent>
-              {sims.map(sim => (
-                <SelectItem key={sim} value={sim}>
-                  {sim === "all" ? "All Sims" : sim}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="popular">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Most Popular
-                </div>
-              </SelectItem>
-              <SelectItem value="rating">
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4" />
-                  Top Rated
-                </div>
-              </SelectItem>
-              <SelectItem value="downloads">
-                <div className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Most Downloaded
-                </div>
-              </SelectItem>
-              <SelectItem value="recent">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  Most Recent
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <MobileSelect
+            value={simFilter}
+            onValueChange={setSimFilter}
+            placeholder="All Sims"
+            triggerClassName="w-40"
+            options={sims.map(sim => ({ value: sim, label: sim === "all" ? "All Sims" : sim }))}
+          />
+          <MobileSelect
+            value={sortBy}
+            onValueChange={setSortBy}
+            placeholder="Sort by"
+            triggerClassName="w-40"
+            options={[
+              { value: "popular", label: "Most Popular" },
+              { value: "rating", label: "Top Rated" },
+              { value: "downloads", label: "Most Downloaded" },
+              { value: "recent", label: "Most Recent" },
+            ]}
+          />
         </div>
 
         {/* Stats */}

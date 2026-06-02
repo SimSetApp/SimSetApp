@@ -80,9 +80,19 @@ export default function SavedSetups() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.SavedSetup.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["saved-setups"] });
+      const previous = queryClient.getQueryData(["saved-setups"]);
+      queryClient.setQueryData(["saved-setups"], (old = []) => old.filter(s => s.id !== id));
       setDeleteId(null);
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      queryClient.setQueryData(["saved-setups"], context.previous);
+      toast.error("Failed to delete setup");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
     },
   });
 

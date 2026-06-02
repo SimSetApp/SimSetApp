@@ -1,7 +1,8 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
@@ -22,8 +23,16 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 
+const pageVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.18, ease: "easeOut" } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.12, ease: "easeIn" } },
+};
+
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const location = useLocation();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -48,22 +57,26 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <>
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/setup-guide" element={<SetupGuide />} />
-      <Route path="/saved-setups" element={<SavedSetups />} />
-      <Route path="/problem-solver" element={<ProblemSolver />} />
-      <Route path="/tuning-guide" element={<TuningGuide />} />
-      <Route path="/methodology" element={<SetupMethodology />} />
-      <Route path="/race-engineer" element={<RaceEngineer />} />
-      <Route path="/share" element={<ShareSetup />} />
-      <Route path="/community-library" element={<CommunityLibrary />} />
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div key={location.pathname} variants={pageVariants} initial="initial" animate="animate" exit="exit">
+        <Routes location={location}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/setup-guide" element={<SetupGuide />} />
+          <Route path="/saved-setups" element={<SavedSetups />} />
+          <Route path="/problem-solver" element={<ProblemSolver />} />
+          <Route path="/tuning-guide" element={<TuningGuide />} />
+          <Route path="/methodology" element={<SetupMethodology />} />
+          <Route path="/race-engineer" element={<RaceEngineer />} />
+          <Route path="/share" element={<ShareSetup />} />
+          <Route path="/community-library" element={<CommunityLibrary />} />
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
     <BottomTabBar />
     </>
   );
