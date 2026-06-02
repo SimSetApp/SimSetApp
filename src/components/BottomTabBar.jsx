@@ -23,11 +23,12 @@ export default function BottomTabBar() {
             <Link
               key={path}
               to={path}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition-colors select-none ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-colors duration-100 select-none touch-manipulation active:scale-95 active:opacity-70 ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <Icon className={`w-5 h-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
+              <Icon className={`w-6 h-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
               <span className="text-[10px] font-medium leading-none">{label}</span>
             </Link>
           );
