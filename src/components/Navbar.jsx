@@ -6,12 +6,10 @@ const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3d
 
 const navItems = [
   { path: "/", label: "Home" },
-  { path: "/setup-guide", label: "Setup Guide" },
-  { path: "/problem-solver", label: "Problem Solver" },
-  { path: "/tuning-guide", label: "Tuning Guide" },
-  { path: "/methodology", label: "Methodology" },
-  { path: "/race-engineer", label: "Race Engineer" },
-  { path: "/saved-setups", label: "My Garage" },
+  { path: "/setup-guide", label: "Guide" },
+  { path: "/problem-solver", label: "Fix" },
+  { path: "/race-engineer", label: "AI Engineer" },
+  { path: "/saved-setups", label: "Garage" },
   { path: "/community-library", label: "Community" },
 ];
 
