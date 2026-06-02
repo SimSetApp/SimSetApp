@@ -13,7 +13,8 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video } from "lucide-react";
+import ReplayUploader from "../components/ReplayUploader";
 
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -101,6 +102,7 @@ export default function SavedSetups() {
   });
 
   const [sharingId, setSharingId] = useState(null);
+  const [sharedSetupData, setSharedSetupData] = useState(null); // { id, replay_urls } for replay upload modal
 
   const shareToCommunityMutation = useMutation({
     mutationFn: async (setup) => {
@@ -121,10 +123,11 @@ export default function SavedSetups() {
         popularity_score: 0
       });
     },
-    onSuccess: () => {
+    onSuccess: (newSetup) => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
       toast.success("Setup shared to community!");
       setSharingId(null);
+      setSharedSetupData({ id: newSetup.id, replay_urls: [] });
     },
     onError: (err) => {
       toast.error("Failed to share: " + err.message);
@@ -433,6 +436,32 @@ export default function SavedSetups() {
 
       {dialogOpen && (
         <SaveSetupDialog open={dialogOpen} onOpenChange={setDialogOpen} editSetup={editSetup} />
+      )}
+
+      {/* Replay upload modal after sharing */}
+      {sharedSetupData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
+            <div className="flex items-center gap-2">
+              <Video className="w-5 h-5 text-primary" />
+              <h3 className="font-heading text-sm font-semibold">Add Replay Videos</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Optionally attach replay videos to your shared setup so others can see it in action.
+            </p>
+            <ReplayUploader
+              setupId={sharedSetupData.id}
+              existingUrls={sharedSetupData.replay_urls}
+              onUploaded={(urls) => setSharedSetupData(d => ({ ...d, replay_urls: urls }))}
+            />
+            <button
+              onClick={() => setSharedSetupData(null)}
+              className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors pt-1"
+            >
+              Done — close
+            </button>
+          </div>
+        </div>
       )}
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

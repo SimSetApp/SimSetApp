@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Star, Download, TrendingUp, Clock, Globe } from "lucide-react";
+import ReplayViewer from "../components/ReplayViewer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -157,6 +158,12 @@ function CommunitySetupCard({ setup }) {
           <span className="flex items-center gap-1"><Download className="w-3 h-3" />{setup.download_count || 0}</span>
           <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" />Score: {Math.round(setup.popularity_score || 0)}</span>
         </div>
+
+        {setup.replay_urls?.length > 0 && (
+          <div className="pt-1">
+            <ReplayViewer urls={setup.replay_urls} />
+          </div>
+        )}
 
         <div className="flex gap-2">
           <Button

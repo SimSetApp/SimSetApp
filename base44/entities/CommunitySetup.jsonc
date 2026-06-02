@@ -63,6 +63,14 @@
       "type": "number",
       "title": "Popularity Score",
       "default": 0
+    },
+    "replay_urls": {
+      "type": "array",
+      "title": "Replay Videos",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     }
   },
   "required": [
