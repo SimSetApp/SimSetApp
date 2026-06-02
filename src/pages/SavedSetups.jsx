@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SaveSetupDialog from "../components/SaveSetupDialog";
@@ -68,6 +69,33 @@ export default function SavedSetups() {
       queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
       setDeleteId(null);
     },
+  });
+
+  const shareToCommunityMutation = useMutation({
+    mutationFn: async (setup) => {
+      const user = await base44.auth.me();
+      return await base44.entities.CommunitySetup.create({
+        title: setup.title,
+        sim_title: setup.sim_title,
+        car: setup.car,
+        track: setup.track || "N/A",
+        notes: setup.notes || "Shared from My Garage",
+        parameters: setup.parameters || {},
+        author_id: user.id,
+        author_name: user.full_name || user.email?.split('@')[0] || "Anonymous",
+        download_count: 0,
+        rating_count: 0,
+        rating_sum: 0,
+        popularity_score: 0
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+      toast.success("Setup shared to community!");
+    },
+    onError: () => {
+      toast.error("Failed to share to community");
+    }
   });
 
   // Full lists from simData + any custom cars saved in setups for this sim
@@ -239,10 +267,20 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={() => shareSetup(setup)}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8" 
+                        title="Share to community" 
+                        onClick={(e) => { e.stopPropagation(); shareToCommunityMutation.mutate(setup); }}
+                        disabled={shareToCommunityMutation.isPending}
+                      >
+                        {shareToCommunityMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Share2 className="w-3.5 h-3.5" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>
                         {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Share2 className="w-3.5 h-3.5" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(setup.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleteId(setup.id); }}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
