@@ -1,37 +1,16 @@
-import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, FolderOpen, Bot, BookOpen, MessageCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
-import { useAuth } from "@/lib/AuthContext";
+import { Home, FolderOpen, Bot, BookOpen, Heart } from "lucide-react";
 
 const TABS = [
   { path: "/", label: "Home", icon: Home },
   { path: "/setup-guide", label: "Setup Guide", icon: BookOpen },
   { path: "/race-engineer", label: "Engineer", icon: Bot },
   { path: "/saved-setups", label: "My Garage", icon: FolderOpen },
-  { path: "/messages", label: "Messages", icon: MessageCircle },
+  { path: "/support", label: "Support", icon: Heart },
 ];
 
 export default function BottomTabBar() {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
-  const [meId, setMeId] = useState(null);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      base44.auth.me().then(u => setMeId(u?.id || null));
-    }
-  }, [isAuthenticated]);
-
-  const { data: unreadMessages = [] } = useQuery({
-    queryKey: ["unread-count", meId],
-    queryFn: () => base44.entities.Message.filter({ recipient_id: meId, read: false }, "-created_date", 50),
-    enabled: !!meId,
-    refetchInterval: 15000,
-  });
-
-  const unreadCount = unreadMessages.length;
 
   return (
     <nav
@@ -41,7 +20,6 @@ export default function BottomTabBar() {
       <div className="flex items-stretch">
         {TABS.map(({ path, label, icon: Icon }) => {
           const active = location.pathname === path;
-          const showBadge = path === "/messages" && unreadCount > 0;
           return (
             <Link
               key={path}
@@ -51,14 +29,7 @@ export default function BottomTabBar() {
               }`}
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="relative">
-                <Icon className={`w-6 h-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
-                {showBadge && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </div>
+              <Icon className={`w-6 h-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
               <span className="text-[10px] font-medium leading-none">{label}</span>
             </Link>
           );

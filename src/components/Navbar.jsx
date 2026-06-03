@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, MessageCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -132,6 +134,16 @@ export default function Navbar() {
             <Heart className="w-3.5 h-3.5" />
             Support
           </Link>
+
+          {/* Messages link (authenticated) */}
+          {isAuthenticated && (
+            <Link
+              to="/messages"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${location.pathname === "/messages" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+            >
+              <MessageCircle className="w-3.5 h-3.5" /> Messages
+            </Link>
+          )}
 
           {/* Auth */}
           <div className="flex items-center gap-1 border-l border-border pl-2 ml-1">
