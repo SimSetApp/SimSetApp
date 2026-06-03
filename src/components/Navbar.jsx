@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Palette } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
-import { useTheme } from "@/lib/ThemeContext";
+import { useTheme, THEMES } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
@@ -74,11 +74,55 @@ function ToolsDropdown({ location }) {
   );
 }
 
+function ThemeDropdown() {
+  const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const current = THEMES.find(t => t.id === theme) || THEMES[0];
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+        aria-label="Select theme"
+      >
+        <Palette className="w-3.5 h-3.5" />
+        <span>{current.label}</span>
+        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full right-0 mt-2 w-40 rounded-xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden z-50">
+          {THEMES.map(t => (
+            <button
+              key={t.id}
+              onClick={() => { setTheme(t.id); setOpen(false); }}
+              className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium transition-colors ${
+                theme === t.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <span>{t.emoji}</span>
+              {t.label}
+              {theme === t.id && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, logout, navigateToLogin, deleteAccount } = useAuth();
-  const { isDark, toggle } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const allMobileNav = [...primaryNav, ...toolsNav];
 
@@ -111,14 +155,7 @@ export default function Navbar() {
 
         {/* Right side actions */}
         <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
-          {/* Theme toggle */}
-          <button
-            onClick={toggle}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-            aria-label="Toggle theme"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+          <ThemeDropdown />
 
           {/* Support button with glow */}
           <Link
@@ -214,13 +251,21 @@ export default function Navbar() {
               );
             })}
             <div className="pt-2 border-t border-border mt-1">
-              <button
-                onClick={toggle}
-                className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                {isDark ? 'Light Mode' : 'Dark Mode'}
-              </button>
+              <p className="px-3 py-1 text-xs text-muted-foreground font-medium flex items-center gap-1.5"><Palette className="w-3.5 h-3.5" /> Theme</p>
+              <div className="grid grid-cols-3 gap-1 px-2 pb-1">
+                {THEMES.map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => { setTheme(t.id); setMobileOpen(false); }}
+                    className={`flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium transition-all ${
+                      theme === t.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    <span className="text-base">{t.emoji}</span>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="pt-2 border-t border-border mt-1 space-y-1">
               {isAuthenticated ? (

@@ -6,65 +6,11 @@
 
 @layer base {
   :root {
-    --background: 220 15% 8%;
-    --foreground: 210 20% 95%;
-    --card: 220 13% 12%;
-    --card-foreground: 210 20% 95%;
-    --popover: 220 13% 12%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 155 100% 55%;
-    --primary-foreground: 220 15% 8%;
-    --secondary: 220 12% 18%;
-    --secondary-foreground: 210 20% 90%;
-    --muted: 220 12% 16%;
-    --muted-foreground: 215 15% 55%;
-    --accent: 155 100% 55%;
-    --accent-foreground: 220 15% 8%;
-    --destructive: 155 100% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 12% 20%;
-    --input: 220 12% 20%;
-    --ring: 155 100% 55%;
-    --chart-1: 35 100% 55%;
-    --chart-2: 200 70% 50%;
-    --chart-3: 150 60% 45%;
-    --chart-4: 280 60% 55%;
-    --chart-5: 10 80% 55%;
     --radius: 0.75rem;
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Outfit', sans-serif;
     --font-display: 'Outfit', sans-serif;
     --font-mono: 'Outfit', sans-serif;
-    --sidebar-background: 220 13% 10%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 35 100% 55%;
-    --sidebar-primary-foreground: 220 15% 8%;
-    --sidebar-accent: 220 12% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 12% 20%;
-    --sidebar-ring: 35 100% 55%;
-  }
-
-  .dark {
-    --background: 220 15% 8%;
-    --foreground: 210 20% 95%;
-    --card: 220 13% 12%;
-    --card-foreground: 210 20% 95%;
-    --popover: 220 13% 12%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 35 100% 55%;
-    --primary-foreground: 220 15% 8%;
-    --secondary: 220 12% 18%;
-    --secondary-foreground: 210 20% 90%;
-    --muted: 220 12% 16%;
-    --muted-foreground: 215 15% 55%;
-    --accent: 35 90% 50%;
-    --accent-foreground: 220 15% 8%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 12% 20%;
-    --input: 220 12% 20%;
-    --ring: 35 100% 55%;
     --chart-1: 35 100% 55%;
     --chart-2: 200 70% 50%;
     --chart-3: 150 60% 45%;
@@ -78,10 +24,145 @@
     --sidebar-accent-foreground: 210 20% 90%;
     --sidebar-border: 220 12% 20%;
     --sidebar-ring: 35 100% 55%;
+    /* Default fallback = Night theme */
+    --background: 220 15% 8%;
+    --foreground: 210 20% 95%;
+    --card: 220 13% 12%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 155 100% 50%;
+    --primary-foreground: 220 15% 8%;
+    --secondary: 220 12% 18%;
+    --secondary-foreground: 210 20% 90%;
+    --muted: 220 12% 16%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 155 100% 50%;
+    --accent-foreground: 220 15% 8%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 12% 20%;
+    --input: 220 12% 20%;
+    --ring: 155 100% 50%;
   }
 }
 
 
+
+/* ── NIGHT (default — neon green, deep space) ──────────────────────── */
+.theme-night {
+  --background: 220 15% 8%;
+  --foreground: 210 20% 95%;
+  --card: 220 13% 12%;
+  --card-foreground: 210 20% 95%;
+  --popover: 220 13% 12%;
+  --popover-foreground: 210 20% 95%;
+  --primary: 155 100% 50%;
+  --primary-foreground: 220 15% 8%;
+  --secondary: 220 12% 18%;
+  --secondary-foreground: 210 20% 90%;
+  --muted: 220 12% 16%;
+  --muted-foreground: 215 15% 55%;
+  --accent: 155 100% 50%;
+  --accent-foreground: 220 15% 8%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 12% 20%;
+  --input: 220 12% 20%;
+  --ring: 155 100% 50%;
+}
+
+/* ── CARBON (neutral dark, white accent — clean/professional) ───────── */
+.theme-carbon {
+  --background: 0 0% 6%;
+  --foreground: 0 0% 94%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 94%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 94%;
+  --primary: 0 0% 92%;
+  --primary-foreground: 0 0% 6%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 88%;
+  --muted: 0 0% 13%;
+  --muted-foreground: 0 0% 50%;
+  --accent: 0 0% 85%;
+  --accent-foreground: 0 0% 6%;
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 18%;
+  --input: 0 0% 18%;
+  --ring: 0 0% 92%;
+}
+
+/* ── MIDNIGHT (deep navy, electric blue accent) ─────────────────────── */
+.theme-midnight {
+  --background: 225 35% 7%;
+  --foreground: 215 25% 93%;
+  --card: 225 30% 11%;
+  --card-foreground: 215 25% 93%;
+  --popover: 225 30% 11%;
+  --popover-foreground: 215 25% 93%;
+  --primary: 210 100% 60%;
+  --primary-foreground: 225 35% 7%;
+  --secondary: 225 25% 17%;
+  --secondary-foreground: 215 20% 88%;
+  --muted: 225 25% 14%;
+  --muted-foreground: 218 18% 52%;
+  --accent: 210 100% 60%;
+  --accent-foreground: 225 35% 7%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 225 22% 20%;
+  --input: 225 22% 20%;
+  --ring: 210 100% 60%;
+}
+
+/* ── SUNSET (dark charcoal, vivid amber/orange accent) ──────────────── */
+.theme-sunset {
+  --background: 24 12% 7%;
+  --foreground: 30 25% 93%;
+  --card: 24 10% 11%;
+  --card-foreground: 30 25% 93%;
+  --popover: 24 10% 11%;
+  --popover-foreground: 30 25% 93%;
+  --primary: 32 100% 56%;
+  --primary-foreground: 24 12% 7%;
+  --secondary: 24 10% 17%;
+  --secondary-foreground: 30 18% 88%;
+  --muted: 24 10% 14%;
+  --muted-foreground: 28 14% 52%;
+  --accent: 32 100% 56%;
+  --accent-foreground: 24 12% 7%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 24 10% 20%;
+  --input: 24 10% 20%;
+  --ring: 32 100% 56%;
+}
+
+/* ── STEALTH (dark olive/slate, muted lime accent) ──────────────────── */
+.theme-stealth {
+  --background: 200 14% 7%;
+  --foreground: 195 18% 92%;
+  --card: 200 12% 11%;
+  --card-foreground: 195 18% 92%;
+  --popover: 200 12% 11%;
+  --popover-foreground: 195 18% 92%;
+  --primary: 160 70% 48%;
+  --primary-foreground: 200 14% 7%;
+  --secondary: 200 12% 17%;
+  --secondary-foreground: 195 14% 86%;
+  --muted: 200 12% 14%;
+  --muted-foreground: 200 12% 50%;
+  --accent: 160 70% 48%;
+  --accent-foreground: 200 14% 7%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 200 11% 19%;
+  --input: 200 11% 19%;
+  --ring: 160 70% 48%;
+}
 
 @layer base {
   * {
