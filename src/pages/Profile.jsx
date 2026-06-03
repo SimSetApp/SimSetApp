@@ -36,9 +36,17 @@ export default function Profile() {
   }
 
   const saveMutation = useMutation({
-    mutationFn: () => base44.auth.updateMe(form),
+    mutationFn: async () => {
+      await base44.auth.updateMe(form);
+      // Sync author_name on all their community setups
+      if (user && form.full_name && form.full_name !== user.full_name) {
+        const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
+        await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, { author_name: form.full_name })));
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
       toast.success("Profile updated!");
     },
     onError: () => toast.error("Failed to save profile"),

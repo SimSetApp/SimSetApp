@@ -3,11 +3,24 @@ import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, UserMinus, Download, TrendingUp, Car, MapPin } from "lucide-react";
+import { UserPlus, UserMinus, Download, TrendingUp, Car, MapPin, User } from "lucide-react";
 import { toast } from "sonner";
 
 export default function UserProfileSheet({ authorId, authorName, isOpen, onClose, currentUserId }) {
   const queryClient = useQueryClient();
+
+  const { data: authorUser } = useQuery({
+    queryKey: ["user-profile", authorId],
+    queryFn: async () => {
+      const users = await base44.entities.User.filter({ id: authorId });
+      return users?.[0] || null;
+    },
+    enabled: isOpen && !!authorId,
+  });
+
+  const displayName = authorUser?.full_name || authorName || "Unknown Creator";
+  const bio = authorUser?.bio;
+  const avatarUrl = authorUser?.avatar_url;
 
   const { data: theirSetups = [] } = useQuery({
     queryKey: ["author-setups", authorId],
@@ -29,7 +42,7 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["follows-for", authorId] });
       queryClient.invalidateQueries({ queryKey: ["my-follows"] });
-      toast.success(`Following ${authorName}!`);
+      toast.success(`Following ${displayName}!`);
     },
   });
 
@@ -38,13 +51,13 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["follows-for", authorId] });
       queryClient.invalidateQueries({ queryKey: ["my-follows"] });
-      toast.success(`Unfollowed ${authorName}`);
+      toast.success(`Unfollowed ${displayName}`);
     },
   });
 
   const totalDownloads = theirSetups.reduce((sum, s) => sum + (s.download_count || 0), 0);
-  const initials = authorName
-    ? authorName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+  const initials = displayName
+    ? displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
 
   return (
@@ -52,11 +65,16 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
       <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto pb-24">
         <SheetHeader className="pb-4">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl flex-shrink-0">
-              {initials}
+            <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl flex-shrink-0 overflow-hidden">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <SheetTitle className="font-heading text-lg">{authorName || "Unknown Creator"}</SheetTitle>
+              <SheetTitle className="font-heading text-lg">{displayName}</SheetTitle>
+              {bio && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{bio}</p>}
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
                 <span>{allFollows.length} follower{allFollows.length !== 1 ? "s" : ""}</span>
                 <span className="w-px h-3 bg-border" />
