@@ -1,4 +1,5 @@
 {
+  "name": "User",
   "type": "object",
   "properties": {
     "role": {
@@ -13,26 +14,9 @@
       "type": "string",
       "title": "Bio"
     },
-    "favorite_cars": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Favourite Cars",
-      "default": []
-    },
-    "favorite_sims": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Favourite Sims",
-      "default": []
-    },
-    "profile_image_url": {
+    "avatar_url": {
       "type": "string",
-      "title": "Profile Image URL"
+      "title": "Avatar URL"
     }
-  },
-  "name": "User"
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Sun, Moon, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -137,6 +137,12 @@ export default function Navbar() {
           <div className="flex items-center gap-1 border-l border-border pl-2 ml-1">
             {isAuthenticated ? (
               <>
+                <Link
+                  to="/profile"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${location.pathname === "/profile" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+                >
+                  <UserCircle className="w-3.5 h-3.5" /> Profile
+                </Link>
                 <button
                   onClick={() => logout()}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
@@ -219,6 +225,13 @@ export default function Navbar() {
             <div className="pt-2 border-t border-border mt-1 space-y-1">
               {isAuthenticated ? (
                 <>
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                  >
+                    <UserCircle className="w-4 h-4" /> Edit Profile
+                  </Link>
                   <button
                     onClick={() => { logout(); setMobileOpen(false); }}
                     className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"

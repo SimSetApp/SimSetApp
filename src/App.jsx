@@ -20,6 +20,7 @@ import ShareSetup from './pages/ShareSetup';
 import CommunityLibrary from './pages/CommunityLibrary';
 import Support from './pages/Support';
 import ThankYou from './pages/ThankYou';
+import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
           <Route path="/community-library" element={<CommunityLibrary />} />
           <Route path="/support" element={<Support />} />
           <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </motion.div>
