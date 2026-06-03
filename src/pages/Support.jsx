@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Lightbulb, Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Heart, Lightbulb, Loader2, CheckCircle2, ArrowLeft, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -136,6 +136,20 @@ export default function Support() {
             Secure checkout powered by Base44 Payments. No account required.
           </p>
         </div>
+
+        {/* Instagram */}
+        <a
+          href="https://www.instagram.com/simsetapp"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-4 mb-6 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all group"
+        >
+          <Instagram className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+          <div>
+            <p className="text-xs font-semibold text-foreground">Follow us on Instagram</p>
+            <p className="text-xs text-muted-foreground">@simsetapp — updates, tips & community</p>
+          </div>
+        </a>
 
         {/* Suggestion card */}
         <div className="rounded-2xl border border-border bg-card p-6">
