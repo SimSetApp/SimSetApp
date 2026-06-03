@@ -31,7 +31,9 @@ export default function TopCreators({ setups = [], onSelectAuthor }) {
     queryFn: async () => {
       if (creatorIds.length === 0) return [];
       const results = await Promise.all(
-        creatorIds.map(id => base44.entities.User.filter({ id }).then(r => r?.[0] || null))
+        creatorIds.map(id =>
+          base44.entities.User.filter({ id }).then(r => r?.[0] || null).catch(() => null)
+        )
       );
       return results.filter(Boolean);
     },

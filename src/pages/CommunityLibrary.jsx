@@ -230,7 +230,9 @@ export default function CommunityLibrary() {
     queryFn: async () => {
       if (authorIds.length === 0) return [];
       const results = await Promise.all(
-        authorIds.map(id => base44.entities.User.filter({ id }).then(r => r?.[0] || null))
+        authorIds.map(id =>
+          base44.entities.User.filter({ id }).then(r => r?.[0] || null).catch(() => null)
+        )
       );
       return results.filter(Boolean);
     },
