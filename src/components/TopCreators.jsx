@@ -36,7 +36,7 @@ export default function TopCreators({ setups = [], onSelectAuthor }) {
       return results.filter(Boolean);
     },
     enabled: creatorIds.length > 0,
-    staleTime: 60_000,
+    staleTime: 0,
   });
 
   const profileMap = useMemo(() => {
