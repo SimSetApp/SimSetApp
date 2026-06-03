@@ -21,6 +21,10 @@
     "display_name": {
       "type": "string",
       "title": "Display Name"
+    },
+    "user_tag": {
+      "type": "string",
+      "title": "User Tag"
     }
   }
 }

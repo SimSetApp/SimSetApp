@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users } from "lucide-react";
+import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users, Search, Copy, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +31,10 @@ export default function Profile() {
   });
 
   const [form, setForm] = useState(null);
+  const [tagSearch, setTagSearch] = useState("");
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   if (user && form === null) {
     setForm({
@@ -38,11 +42,25 @@ export default function Profile() {
       bio: user.bio || "",
       avatar_url: user.avatar_url || "",
     });
+    // Auto-generate tag if missing
+    if (!user.user_tag) {
+      const tag = "SSA-" + Math.floor(10000 + Math.random() * 90000);
+      base44.auth.updateMe({ user_tag: tag }).then(() => queryClient.invalidateQueries({ queryKey: ["me"] }));
+    }
   }
+
+  // Generate a user tag if the user doesn't have one
+  const ensureUserTag = async (currentUser) => {
+    if (currentUser.user_tag) return currentUser.user_tag;
+    const tag = "SSA-" + Math.floor(10000 + Math.random() * 90000);
+    await base44.auth.updateMe({ user_tag: tag });
+    return tag;
+  };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await base44.auth.updateMe({ display_name: form.display_name, bio: form.bio, avatar_url: form.avatar_url });
+      const tag = await ensureUserTag(user);
+      await base44.auth.updateMe({ display_name: form.display_name, bio: form.bio, avatar_url: form.avatar_url, user_tag: tag });
       const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
       if (mySetups.length > 0 && form.display_name) {
         await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, { author_name: form.display_name })));
@@ -93,6 +111,41 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
     },
   });
+
+  const sendRequestMutation = useMutation({
+    mutationFn: (toId) => base44.entities.FriendRequest.create({ from_id: user.id, to_id: toId, status: "pending" }),
+    onSuccess: () => {
+      toast.success("Friend request sent!");
+      setSearchResult(null);
+      setTagSearch("");
+    },
+    onError: () => toast.error("Failed to send request"),
+  });
+
+  const handleTagSearch = async () => {
+    const query = tagSearch.trim().toUpperCase();
+    if (!query) return;
+    setSearchLoading(true);
+    setSearchError("");
+    setSearchResult(null);
+    const results = await base44.entities.User.filter({ user_tag: query });
+    setSearchLoading(false);
+    if (!results || results.length === 0) {
+      setSearchError("No user found with that tag.");
+    } else {
+      const found = results[0];
+      if (found.id === user.id) {
+        setSearchError("That's you!");
+      } else {
+        setSearchResult(found);
+      }
+    }
+  };
+
+  const alreadyFriends = friendRequests.some(r =>
+    (r.from_id === user?.id && r.to_id === searchResult?.id) ||
+    (r.to_id === user?.id && r.from_id === searchResult?.id)
+  );
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
@@ -175,6 +228,23 @@ export default function Profile() {
                   <p className="text-xs text-muted-foreground">Click the camera to change your avatar</p>
                 </div>
 
+                {/* User Tag */}
+                <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-0.5">Your User Tag</p>
+                    <p className="text-sm font-mono font-semibold text-primary">{user.user_tag || "Save profile to generate"}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Share this with friends so they can find you</p>
+                  </div>
+                  {user.user_tag && (
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(user.user_tag); toast.success("Tag copied!"); }}
+                      className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
                 {/* Display Name */}
                 <div className="space-y-1.5">
                   <Label htmlFor="username">Display Name</Label>
@@ -217,7 +287,48 @@ export default function Profile() {
 
             <TabsContent value="friends">
               <div className="max-w-lg space-y-4">
-                <p className="text-sm text-muted-foreground -mt-2">Manage your friend requests.</p>
+                <p className="text-sm text-muted-foreground -mt-2">Find users by their tag or manage incoming requests.</p>
+
+                {/* Search by tag */}
+                <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Find a User</p>
+                  <div className="flex gap-2">
+                    <Input
+                      value={tagSearch}
+                      onChange={e => { setTagSearch(e.target.value); setSearchError(""); setSearchResult(null); }}
+                      onKeyDown={e => e.key === "Enter" && handleTagSearch()}
+                      placeholder="Enter User Tag (e.g. SSA-12345)"
+                      className="flex-1 font-mono text-sm"
+                    />
+                    <Button size="sm" onClick={handleTagSearch} disabled={searchLoading || !tagSearch.trim()} className="h-9 px-3">
+                      {searchLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  {searchError && <p className="text-xs text-muted-foreground">{searchError}</p>}
+                  {searchResult && (
+                    <div className="flex items-center justify-between gap-3 pt-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold overflow-hidden shrink-0">
+                          {searchResult.avatar_url
+                            ? <img src={searchResult.avatar_url} className="w-full h-full object-cover" alt="" />
+                            : (searchResult.display_name || searchResult.full_name || "?")[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{searchResult.display_name || searchResult.full_name}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{searchResult.user_tag}</p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="h-8 text-xs px-3"
+                        disabled={alreadyFriends || sendRequestMutation.isPending}
+                        onClick={() => sendRequestMutation.mutate(searchResult.id)}
+                      >
+                        {alreadyFriends ? "Already connected" : <><UserPlus className="w-3 h-3 mr-1" />Add Friend</>}
+                      </Button>
+                    </div>
+                  )}
+                </div>
                 {incoming.length === 0 ? (
                   <div className="rounded-xl border border-border bg-card p-8 text-center">
                     <Users className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
