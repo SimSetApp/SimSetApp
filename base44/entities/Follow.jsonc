@@ -1,0 +1,35 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "follower_id": {
+      "type": "string",
+      "title": "Follower ID"
+    },
+    "following_id": {
+      "type": "string",
+      "title": "Following ID"
+    }
+  },
+  "required": [
+    "follower_id",
+    "following_id"
+  ],
+  "access_control": {
+    "list": "public",
+    "get": "public",
+    "create": "authenticated",
+    "update": "admin",
+    "delete": "authenticated"
+  },
+  "rls": {
+    "create": {
+      "data.follower_id": "{{user.id}}"
+    },
+    "read": null,
+    "update": null,
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

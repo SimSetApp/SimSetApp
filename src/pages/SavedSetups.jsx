@@ -13,7 +13,8 @@ import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight } from "lucide-react";
+import { Link as RouterLink } from "react-router-dom";
 import ReplayUploader from "../components/ReplayUploader";
 
 import { Input } from "@/components/ui/input";
@@ -323,6 +324,25 @@ export default function SavedSetups() {
                 </Button>
               </div>
             )}
+
+            {/* Mobile-only Community CTA */}
+            <div className="md:hidden mt-6">
+              <RouterLink
+                to="/community-library"
+                className="flex items-center justify-between rounded-2xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Explore Community Setups</p>
+                    <p className="text-xs text-muted-foreground">Browse setups from other racers</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-primary" />
+              </RouterLink>
+            </div>
 
             {!isLoading && setups.length > 0 && (
               <div className="space-y-3">

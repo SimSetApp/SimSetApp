@@ -1,16 +1,19 @@
 import { useState, useCallback } from "react";
-import { Star, Download, TrendingUp, Clock, Globe } from "lucide-react";
+import { Star, Download, TrendingUp, Clock, Globe, Users } from "lucide-react";
 import ReplayViewer from "../components/ReplayViewer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MobileSelect from "@/components/MobileSelect";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MobileHeader from "../components/MobileHeader";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../components/PullToRefreshIndicator";
+import TopCreators from "../components/TopCreators";
+import UserProfileSheet from "../components/UserProfileSheet";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -46,7 +49,7 @@ function StarRating({ rating, onRate, interactive = false }) {
   );
 }
 
-function CommunitySetupCard({ setup }) {
+function CommunitySetupCard({ setup, onAuthorClick }) {
   const queryClient = useQueryClient();
   const [showRating, setShowRating] = useState(false);
   const [pendingRating, setPendingRating] = useState(0);
@@ -109,7 +112,12 @@ function CommunitySetupCard({ setup }) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="font-heading text-sm font-semibold truncate">{setup.title}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">by {setup.author_name || "Anonymous"}</p>
+            <button
+            className="text-xs text-muted-foreground mt-0.5 hover:text-primary transition-colors text-left"
+            onClick={() => onAuthorClick?.(setup.author_id, setup.author_name)}
+          >
+            by {setup.author_name || "Anonymous"}
+          </button>
           </div>
           <Badge variant="outline" className="text-xs shrink-0">{setup.sim_title}</Badge>
         </div>
@@ -196,12 +204,27 @@ export default function CommunityLibrary() {
   const [simFilter, setSimFilter] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
   const [replayFilter, setReplayFilter] = useState(false);
+  const [profileSheet, setProfileSheet] = useState(null); // { id, name }
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const { data: setups, isLoading } = useQuery({
     queryKey: ["communitySetups"],
     queryFn: () => base44.entities.CommunitySetup.list("-popularity_score", COMMUNITY_SETUPS_LIMIT)
   });
+
+  const { data: myFollows = [] } = useQuery({
+    queryKey: ["my-follows"],
+    queryFn: async () => {
+      const user = await base44.auth.me();
+      setCurrentUserId(user?.id || null);
+      if (!user) return [];
+      return base44.entities.Follow.filter({ follower_id: user.id });
+    },
+    enabled: !!isAuthenticated,
+  });
+
+  const followingIds = new Set(myFollows.map(f => f.following_id));
 
   const filteredSetups = (setups || []).filter(setup => {
     const matchesSearch = setup.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -227,6 +250,8 @@ export default function CommunityLibrary() {
     return 0;
   });
 
+  const followingSetups = (setups || []).filter(s => followingIds.has(s.author_id));
+
   const sims = ["all", ...new Set((setups || []).map(s => s.sim_title))];
 
   const queryClient = useQueryClient();
@@ -234,6 +259,8 @@ export default function CommunityLibrary() {
     await queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
   }, [queryClient]);
   const { containerRef, pullY, refreshing } = usePullToRefresh(handleRefresh);
+
+  const handleAuthorClick = (id, name) => setProfileSheet({ id, name });
 
   if (!isLoadingAuth && !isAuthenticated) {
     return (
@@ -258,12 +285,33 @@ export default function CommunityLibrary() {
     );
   }
 
+  function SetupGrid({ list }) {
+    if (isLoading) return (
+      <div className="text-center py-12">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto" />
+      </div>
+    );
+    if (list.length === 0) return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground text-sm">No setups found.</p>
+      </div>
+    );
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {list.map(setup => (
+          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <MobileHeader title="Community Library" />
       <div ref={containerRef} className="max-w-6xl mx-auto px-4 py-8 pb-24">
         <PullToRefreshIndicator pullY={pullY} refreshing={refreshing} />
+
         {/* Header */}
         <div className="mb-6">
           <h1 className="font-heading text-2xl font-bold text-foreground">Community Setup Library</h1>
@@ -272,71 +320,90 @@ export default function CommunityLibrary() {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <Input
-            placeholder="Search setups..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full sm:w-64"
-          />
-          <MobileSelect
-            value={simFilter}
-            onValueChange={setSimFilter}
-            placeholder="All Sims"
-            triggerClassName="w-40"
-            options={sims.map(sim => ({ value: sim, label: sim === "all" ? "All Sims" : sim }))}
-          />
-          <MobileSelect
-            value={sortBy}
-            onValueChange={setSortBy}
-            placeholder="Sort by"
-            triggerClassName="w-40"
-            options={[
-              { value: "popular", label: "Most Popular" },
-              { value: "rating", label: "Top Rated" },
-              { value: "downloads", label: "Most Downloaded" },
-              { value: "recent", label: "Most Recent" },
-            ]}
-          />
-          <button
-            onClick={() => setReplayFilter(r => !r)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-              replayFilter
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          >
-            🎬 Has Replay
-          </button>
-        </div>
+        {/* Top Creators */}
+        <TopCreators setups={setups || []} onSelectAuthor={handleAuthorClick} />
 
-        {/* Stats */}
-        <div className="flex items-center gap-4 mb-6 text-xs text-muted-foreground">
-          <span>{sortedSetups.length} setups</span>
-          <span className="w-px h-3 bg-border" />
-          <span>{sims.length - 1} sims</span>
-        </div>
+        {/* Tabs: All / Following */}
+        <Tabs defaultValue="all">
+          <TabsList className="bg-secondary mb-5">
+            <TabsTrigger value="all" className="text-xs font-heading tracking-wide">All Setups</TabsTrigger>
+            <TabsTrigger value="following" className="text-xs font-heading tracking-wide">
+              <Users className="w-3.5 h-3.5 mr-1.5" />Following
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Grid */}
-        {isLoading ? (
-          <div className="text-center py-12">
-            <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto" />
-          </div>
-        ) : sortedSetups.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No setups found. Be the first to upload one!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedSetups.map(setup => (
-              <CommunitySetupCard key={setup.id} setup={setup} />
-            ))}
-          </div>
-        )}
+          <TabsContent value="all">
+            {/* Filters */}
+            <div className="flex flex-wrap gap-3 mb-5">
+              <Input
+                placeholder="Search setups..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-64"
+              />
+              <MobileSelect
+                value={simFilter}
+                onValueChange={setSimFilter}
+                placeholder="All Sims"
+                triggerClassName="w-40"
+                options={sims.map(sim => ({ value: sim, label: sim === "all" ? "All Sims" : sim }))}
+              />
+              <MobileSelect
+                value={sortBy}
+                onValueChange={setSortBy}
+                placeholder="Sort by"
+                triggerClassName="w-40"
+                options={[
+                  { value: "popular", label: "Most Popular" },
+                  { value: "rating", label: "Top Rated" },
+                  { value: "downloads", label: "Most Downloaded" },
+                  { value: "recent", label: "Most Recent" },
+                ]}
+              />
+              <button
+                onClick={() => setReplayFilter(r => !r)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                  replayFilter
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                🎬 Has Replay
+              </button>
+            </div>
+            <div className="flex items-center gap-4 mb-5 text-xs text-muted-foreground">
+              <span>{sortedSetups.length} setups</span>
+              <span className="w-px h-3 bg-border" />
+              <span>{sims.length - 1} sims</span>
+            </div>
+            <SetupGrid list={sortedSetups} />
+          </TabsContent>
+
+          <TabsContent value="following">
+            {followingIds.size === 0 ? (
+              <div className="text-center py-16 text-sm text-muted-foreground">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p>You're not following anyone yet.</p>
+                <p className="text-xs mt-1">Click a creator above to follow them.</p>
+              </div>
+            ) : (
+              <SetupGrid list={followingSetups} />
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Footer />
+
+      {profileSheet && (
+        <UserProfileSheet
+          authorId={profileSheet.id}
+          authorName={profileSheet.name}
+          isOpen={!!profileSheet}
+          onClose={() => setProfileSheet(null)}
+          currentUserId={currentUserId}
+        />
+      )}
     </div>
   );
 }
