@@ -25,51 +25,51 @@
     --sidebar-border: 220 12% 20%;
     --sidebar-ring: 35 100% 55%;
     /* Default fallback = Night theme */
-    --background: 220 15% 8%;
-    --foreground: 210 20% 95%;
-    --card: 220 13% 12%;
-    --card-foreground: 210 20% 95%;
-    --popover: 220 13% 12%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 155 100% 50%;
-    --primary-foreground: 220 15% 8%;
-    --secondary: 220 12% 18%;
-    --secondary-foreground: 210 20% 90%;
-    --muted: 220 12% 16%;
-    --muted-foreground: 215 15% 55%;
-    --accent: 155 100% 50%;
-    --accent-foreground: 220 15% 8%;
+    --background: 150 20% 5%;
+    --foreground: 140 15% 94%;
+    --card: 150 15% 9%;
+    --card-foreground: 140 15% 94%;
+    --popover: 150 15% 9%;
+    --popover-foreground: 140 15% 94%;
+    --primary: 128 100% 52%;
+    --primary-foreground: 150 20% 5%;
+    --secondary: 150 12% 14%;
+    --secondary-foreground: 140 12% 88%;
+    --muted: 150 12% 12%;
+    --muted-foreground: 145 10% 52%;
+    --accent: 128 100% 52%;
+    --accent-foreground: 150 20% 5%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 12% 20%;
-    --input: 220 12% 20%;
-    --ring: 155 100% 50%;
+    --border: 150 12% 17%;
+    --input: 150 12% 17%;
+    --ring: 128 100% 52%;
   }
 }
 
 
 
-/* ── NIGHT (default — neon green, deep space) ──────────────────────── */
+/* ── NIGHT (default — electric lime green, near-black bg) ──────────── */
 .theme-night {
-  --background: 220 15% 8%;
-  --foreground: 210 20% 95%;
-  --card: 220 13% 12%;
-  --card-foreground: 210 20% 95%;
-  --popover: 220 13% 12%;
-  --popover-foreground: 210 20% 95%;
-  --primary: 155 100% 50%;
-  --primary-foreground: 220 15% 8%;
-  --secondary: 220 12% 18%;
-  --secondary-foreground: 210 20% 90%;
-  --muted: 220 12% 16%;
-  --muted-foreground: 215 15% 55%;
-  --accent: 155 100% 50%;
-  --accent-foreground: 220 15% 8%;
+  --background: 150 20% 5%;
+  --foreground: 140 15% 94%;
+  --card: 150 15% 9%;
+  --card-foreground: 140 15% 94%;
+  --popover: 150 15% 9%;
+  --popover-foreground: 140 15% 94%;
+  --primary: 128 100% 52%;
+  --primary-foreground: 150 20% 5%;
+  --secondary: 150 12% 14%;
+  --secondary-foreground: 140 12% 88%;
+  --muted: 150 12% 12%;
+  --muted-foreground: 145 10% 52%;
+  --accent: 128 100% 52%;
+  --accent-foreground: 150 20% 5%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 98%;
-  --border: 220 12% 20%;
-  --input: 220 12% 20%;
-  --ring: 155 100% 50%;
+  --border: 150 12% 17%;
+  --input: 150 12% 17%;
+  --ring: 128 100% 52%;
 }
 
 /* ── CARBON (neutral dark, white accent — clean/professional) ───────── */
@@ -141,27 +141,27 @@
   --ring: 32 100% 56%;
 }
 
-/* ── STEALTH (dark olive/slate, muted lime accent) ──────────────────── */
+/* ── STEALTH (deep teal bg, vivid cyan accent) ───────────────────────── */
 .theme-stealth {
-  --background: 200 14% 7%;
-  --foreground: 195 18% 92%;
-  --card: 200 12% 11%;
-  --card-foreground: 195 18% 92%;
-  --popover: 200 12% 11%;
-  --popover-foreground: 195 18% 92%;
-  --primary: 160 70% 48%;
-  --primary-foreground: 200 14% 7%;
-  --secondary: 200 12% 17%;
-  --secondary-foreground: 195 14% 86%;
-  --muted: 200 12% 14%;
-  --muted-foreground: 200 12% 50%;
-  --accent: 160 70% 48%;
-  --accent-foreground: 200 14% 7%;
+  --background: 196 40% 6%;
+  --foreground: 190 25% 93%;
+  --card: 196 35% 10%;
+  --card-foreground: 190 25% 93%;
+  --popover: 196 35% 10%;
+  --popover-foreground: 190 25% 93%;
+  --primary: 185 100% 46%;
+  --primary-foreground: 196 40% 6%;
+  --secondary: 196 30% 15%;
+  --secondary-foreground: 190 20% 87%;
+  --muted: 196 30% 12%;
+  --muted-foreground: 193 18% 50%;
+  --accent: 185 100% 46%;
+  --accent-foreground: 196 40% 6%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 98%;
-  --border: 200 11% 19%;
-  --input: 200 11% 19%;
-  --ring: 160 70% 48%;
+  --border: 196 25% 18%;
+  --input: 196 25% 18%;
+  --ring: 185 100% 46%;
 }
 
 @layer base {
