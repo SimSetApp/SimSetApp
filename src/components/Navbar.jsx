@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Palette } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Palette, Instagram } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme, THEMES } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -156,6 +156,17 @@ export default function Navbar() {
         {/* Right side actions */}
         <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
           <ThemeDropdown />
+
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/simsetapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            aria-label="Instagram"
+          >
+            <Instagram className="w-4 h-4" />
+          </a>
 
           {/* Support button with glow */}
           <Link
