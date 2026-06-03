@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX } from "lucide-react";
+import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,7 +21,7 @@ export default function Profile() {
   const fileRef = useRef(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") === "messages" ? "messages" : "settings";
+  const initialTab = searchParams.get("tab") === "messages" ? "messages" : searchParams.get("tab") === "friends" ? "friends" : "settings";
   const initialWith = searchParams.get("with") || null;
 
   const { data: user, isLoading } = useQuery({
@@ -139,6 +139,12 @@ export default function Profile() {
               <TabsTrigger value="messages" className="text-xs font-heading tracking-wide">
                 <MessageCircle className="w-3.5 h-3.5 mr-1.5" />Messages
               </TabsTrigger>
+              <TabsTrigger value="friends" className="text-xs font-heading tracking-wide relative">
+                <Users className="w-3.5 h-3.5 mr-1.5" />Friends
+                {incoming.length > 0 && (
+                  <span className="ml-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{incoming.length}</span>
+                )}
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="settings">
@@ -194,39 +200,6 @@ export default function Profile() {
                   <p className="text-xs text-muted-foreground text-right">{(form.bio || "").length}/300</p>
                 </div>
 
-                {/* Friend Requests */}
-                {incoming.length > 0 && (
-                  <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">
-                      Friend Requests ({incoming.length})
-                    </p>
-                    {incoming.map(req => {
-                      const sender = incomingProfiles.find(p => p.id === req.from_id);
-                      const name = sender?.display_name || sender?.full_name || req.from_id;
-                      return (
-                        <div key={req.id} className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold overflow-hidden shrink-0">
-                              {sender?.avatar_url
-                                ? <img src={sender.avatar_url} className="w-full h-full object-cover" alt={name} />
-                                : name[0]?.toUpperCase()}
-                            </div>
-                            <span className="text-sm font-medium">{name}</span>
-                          </div>
-                          <div className="flex gap-1.5">
-                            <Button size="sm" className="h-7 text-xs px-3" onClick={() => acceptMutation.mutate(req.id)} disabled={acceptMutation.isPending}>
-                              <UserCheck className="w-3 h-3 mr-1" />Accept
-                            </Button>
-                            <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={() => declineMutation.mutate(req.id)} disabled={declineMutation.isPending}>
-                              <UserX className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
                 <Button
                   className="w-full font-heading text-xs tracking-wider"
                   onClick={() => saveMutation.mutate()}
@@ -240,6 +213,48 @@ export default function Profile() {
 
             <TabsContent value="messages">
               <MessagesPanel me={user} initialUserId={initialWith} />
+            </TabsContent>
+
+            <TabsContent value="friends">
+              <div className="max-w-lg space-y-4">
+                <p className="text-sm text-muted-foreground -mt-2">Manage your friend requests.</p>
+                {incoming.length === 0 ? (
+                  <div className="rounded-xl border border-border bg-card p-8 text-center">
+                    <Users className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
+                    <p className="text-sm text-muted-foreground">No pending friend requests.</p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                    {incoming.map(req => {
+                      const sender = incomingProfiles.find(p => p.id === req.from_id);
+                      const name = sender?.display_name || sender?.full_name || req.from_id;
+                      return (
+                        <div key={req.id} className="flex items-center justify-between gap-3 p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold overflow-hidden shrink-0">
+                              {sender?.avatar_url
+                                ? <img src={sender.avatar_url} className="w-full h-full object-cover" alt={name} />
+                                : name[0]?.toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{name}</p>
+                              <p className="text-xs text-muted-foreground">wants to be your friend</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <Button size="sm" className="h-8 text-xs px-3" onClick={() => acceptMutation.mutate(req.id)} disabled={acceptMutation.isPending}>
+                              <UserCheck className="w-3 h-3 mr-1" />Accept
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-8 text-xs px-2" onClick={() => declineMutation.mutate(req.id)} disabled={declineMutation.isPending}>
+                              <UserX className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
         )}
