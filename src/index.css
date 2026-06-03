@@ -164,6 +164,29 @@
   --ring: 185 100% 46%;
 }
 
+/* ── NOVA (deep purple bg, vivid violet accent) ───────────────────────── */
+.theme-nova {
+  --background: 270 30% 6%;
+  --foreground: 270 20% 96%;
+  --card: 270 25% 10%;
+  --card-foreground: 270 20% 96%;
+  --popover: 270 25% 10%;
+  --popover-foreground: 270 20% 96%;
+  --primary: 270 100% 70%;
+  --primary-foreground: 270 30% 6%;
+  --secondary: 270 20% 16%;
+  --secondary-foreground: 270 15% 92%;
+  --muted: 270 20% 13%;
+  --muted-foreground: 270 15% 66%;
+  --accent: 270 100% 70%;
+  --accent-foreground: 270 30% 6%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 270 18% 22%;
+  --input: 270 18% 22%;
+  --ring: 270 100% 70%;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

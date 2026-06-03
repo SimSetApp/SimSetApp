@@ -6,6 +6,7 @@ export const THEMES = [
   { id: 'midnight', label: 'Midnight', color: '#3399ff' },
   { id: 'sunset',   label: 'Sunset',   color: '#ff9c1a' },
   { id: 'stealth',  label: 'Stealth',  color: '#00d4d4' },
+  { id: 'nova',     label: 'Nova',     color: '#9933ff' },
 ];
 
 const ThemeContext = createContext();
