@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 export const THEMES = [
-  { id: 'night',    label: 'Night',     emoji: '🌑' },
-  { id: 'carbon',   label: 'Carbon',    emoji: '⚫' },
-  { id: 'midnight', label: 'Midnight',  emoji: '🔵' },
-  { id: 'sunset',   label: 'Sunset',    emoji: '🟠' },
-  { id: 'stealth',  label: 'Stealth',   emoji: '🟢' },
+  { id: 'night',    label: 'Night',    color: '#1aff54' },
+  { id: 'carbon',   label: 'Carbon',   color: '#ebebeb' },
+  { id: 'midnight', label: 'Midnight', color: '#3399ff' },
+  { id: 'sunset',   label: 'Sunset',   color: '#ff9c1a' },
+  { id: 'stealth',  label: 'Stealth',  color: '#00d4d4' },
 ];
 
 const ThemeContext = createContext();

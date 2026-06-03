@@ -93,7 +93,7 @@ function ThemeDropdown() {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
         aria-label="Select theme"
       >
-        <Palette className="w-3.5 h-3.5" />
+        <span className="w-3 h-3 rounded-full ring-1 ring-white/10" style={{ backgroundColor: current.color }} />
         <span>{current.label}</span>
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
@@ -107,7 +107,7 @@ function ThemeDropdown() {
                 theme === t.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              <span>{t.emoji}</span>
+              <span className="w-3 h-3 rounded-full flex-shrink-0 ring-1 ring-white/10" style={{ backgroundColor: t.color }} />
               {t.label}
               {theme === t.id && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
             </button>
@@ -261,7 +261,7 @@ export default function Navbar() {
                       theme === t.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
-                    <span className="text-base">{t.emoji}</span>
+                    <span className="w-4 h-4 rounded-full ring-1 ring-white/10" style={{ backgroundColor: t.color }} />
                     {t.label}
                   </button>
                 ))}
