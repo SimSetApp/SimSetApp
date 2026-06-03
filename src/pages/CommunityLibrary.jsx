@@ -55,7 +55,7 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
   const [pendingRating, setPendingRating] = useState(0);
   const [saved, setSaved] = useState(false);
 
-  const displayAuthorName = authorProfile?.full_name || setup.author_name || "Anonymous";
+  const displayAuthorName = authorProfile?.display_name || authorProfile?.full_name || setup.author_name || "Anonymous";
   const authorAvatarUrl = authorProfile?.avatar_url;
 
   const saveMutation = useMutation({

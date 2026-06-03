@@ -34,7 +34,7 @@ export default function Profile() {
 
   if (user && form === null) {
     setForm({
-      full_name: user.full_name || "",
+      display_name: user.display_name || user.full_name || "",
       bio: user.bio || "",
       avatar_url: user.avatar_url || "",
     });
@@ -42,12 +42,10 @@ export default function Profile() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await base44.auth.updateMe(form);
+      await base44.auth.updateMe({ display_name: form.display_name, bio: form.bio, avatar_url: form.avatar_url });
       const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
-      const updates = {};
-      if (form.full_name && form.full_name !== user.full_name) updates.author_name = form.full_name;
-      if (mySetups.length > 0 && Object.keys(updates).length > 0) {
-        await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, updates)));
+      if (mySetups.length > 0 && form.display_name) {
+        await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, { author_name: form.display_name })));
       }
     },
     onSuccess: () => {
@@ -139,8 +137,8 @@ export default function Profile() {
                   <Label htmlFor="username">Display Name</Label>
                   <Input
                     id="username"
-                    value={form.full_name}
-                    onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
+                    value={form.display_name}
+                    onChange={e => setForm(f => ({ ...f, display_name: e.target.value }))}
                     placeholder="Your name"
                   />
                 </div>

@@ -58,7 +58,7 @@ export default function TopCreators({ setups = [], onSelectAuthor }) {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {creators.map(creator => {
           const profile = profileMap[creator.id];
-          const displayName = profile?.full_name || creator.name;
+          const displayName = profile?.display_name || profile?.full_name || creator.name;
           const avatarUrl = profile?.avatar_url;
           const initials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 

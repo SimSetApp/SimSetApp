@@ -20,7 +20,7 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
     enabled: isOpen && !!authorId,
   });
 
-  const displayName = authorUser?.full_name || authorName || "Unknown Creator";
+  const displayName = authorUser?.display_name || authorUser?.full_name || authorName || "Unknown Creator";
   const bio = authorUser?.bio;
   const avatarUrl = authorUser?.avatar_url;
 

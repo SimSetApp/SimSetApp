@@ -17,6 +17,10 @@
     "avatar_url": {
       "type": "string",
       "title": "Avatar URL"
+    },
+    "display_name": {
+      "type": "string",
+      "title": "Display Name"
     }
   }
 }
