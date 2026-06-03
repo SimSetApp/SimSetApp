@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Users } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Users, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -200,6 +200,26 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Instagram CTA */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
+          <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground">Community</h2>
+          <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
+        </div>
+        <a
+          href="https://www.instagram.com/simsetapp"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-4 rounded-2xl border border-border bg-card p-5 hover:border-primary/40 hover:bg-secondary/30 transition-all duration-200 group"
+        >
+          <Instagram className="w-6 h-6 text-primary group-hover:scale-110 transition-transform flex-shrink-0" />
+          <div>
+            <p className="font-heading text-sm font-semibold">Follow us on Instagram</p>
+            <p className="text-xs text-muted-foreground mt-0.5">@simsetapp — updates, tips &amp; sim racing community</p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary ml-auto transition-colors flex-shrink-0" />
+        </a>
 
       </div>
       <Footer />
