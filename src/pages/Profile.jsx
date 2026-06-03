@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Camera, Save, User, Loader2, Settings, MessageCircle } from "lucide-react";
+import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +55,43 @@ export default function Profile() {
       toast.success("Profile updated!");
     },
     onError: () => toast.error("Failed to save profile"),
+  });
+
+  // Friend requests
+  const { data: friendRequests = [] } = useQuery({
+    queryKey: ["friend-requests", user?.id],
+    queryFn: () => base44.entities.FriendRequest.list("-created_date", 100),
+    enabled: !!user,
+  });
+
+  const incoming = friendRequests.filter(r => r.to_id === user?.id && r.status === "pending");
+  const incomingIds = incoming.map(r => r.from_id);
+
+  const { data: incomingProfiles = [] } = useQuery({
+    queryKey: ["incoming-profiles", incomingIds.join(",")],
+    queryFn: async () => {
+      if (incomingIds.length === 0) return [];
+      const results = await Promise.all(
+        incomingIds.map(id => base44.entities.User.filter({ id }).then(r => r?.[0] || null).catch(() => null))
+      );
+      return results.filter(Boolean);
+    },
+    enabled: incomingIds.length > 0,
+  });
+
+  const acceptMutation = useMutation({
+    mutationFn: (reqId) => base44.entities.FriendRequest.update(reqId, { status: "accepted" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+      toast.success("Friend request accepted!");
+    },
+  });
+
+  const declineMutation = useMutation({
+    mutationFn: (reqId) => base44.entities.FriendRequest.update(reqId, { status: "declined" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+    },
   });
 
   const handleAvatarChange = async (e) => {
@@ -156,6 +193,39 @@ export default function Profile() {
                   />
                   <p className="text-xs text-muted-foreground text-right">{(form.bio || "").length}/300</p>
                 </div>
+
+                {/* Friend Requests */}
+                {incoming.length > 0 && (
+                  <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">
+                      Friend Requests ({incoming.length})
+                    </p>
+                    {incoming.map(req => {
+                      const sender = incomingProfiles.find(p => p.id === req.from_id);
+                      const name = sender?.display_name || sender?.full_name || req.from_id;
+                      return (
+                        <div key={req.id} className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold overflow-hidden shrink-0">
+                              {sender?.avatar_url
+                                ? <img src={sender.avatar_url} className="w-full h-full object-cover" alt={name} />
+                                : name[0]?.toUpperCase()}
+                            </div>
+                            <span className="text-sm font-medium">{name}</span>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <Button size="sm" className="h-7 text-xs px-3" onClick={() => acceptMutation.mutate(req.id)} disabled={acceptMutation.isPending}>
+                              <UserCheck className="w-3 h-3 mr-1" />Accept
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={() => declineMutation.mutate(req.id)} disabled={declineMutation.isPending}>
+                              <UserX className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 <Button
                   className="w-full font-heading text-xs tracking-wider"
