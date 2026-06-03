@@ -235,7 +235,7 @@ export default function CommunityLibrary() {
       return results.filter(Boolean);
     },
     enabled: authorIds.length > 0,
-    staleTime: 30_000,
+    staleTime: 0,
   });
   const authorProfileMap = useMemo(() => {
     const m = {};
