@@ -1,0 +1,48 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "title": "Conversation ID"
+    },
+    "sender_id": {
+      "type": "string",
+      "title": "Sender User ID"
+    },
+    "recipient_id": {
+      "type": "string",
+      "title": "Recipient User ID"
+    },
+    "content": {
+      "type": "string",
+      "title": "Message Content"
+    },
+    "read": {
+      "type": "boolean",
+      "title": "Read",
+      "default": false
+    }
+  },
+  "required": [
+    "conversation_id",
+    "sender_id",
+    "recipient_id",
+    "content"
+  ],
+  "access_control": {
+    "list": "authenticated",
+    "get": "authenticated",
+    "create": "authenticated",
+    "update": "authenticated",
+    "delete": "authenticated"
+  },
+  "rls": {
+    "create": {
+      "data.sender_id": "{{user.id}}"
+    },
+    "read": null,
+    "update": null,
+    "delete": null
+  }
+}

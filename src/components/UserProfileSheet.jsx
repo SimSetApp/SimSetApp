@@ -3,11 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, UserMinus, Download, TrendingUp, Car, MapPin, User } from "lucide-react";
+import { UserPlus, UserMinus, Download, TrendingUp, Car, MapPin, MessageCircle, UserCheck, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfileSheet({ authorId, authorName, isOpen, onClose, currentUserId }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: authorUser } = useQuery({
     queryKey: ["user-profile", authorId],
@@ -37,6 +39,22 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
   const myFollow = currentUserId ? allFollows.find(f => f.follower_id === currentUserId) : null;
   const isFollowing = !!myFollow;
 
+  // Friend request status
+  const { data: friendRequests = [] } = useQuery({
+    queryKey: ["friend-requests", currentUserId],
+    queryFn: () => base44.entities.FriendRequest.list("-created_date", 100),
+    enabled: isOpen && !!currentUserId && !!authorId,
+  });
+
+  const myRequests = friendRequests.filter(r =>
+    (r.from_id === currentUserId && r.to_id === authorId) ||
+    (r.from_id === authorId && r.to_id === currentUserId)
+  );
+  const activeRequest = myRequests.find(r => r.status !== "declined");
+  const isFriend = activeRequest?.status === "accepted";
+  const isPending = activeRequest?.status === "pending";
+  const iSentRequest = activeRequest?.from_id === currentUserId;
+
   const followMutation = useMutation({
     mutationFn: () => base44.entities.Follow.create({ follower_id: currentUserId, following_id: authorId }),
     onSuccess: () => {
@@ -55,10 +73,30 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
     },
   });
 
+  const addFriendMutation = useMutation({
+    mutationFn: () => base44.entities.FriendRequest.create({
+      from_id: currentUserId,
+      to_id: authorId,
+      status: "pending",
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friend-requests", currentUserId] });
+      toast.success(`Friend request sent to ${displayName}!`);
+    },
+    onError: () => toast.error("Failed to send friend request"),
+  });
+
+  const handleMessage = () => {
+    onClose();
+    navigate("/messages");
+  };
+
   const totalDownloads = theirSetups.reduce((sum, s) => sum + (s.download_count || 0), 0);
   const initials = displayName
     ? displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
+
+  const isOwnProfile = currentUserId && authorId === currentUserId;
 
   return (
     <Sheet open={isOpen} onOpenChange={(o) => !o && onClose()}>
@@ -89,20 +127,45 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
             </div>
           </div>
 
-          {currentUserId && authorId !== currentUserId && (
-            <Button
-              variant={isFollowing ? "outline" : "default"}
-              size="sm"
-              className="w-full mt-3"
-              disabled={followMutation.isPending || unfollowMutation.isPending}
-              onClick={() => isFollowing ? unfollowMutation.mutate() : followMutation.mutate()}
-            >
-              {isFollowing ? (
-                <><UserMinus className="w-4 h-4 mr-1.5" /> Unfollow</>
+          {currentUserId && !isOwnProfile && (
+            <div className="flex flex-col gap-2 mt-3">
+              {/* Follow button */}
+              <Button
+                variant={isFollowing ? "outline" : "default"}
+                size="sm"
+                className="w-full"
+                disabled={followMutation.isPending || unfollowMutation.isPending}
+                onClick={() => isFollowing ? unfollowMutation.mutate() : followMutation.mutate()}
+              >
+                {isFollowing ? (
+                  <><UserMinus className="w-4 h-4 mr-1.5" /> Unfollow</>
+                ) : (
+                  <><UserPlus className="w-4 h-4 mr-1.5" /> Follow</>
+                )}
+              </Button>
+
+              {/* Friend / Message buttons */}
+              {isFriend ? (
+                <Button size="sm" variant="outline" className="w-full" onClick={handleMessage}>
+                  <MessageCircle className="w-4 h-4 mr-1.5" /> Message
+                </Button>
+              ) : isPending ? (
+                <Button size="sm" variant="outline" className="w-full" disabled>
+                  <Clock className="w-4 h-4 mr-1.5" />
+                  {iSentRequest ? "Request Sent" : "Respond in Messages"}
+                </Button>
               ) : (
-                <><UserPlus className="w-4 h-4 mr-1.5" /> Follow</>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => addFriendMutation.mutate()}
+                  disabled={addFriendMutation.isPending}
+                >
+                  <UserCheck className="w-4 h-4 mr-1.5" /> Add Friend
+                </Button>
               )}
-            </Button>
+            </div>
           )}
         </SheetHeader>
 

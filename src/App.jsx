@@ -21,6 +21,7 @@ import CommunityLibrary from './pages/CommunityLibrary';
 import Support from './pages/Support';
 import ThankYou from './pages/ThankYou';
 import Profile from './pages/Profile';
+import Messages from './pages/Messages';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -79,6 +80,7 @@ const AuthenticatedApp = () => {
           <Route path="/support" element={<Support />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </motion.div>

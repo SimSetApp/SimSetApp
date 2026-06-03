@@ -1,0 +1,44 @@
+{
+  "name": "FriendRequest",
+  "type": "object",
+  "properties": {
+    "from_id": {
+      "type": "string",
+      "title": "Sender User ID"
+    },
+    "to_id": {
+      "type": "string",
+      "title": "Recipient User ID"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "from_id",
+    "to_id",
+    "status"
+  ],
+  "access_control": {
+    "list": "authenticated",
+    "get": "authenticated",
+    "create": "authenticated",
+    "update": "authenticated",
+    "delete": "authenticated"
+  },
+  "rls": {
+    "create": {
+      "data.from_id": "{{user.id}}"
+    },
+    "read": null,
+    "update": null,
+    "delete": null
+  }
+}
