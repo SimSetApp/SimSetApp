@@ -1,23 +1,28 @@
 import { useState, useRef } from "react";
-import { Camera, Save, User, Loader2, Settings } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Camera, Save, User, Loader2, Settings, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileHeader from "@/components/MobileHeader";
-import { Separator } from "@/components/ui/separator";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/AuthContext";
+import MessagesPanel from "@/components/MessagesPanel";
 
 export default function Profile() {
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
   const queryClient = useQueryClient();
   const fileRef = useRef(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") === "messages" ? "messages" : "settings";
+  const initialWith = searchParams.get("with") || null;
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["me"],
@@ -27,7 +32,6 @@ export default function Profile() {
 
   const [form, setForm] = useState(null);
 
-  // Initialise form once user loads
   if (user && form === null) {
     setForm({
       full_name: user.full_name || "",
@@ -39,15 +43,17 @@ export default function Profile() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       await base44.auth.updateMe(form);
-      // Sync author_name on all their community setups
-      if (user && form.full_name && form.full_name !== user.full_name) {
-        const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
-        await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, { author_name: form.full_name })));
+      const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
+      const updates = {};
+      if (form.full_name && form.full_name !== user.full_name) updates.author_name = form.full_name;
+      if (mySetups.length > 0 && Object.keys(updates).length > 0) {
+        await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, updates)));
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
+      queryClient.invalidateQueries({ queryKey: ["author-profiles-bulk"] });
       toast.success("Profile updated!");
     },
     onError: () => toast.error("Failed to save profile"),
@@ -78,86 +84,96 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <MobileHeader title="Profile Settings" />
-      <div className="max-w-lg mx-auto px-4 py-10 pb-24">
-        <div className="hidden md:flex items-center gap-3 mb-1">
+      <MobileHeader title="My Profile" />
+      <div className="max-w-5xl mx-auto px-4 py-10 pb-24">
+        <div className="hidden md:flex items-center gap-3 mb-6">
           <Settings className="w-5 h-5 text-primary" />
-          <h1 className="font-heading text-2xl font-bold">Profile Settings</h1>
+          <h1 className="font-heading text-2xl font-bold">My Profile</h1>
         </div>
-        <p className="text-sm text-muted-foreground mb-8 hidden md:block">
-          Update your public identity — changes reflect immediately across the community
-        </p>
 
         {isLoading || !form ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="space-y-7">
-            {/* Avatar */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-2 border-border">
-                  {form.avatar_url ? (
-                    <img src={form.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-10 h-10 text-muted-foreground" />
-                  )}
+          <Tabs defaultValue={initialTab}>
+            <TabsList className="bg-secondary mb-6">
+              <TabsTrigger value="settings" className="text-xs font-heading tracking-wide">
+                <Settings className="w-3.5 h-3.5 mr-1.5" />Profile Settings
+              </TabsTrigger>
+              <TabsTrigger value="messages" className="text-xs font-heading tracking-wide">
+                <MessageCircle className="w-3.5 h-3.5 mr-1.5" />Messages
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="settings">
+              <div className="max-w-lg space-y-7">
+                <p className="text-sm text-muted-foreground -mt-2">
+                  Changes reflect immediately across the community.
+                </p>
+
+                {/* Avatar */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-2 border-border">
+                      {form.avatar_url ? (
+                        <img src={form.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-10 h-10 text-muted-foreground" />
+                      )}
+                    </div>
+                    <button
+                      onClick={() => fileRef.current?.click()}
+                      disabled={avatarUploading}
+                      className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+                    >
+                      {avatarUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                    </button>
+                    <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Click the camera to change your avatar</p>
                 </div>
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  disabled={avatarUploading}
-                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+
+                {/* Display Name */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="username">Display Name</Label>
+                  <Input
+                    id="username"
+                    value={form.full_name}
+                    onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
+                    placeholder="Your name"
+                  />
+                </div>
+
+                {/* Bio */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={form.bio}
+                    onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
+                    placeholder="Tell the community about your sim racing..."
+                    className="resize-none h-28"
+                    maxLength={300}
+                  />
+                  <p className="text-xs text-muted-foreground text-right">{(form.bio || "").length}/300</p>
+                </div>
+
+                <Button
+                  className="w-full font-heading text-xs tracking-wider"
+                  onClick={() => saveMutation.mutate()}
+                  disabled={saveMutation.isPending || avatarUploading}
                 >
-                  {avatarUploading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Camera className="w-3.5 h-3.5" />
-                  )}
-                </button>
-                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                  {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Profile
+                </Button>
               </div>
-              <p className="text-xs text-muted-foreground">Click the camera to change your avatar</p>
-            </div>
+            </TabsContent>
 
-            {/* Username */}
-            <div className="space-y-1.5">
-              <Label htmlFor="username">Display Name</Label>
-              <Input
-                id="username"
-                value={form.full_name}
-                onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-                placeholder="Your name"
-              />
-            </div>
-
-            {/* Bio */}
-            <div className="space-y-1.5">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={form.bio}
-                onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
-                placeholder="Tell the community about your sim racing..."
-                className="resize-none h-28"
-                maxLength={300}
-              />
-              <p className="text-xs text-muted-foreground text-right">{(form.bio || "").length}/300</p>
-            </div>
-
-            <Button
-              className="w-full font-heading text-xs tracking-wider"
-              onClick={() => saveMutation.mutate()}
-              disabled={saveMutation.isPending || avatarUploading}
-            >
-              {saveMutation.isPending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4 mr-2" />
-              )}
-              Save Profile
-            </Button>
-          </div>
+            <TabsContent value="messages">
+              <MessagesPanel me={user} initialUserId={initialWith} />
+            </TabsContent>
+          </Tabs>
         )}
       </div>
       <Footer />

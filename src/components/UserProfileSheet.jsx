@@ -88,7 +88,7 @@ export default function UserProfileSheet({ authorId, authorName, isOpen, onClose
 
   const handleMessage = () => {
     onClose();
-    navigate(`/messages?with=${authorId}`);
+    navigate(`/profile?tab=messages&with=${authorId}`);
   };
 
   const totalDownloads = theirSetups.reduce((sum, s) => sum + (s.download_count || 0), 0);
