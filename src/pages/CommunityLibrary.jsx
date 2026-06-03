@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Star, Download, TrendingUp, Clock, Globe, Users } from "lucide-react";
 import ReplayViewer from "../components/ReplayViewer";
 import { Button } from "@/components/ui/button";
@@ -49,11 +49,14 @@ function StarRating({ rating, onRate, interactive = false }) {
   );
 }
 
-function CommunitySetupCard({ setup, onAuthorClick }) {
+function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
   const queryClient = useQueryClient();
   const [showRating, setShowRating] = useState(false);
   const [pendingRating, setPendingRating] = useState(0);
   const [saved, setSaved] = useState(false);
+
+  const displayAuthorName = authorProfile?.full_name || setup.author_name || "Anonymous";
+  const authorAvatarUrl = authorProfile?.avatar_url;
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -113,11 +116,18 @@ function CommunitySetupCard({ setup, onAuthorClick }) {
           <div className="flex-1 min-w-0">
             <h3 className="font-heading text-sm font-semibold truncate">{setup.title}</h3>
             <button
-            className="text-xs text-muted-foreground mt-0.5 hover:text-primary transition-colors text-left"
-            onClick={() => onAuthorClick?.(setup.author_id, setup.author_name)}
-          >
-            by {setup.author_name || "Anonymous"}
-          </button>
+              className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5 hover:text-primary transition-colors text-left"
+              onClick={() => onAuthorClick?.(setup.author_id, displayAuthorName)}
+            >
+              {authorAvatarUrl ? (
+                <img src={authorAvatarUrl} alt={displayAuthorName} className="w-4 h-4 rounded-full object-cover shrink-0" />
+              ) : (
+                <span className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0" style={{ fontSize: "8px" }}>
+                  {displayAuthorName[0]?.toUpperCase()}
+                </span>
+              )}
+              {displayAuthorName}
+            </button>
           </div>
           <Badge variant="outline" className="text-xs shrink-0">{setup.sim_title}</Badge>
         </div>
@@ -213,6 +223,26 @@ export default function CommunityLibrary() {
     queryFn: () => base44.entities.CommunitySetup.list("-popularity_score", COMMUNITY_SETUPS_LIMIT)
   });
 
+  // Fetch live profiles for all unique authors
+  const authorIds = useMemo(() => [...new Set((setups || []).map(s => s.author_id).filter(Boolean))], [setups]);
+  const { data: authorProfiles = [] } = useQuery({
+    queryKey: ["author-profiles-bulk", authorIds.join(",")],
+    queryFn: async () => {
+      if (authorIds.length === 0) return [];
+      const results = await Promise.all(
+        authorIds.map(id => base44.entities.User.filter({ id }).then(r => r?.[0] || null))
+      );
+      return results.filter(Boolean);
+    },
+    enabled: authorIds.length > 0,
+    staleTime: 30_000,
+  });
+  const authorProfileMap = useMemo(() => {
+    const m = {};
+    authorProfiles.forEach(u => { m[u.id] = u; });
+    return m;
+  }, [authorProfiles]);
+
   const { data: myFollows = [] } = useQuery({
     queryKey: ["my-follows"],
     queryFn: async () => {
@@ -299,7 +329,7 @@ export default function CommunityLibrary() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map(setup => (
-          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} />
+          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} authorProfile={authorProfileMap[setup.author_id]} />
         ))}
       </div>
     );
