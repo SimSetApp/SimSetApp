@@ -37,7 +37,9 @@
     "sim_title"
   ],
   "rls": {
-    "create": null,
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
     "read": {
       "created_by_id": "{{user.id}}"
     },

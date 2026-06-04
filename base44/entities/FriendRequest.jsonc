@@ -37,8 +37,28 @@
     "create": {
       "data.from_id": "{{user.id}}"
     },
-    "read": null,
-    "update": null,
-    "delete": null
+    "read": {
+      "$or": [
+        {
+          "data.from_id": "{{user.id}}"
+        },
+        {
+          "data.to_id": "{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "data.to_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.from_id": "{{user.id}}"
+        },
+        {
+          "data.to_id": "{{user.id}}"
+        }
+      ]
+    }
   }
 }

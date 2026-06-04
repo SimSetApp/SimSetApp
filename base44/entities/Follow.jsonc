@@ -27,7 +27,11 @@
       "data.follower_id": "{{user.id}}"
     },
     "read": null,
-    "update": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "delete": {
       "created_by_id": "{{user.id}}"
     }

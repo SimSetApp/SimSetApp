@@ -41,8 +41,28 @@
     "create": {
       "data.sender_id": "{{user.id}}"
     },
-    "read": null,
-    "update": null,
-    "delete": null
+    "read": {
+      "$or": [
+        {
+          "data.sender_id": "{{user.id}}"
+        },
+        {
+          "data.recipient_id": "{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "data.recipient_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.sender_id": "{{user.id}}"
+        },
+        {
+          "data.recipient_id": "{{user.id}}"
+        }
+      ]
+    }
   }
 }
