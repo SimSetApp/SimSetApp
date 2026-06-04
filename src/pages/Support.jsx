@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Heart, Lightbulb, Loader2, CheckCircle2, ArrowLeft, Instagram } from "lucide-react";
@@ -16,6 +16,11 @@ export default function Support() {
   const [amount, setAmount] = useState(3);
   const [customAmount, setCustomAmount] = useState("");
   const [donating, setDonating] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(setIsAuthenticated);
+  }, []);
 
   const [suggestion, setSuggestion] = useState("");
   const [email, setEmail] = useState("");
@@ -26,6 +31,10 @@ export default function Support() {
   const finalAmount = customAmount ? parseFloat(customAmount) : amount;
 
   const handleDonate = async () => {
+    if (!isAuthenticated) {
+      base44.auth.redirectToLogin(window.location.pathname);
+      return;
+    }
     if (!finalAmount || finalAmount < 1) {
       toast.error("Minimum donation is £1");
       return;
@@ -129,11 +138,11 @@ export default function Support() {
             className="w-full font-heading text-xs tracking-wider"
           >
             {donating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Heart className="w-4 h-4 mr-2" />}
-            {donating ? "Redirecting to checkout..." : `Donate £${finalAmount || "?"}`}
+            {donating ? "Redirecting to checkout..." : isAuthenticated ? `Donate £${finalAmount || "?"}` : "Sign in to Donate"}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center mt-3">
-            Secure checkout powered by Base44 Payments. No account required.
+            Secure checkout powered by Base44 Payments.{!isAuthenticated && " An account is required to donate."}
           </p>
         </div>
 
