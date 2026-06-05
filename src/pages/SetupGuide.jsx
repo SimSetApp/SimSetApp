@@ -16,6 +16,9 @@ export default function SetupGuide() {
   const [car, setCar] = useState("");
   const navigate = useNavigate();
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const defaultTab = urlParams.get("tab") || "parameters";
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -57,7 +60,7 @@ export default function SetupGuide() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="parameters" className="space-y-6">
+        <Tabs defaultValue={defaultTab} className="space-y-6">
           <TabsList className="bg-secondary">
             <TabsTrigger value="parameters" className="font-heading text-xs tracking-wider">
               <BookOpen className="w-3.5 h-3.5 mr-1.5" />
