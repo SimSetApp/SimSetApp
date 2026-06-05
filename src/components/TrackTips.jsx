@@ -24,7 +24,7 @@ function TrackMap({ mapUrl, track }) {
             "brightness(0) invert(1) " +
             "drop-shadow(0px 0px 3px rgba(69, 179, 47, 0.95)) " +
             "drop-shadow(0px 0px 6px rgba(0,0,0,0.8)) " +
-            "drop-shadow(0px 0px 1px rgba(248, 248, 248, 1)) " +
+            "drop-shadow(0px 0px 1px rgba(197, 197, 197, 1)) " +
             "opacity(0.92)",
         }}
         draggable={false}
