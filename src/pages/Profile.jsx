@@ -42,10 +42,16 @@ export default function Profile() {
       bio: user.bio || "",
       avatar_url: user.avatar_url || "",
     });
-    // Auto-generate tag if missing
+    const updates = {};
     if (!user.user_tag) {
-      const tag = "SSA-" + Math.floor(10000 + Math.random() * 90000);
-      base44.auth.updateMe({ user_tag: tag }).then(() => queryClient.invalidateQueries({ queryKey: ["me"] }));
+      updates.user_tag = "SSA-" + Math.floor(10000 + Math.random() * 90000);
+    }
+    // Backdate: auto-fill display_name from full_name for existing users
+    if (!user.display_name && user.full_name) {
+      updates.display_name = user.full_name;
+    }
+    if (Object.keys(updates).length > 0) {
+      base44.auth.updateMe(updates).then(() => queryClient.invalidateQueries({ queryKey: ["me"] }));
     }
   }
 
