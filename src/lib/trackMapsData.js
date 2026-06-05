@@ -338,7 +338,7 @@ export const TRACK_MAPS = {
       {
         name: "Tamburello chicane",
         importance: "critical",
-        note: "Main overtaking point — flat-out chicane, kerbs can launch the car, exit stability critical.",
+        note: "Braking from ~310 km/h to ~80 km/h over sausage kerbs that produce 20–35mm vertical suspension impulse at peak deceleration. ABS threshold sensitivity is highest here due to simultaneous longitudinal and vertical loading. Exit stability under full acceleration is the primary time variable: rear ARB stiffness governs yaw resistance as throttle load is applied over residual kerb-induced vertical movement. Softer bump damping (allow kerb travel) + medium rear ARB is the optimal compromise. First apex is wholly secondary — second apex exit vector onto the pit straight determines trap speed.",
         rookie: {
           what: "A chicane replacing what used to be the flat-out Tamburello curve. The kerbs here can send the car airborne if hit hard, so be cautious.",
           inputs: "Brake firmly, take a gentle first apex (don't ride the kerb), then accelerate hard from the second apex. The kerbs look inviting but they're dangerous at speed.",
@@ -348,7 +348,7 @@ export const TRACK_MAPS = {
       {
         name: "Acque Minerali",
         importance: "critical",
-        note: "Mid-circuit complex — bumpy, high-speed. Soft bump damping allows the car to breathe over the surface.",
+        note: "High-frequency surface irregularities through a medium-speed esses at ~180–200 km/h — bump damping compliance is the dominant setup variable. Wheel frequency at this section peaks at 8–12 Hz, which exceeds the natural response of stiff damper settings, causing tyre contact loss. Any steering correction over a contact-loss event creates oscillation. Optimal bump damping: 30–40% of maximum on both axles. Rebound rate governs how quickly the tyre returns to road contact after each surface irregularity — too stiff rebound prolongs the contact gap.",
         rookie: {
           what: "A mid-speed esses complex over a bumpy section of track. The car bounces and the grip level changes — it requires a lot of car confidence.",
           inputs: "Be smooth above all else. Don't react to every bump with a steering correction — let the car move under you slightly. Keep your grip light on the wheel.",
@@ -358,7 +358,7 @@ export const TRACK_MAPS = {
       {
         name: "Variante Alta",
         importance: "high",
-        note: "Double-apex over the ridge — blind entry requires composure. Both apices matter equally.",
+        note: "Double-apex taken over a ridge crest at ~150 km/h — vertical load transitions from compression to extension as the car crosses the crest between the two apices. Spring rate governs how much the car extends over the ridge: too stiff = wheels lift, too soft = excessive body pitch masking road surface input. Blind second apex requires a committed turn-in point referenced to trackside markers, not visual apex confirmation. Any weight transfer initiated incorrectly at the first apex determines the car's attitude at the critical second apex.",
         rookie: {
           what: "A double-apex corner over a ridge — you can't see the second apex until you're committed to the first. It requires trusting the layout.",
           inputs: "Brake, take the first apex conservatively, and then look immediately for the second apex. Don't rush — the car needs time to settle between the two turning points.",
@@ -368,7 +368,7 @@ export const TRACK_MAPS = {
       {
         name: "Rivazza (final hairpins)",
         importance: "high",
-        note: "Double hairpin — second exit leads onto the pit straight. Traction is the priority.",
+        note: "Two geometrically linked hairpins — first hairpin rotation quality determines second hairpin entry angle. The second exit vector feeds the pit straight: any residual lateral slip angle from the first hairpin propagates into the second entry, creating an understeer condition that forces a wide exit. Power diff lock 65–72%: higher values prevent rotation at the first hairpin but maximise traction at the second. Optimal compromise: 67–70% lock, accept a slight rotation penalty at T1 to ensure clean traction at T2.",
         rookie: {
           what: "Two slow hairpins at the end of the lap. The second one leads directly onto the pit straight so exit traction is very important.",
           inputs: "Take the first hairpin cleanly, then focus everything on the second one. Slow in, late apex, clean throttle. The car you need coming out of Rivazza is fast, not dramatic.",
@@ -385,7 +385,7 @@ export const TRACK_MAPS = {
       {
         name: "Ford Chicanes (T1–T2)",
         importance: "critical",
-        note: "Opening chicane — braking from 330+ km/h over two apices. Kerb abuse here ruins tyres for the entire stint.",
+        note: "Braking from 340+ km/h to ~80 km/h — the highest peak deceleration of any corner in any series at Le Mans. Brake disc temperature at this point is the highest on the lap by a margin; GT cars running endurance stints require harder pad compounds (higher temperature operating range) and maximum cooling duct aperture. High sausage kerbs: contact at entry speed above 100 km/h generates peak vertical suspension impulse of ~40mm — insufficient bump travel causes the car to skip rather than absorb. First apex is a setup compromise; second apex exit vector determines Tertre Rouge approach speed.",
         rookie: {
           what: "The first braking point after the pit straight — you go from 300+ km/h to about 80 km/h. The kerbs here are high and dangerous if hit at speed.",
           inputs: "Brake very early on your first laps — you'll be going faster than you're used to. Two apices: hit both calmly without running over the sausage kerbs. Clean and controlled over anything aggressive.",
@@ -395,7 +395,7 @@ export const TRACK_MAPS = {
       {
         name: "Tertre Rouge",
         importance: "critical",
-        note: "Fast right-hander feeding the Mulsanne. Every extra km/h here compounds across 6 km of flat.",
+        note: "Exit speed from this ~145 km/h right-hander integrates across 6.5 km of near-flat road (Mulsanne, Indianapolis, Arnage approaches) — every 1 km/h at the Tertre Rouge exit is worth approximately 0.08–0.12s of lap time before the next braking zone. Minimum wing setting is constrained by Tertre Rouge cornering load — insufficient rear wing causes rear slip angle here that delays full throttle application by 0.3–0.5s, erasing the straight-line drag advantage. Power diff lock 60–65%: higher values delay early throttle application at the apex due to understeer.",
         rookie: {
           what: "A fast right-hander at the end of the lap's technical section that fires you onto the Mulsanne Straight. Speed here multiplies across 6 km of flat road.",
           inputs: "Treat this as a corner where the exit matters more than any other corner on the track. Get on the throttle early and smoothly — even an extra 5 km/h here is worth seconds down the straight.",
@@ -405,7 +405,7 @@ export const TRACK_MAPS = {
       {
         name: "Indianapolis / Arnage",
         importance: "critical",
-        note: "Slowest section of the lap — mechanical grip dominant. Most time gaps between classes are created here.",
+        note: "Minimum speed ~55–80 km/h — aerodynamic contribution approaches zero, mechanical grip is the sole variable. Low-speed differential lock 55–65% governs rotation through the tight entry radius. At these speeds, tyre contact patch deformation under load is the primary grip source; higher tyre pressures reduce deformation and cost lap time. Rear spring rate and rear ARB influence how much load transfers to the outer rear tyre under throttle — a softer rear spring increases contact patch area and traction modulation. Most inter-class lap time differentials at Le Mans originate from this section.",
         rookie: {
           what: "A slow, tight chicane and hairpin in the infield section. At low speed, aero barely helps — it's all about mechanical grip and smooth throttle.",
           inputs: "Take each corner individually. Brake firmly, rotate the car, then apply smooth progressive throttle. Don't rush — the car needs to be pointed straight before you get on the power.",
@@ -415,7 +415,7 @@ export const TRACK_MAPS = {
       {
         name: "Porsche Curves",
         importance: "critical",
-        note: "Multi-apex S-bends — the most technically demanding section. Bumpy, fast, unforgiving of setup imbalance.",
+        note: "Six direction changes at 200–250 km/h over a bumpy, undulating surface — the highest combined bump-damping and aero-balance demand of any section at Le Mans. Surface irregularities at this speed generate tyre load variations of ±30–40% instantaneously; insufficient bump compliance causes intermittent contact loss that appears as random understeer. Aero imbalance at these speeds amplifies through sequential direction changes identically to Suzuka S-Curves. Optimal bump damping: 30–40% of max on both axles. Rebound rate: slightly stiffer than bump to prevent oscillation build-up.",
         rookie: {
           what: "A flowing series of S-bends over a bumpy surface at the far end of the circuit. Very fast, very demanding, and the section where setups with imbalance get found out.",
           inputs: "Flow through — don't fight the car. Small, smooth steering inputs. Let the bumps move the car slightly rather than correcting every movement. If you're fighting the steering here, your setup needs work.",
@@ -432,7 +432,7 @@ export const TRACK_MAPS = {
       {
         name: "T1 (Elf)",
         importance: "critical",
-        note: "Heavy braking into a tight right — biggest front tyre load on the lap, sustained through the exit.",
+        note: "Braking from ~280 km/h to ~75 km/h — peak front tyre deceleration load of the lap. Front tyre inner shoulder temperature accumulation from this corner onward tracks directly to T5 (Seat) wear rate. Brake bias 57–58% front: higher risks front lock on the slightly downhill approach, lower causes rear instability. Trail braking to ~60% of corner arc maintains front load for rotation; early throttle application before the car is settled produces understeer that forces a wide exit and compromises the T2 approach. Soft front rebound prevents the front from rising sharply after the braking phase ends.",
         rookie: {
           what: "The first corner — a heavy braking zone into a tight right-hander. Your front tyres get hit the hardest here, especially on the first lap when they're still cold.",
           inputs: "Brake in a straight line, downshift early, then turn in smoothly. Don't attack the kerb on exit — it's bumpy and will unsettle the car. Take your time with the throttle.",
@@ -442,7 +442,7 @@ export const TRACK_MAPS = {
       {
         name: "T3 (Renault)",
         importance: "critical",
-        note: "Fast right after the back straight — the primary aero balance diagnostic corner.",
+        note: "~230 km/h right-hander with a minimal braking event (~0.8s braking pulse from 255 km/h) — the car transitions directly from high-speed aero-dominated mode to mechanical grip mode within the same arc. Front aero load is the critical input: insufficient front downforce at the turn-in point creates understeer before mechanical grip can compensate. Rear ARB stiffness must allow enough rear compliance to avoid oversteer as speed drops mid-arc. This corner is the definitive aero balance diagnostic — a balanced car carries more speed through here than either understeering or oversteering configurations.",
         rookie: {
           what: "A fast right-hander at the end of the back straight. This corner tells you more about your car's balance than any other — if it understeers here, your front aero is lacking.",
           inputs: "Light braking or a lift, then commit to the corner. The car should feel balanced and planted — if the front pushes wide, you need more front downforce or less rear wing.",
@@ -452,7 +452,7 @@ export const TRACK_MAPS = {
       {
         name: "T5 (Seat)",
         importance: "critical",
-        note: "Long sustained right-hander — more front tyre degradation comes from here than anywhere else.",
+        note: "~4.5 seconds of sustained lateral loading at ~140–160 km/h — the longest uninterrupted front tyre stress event of any corner at Catalunya. Inner front tyre temperature rise per lap-arc here is the highest of any corner: typically 8–12°C per lap for a GT3 car. Front camber is the primary thermal variable: each 0.1° of camber increase shifts ~2°C from outer to inner tyre face. Target: outer and inner front tyre temperatures within 15°C after a full stint. Throttle application timing mid-arc directly governs understeer load — early throttle increases front lateral load via weight transfer; delayed throttle maintains a more neutral balance.",
         rookie: {
           what: "A long, constant-radius right-hander. Your front tyres are under load for the entire duration — this is where they get hot and wear fastest.",
           inputs: "Smooth steering — don't 'hold' the wheel aggressively against understeer. If the front pushes, ease off the throttle gently rather than forcing the car. Trying to fight understeer here destroys front tyres.",
@@ -462,7 +462,7 @@ export const TRACK_MAPS = {
       {
         name: "T9 La Caixa (hairpin)",
         importance: "high",
-        note: "Slow hairpin exit — diff setup critical, long traction zone onto the pit straight area.",
+        note: "Minimum speed ~55 km/h — traction zone feeds the 1.05 km main straight via a compound uphill gradient. Power diff lock 65–72%: the uphill gradient after the apex increases weight transfer to the rear axle, which amplifies the effect of higher diff lock values compared to flat-ground equivalents. Trail braking to the apex is mandatory for rotation; the tight radius (≈25m) requires maximum front load. Rear tyre thermal state at this point in the lap is the highest on the circuit — high-lock diff with worn rears produces excessive wheelspin and makes the car feel understeering when it is actually rear-traction-limited.",
         rookie: {
           what: "A slow hairpin where traction on exit feeds the long main straight. Wheelspin here costs a lot of time.",
           inputs: "Slow and patient. Late apex, then progressive throttle. If you feel wheelspin, ease off slightly — fighting the wheels spinning loses more time than a controlled exit.",
@@ -479,7 +479,7 @@ export const TRACK_MAPS = {
       {
         name: "Turn 2 (Castrol Corner)",
         importance: "critical",
-        note: "First heavy braking zone — key setup corner, traction out feeds the infield section.",
+        note: "Downhill braking from ~240 km/h — descending gradient progressively reduces front vertical load as braking proceeds, shifting the effective brake balance rearward dynamically during the stop. Brake bias 58–59% front nominal; the actual front proportion at peak deceleration is lower due to the pitch-induced weight reduction. Trail braking to mid-corner maintains residual front load for rotation. Soft front rebound prevents the nose from rising sharply when braking force reduces — excessive rebound stiffness creates a brief moment of front 'float' that reduces steering response at the turn-in point.",
         rookie: {
           what: "The first real braking zone — a downhill right-hander. The track drops as you brake, which can cause the front to lock if you brake too hard.",
           inputs: "Brake before the corner begins to drop (earlier than it looks necessary). Trail-brake gently into the apex. Focus on traction — the next section flows from this exit.",
@@ -489,7 +489,7 @@ export const TRACK_MAPS = {
       {
         name: "Andretti Hairpin (Turn 5)",
         importance: "high",
-        note: "Tight hairpin — rotation and traction priority. Diff tuning matters significantly here.",
+        note: "Minimum speed ~45 km/h in a tight-radius hairpin — the most mechanically dominated corner at Laguna Seca. Low-speed diff lock 55–65%: the approach is slightly uphill, increasing rear axle load and amplifying the effect of diff lock on rotation resistance. Too high a lock (>65%) creates understeer that forces the car onto a wider line, adding ~0.2s. Rear spring rate governs mechanical traction quality — softer rear spring (within ride height constraints) increases rear contact patch load under acceleration. Front camber: maximum allowable reduces scrub and maintains steering precision at low speed.",
         rookie: {
           what: "A slow hairpin in the middle of the infield section. Very tight — you need to really slow down. Exit traction is the key.",
           inputs: "Brake firm, rotate the car, then apply throttle very progressively. Wheelspin here sends you sideways quickly. Patient and smooth.",
@@ -499,7 +499,7 @@ export const TRACK_MAPS = {
       {
         name: "Corkscrew (Turn 8/9)",
         importance: "critical",
-        note: "The world's most famous corner. Blind entry, massive downhill drop, direction change. Soft suspension, total commitment.",
+        note: "Blind entry at ~135 km/h followed by a 17m elevation drop over ~80m horizontal distance — the steepest descent of any named corner in professional motorsport. Vertical compression at the bottom of the drop generates peak suspension travel of 30–45mm; insufficient ride height causes aerodynamic floor contact, creating an instantaneous grip reduction mid-corner. Soft bump damping (below 40% of max) is non-negotiable — stiffer settings cause the car to bounce off the compression and lose contact. Turn-in point is fixed by landmark (not visual apex) — commitment must be absolute before the car crests. Rear toe-in provides passive yaw stability during the direction change at the base of the drop.",
         rookie: {
           what: "The most famous corner in American motorsport. You drive over a crest and the road drops sharply away to the left, then immediately turns right. You can't see the landing from the entry.",
           inputs: "Pick a braking point landmark (a post, a line on the road) and use it every lap. Turn left before you can see the bottom. The car will drop — let it. Don't brake after you've turned. Trust the track.",
@@ -509,7 +509,7 @@ export const TRACK_MAPS = {
       {
         name: "Rainey Curve (Turn 11)",
         importance: "critical",
-        note: "Long final corner — sustained front load, traction onto the front straight. Front tyre condition key.",
+        note: "~3.8 seconds of sustained loading at ~130–155 km/h — the longest single-corner front tyre stress event at Laguna Seca. Front camber balance governs temperature spread: target outer-inner delta below 18°C after a full stint. Power diff lock 58–65%: mid-corner throttle application under lateral G at this arc length creates a steady-state understeer condition — too high a lock makes this worse. Optimal throttle timing: at or just after the apex, with progressive overlay. Exit is the primary time output: higher exit speed adds ~0.05s per km/h through the braking zone for Turn 2 approach.",
         rookie: {
           what: "The long, final sweeping corner before the main straight. Taken at medium-high speed for an extended period — the front tyres work hard throughout.",
           inputs: "Brake just enough, then hold a smooth, consistent throttle through the corner. The exit is the priority — get the car pointing straight and accelerate hard.",
@@ -526,7 +526,7 @@ export const TRACK_MAPS = {
       {
         name: "Turn 1 (Castrol Kurve)",
         importance: "critical",
-        note: "Uphill heavy braking zone — grip builds through the corner. Late apex, aggressive traction.",
+        note: "Uphill braking from ~275 km/h — ascending gradient reduces aerodynamic contribution to downforce as speed drops faster than on flat ground, compressing the effective braking distance. The car is simultaneously decelerating and climbing, which reduces pitch moment and rear load transfer; this makes the rear less stable during hard braking versus flat-ground equivalent. Brake bias 57–58% front. Trail braking to the apex is the primary rotation tool — turn-in without trail braking causes understeer that forces a wide exit and reduces T1–T2 carry speed. Power diff lock 65–70% exploits the uphill gradient's natural rear-loading effect for exit traction.",
         rookie: {
           what: "An uphill right-hander at the end of the main straight. The uphill approach fools many beginners into braking too late — the car doesn't slow down as fast as on flat ground.",
           inputs: "Brake earlier than instinct suggests. The uphill helps, but not as much as you think. Late apex — hug the inside kerb — then get on the throttle early as the track continues uphill.",
@@ -536,7 +536,7 @@ export const TRACK_MAPS = {
       {
         name: "Turn 3 (Remus Kurve)",
         importance: "critical",
-        note: "Second major braking zone — over the crest blind. The primary lap time differentiator.",
+        note: "Braking from ~240 km/h over a blind crest — the car is at minimum vertical load as braking commences (crest reduces both front and rear aero load simultaneously). This makes the brake bias threshold sensitivity higher than at T1: the same brake pressure that is stable at T1 may cause front lock here due to reduced overall load. ABS threshold recalibration between T1 and T3 is the highest-skill delta on the lap. Brake bias 57–58% front; any higher risks front lock at reduced-grip crest phase. This corner produces the largest time differential between driver skill levels at Red Bull Ring.",
         rookie: {
           what: "A heavy braking zone over a blind crest — you can't see the corner until you're nearly at it. This is where most time differences between drivers appear.",
           inputs: "Pick a braking marker and commit to it. Don't be tempted to brake later just because you can't see the corner yet. The crest can make the car light, so very late braking risks locking up and going straight on.",
@@ -546,7 +546,7 @@ export const TRACK_MAPS = {
       {
         name: "Turn 6 (Rindt Kurve)",
         importance: "high",
-        note: "Downhill right-hander — car unloads, needs careful setup to stay planted at speed.",
+        note: "~175 km/h downhill right-hander — descending gradient reduces both aero downforce contribution (speed loss is slower, but pitch angle reduces front aero efficacy) and rear mechanical grip. The car transitions from compression (before entry) to pitch-neutral (mid-corner) to extension (exit), each phase requiring different grip demands. Rear wing setting must account for the extension phase where rear aero load drops most acutely. Rear toe-in provides passive yaw stability during the extension. Throttle application before the car is settled in the extension phase creates rear-oversteer on the downhill gradient.",
         rookie: {
           what: "A medium-speed right-hander that goes downhill. The car becomes lighter as the track drops, reducing rear grip.",
           inputs: "Be gentle with inputs as the car unloads. Don't trail-brake aggressively. Smooth throttle from the apex — the downhill actually helps you accelerate away.",
@@ -556,7 +556,7 @@ export const TRACK_MAPS = {
       {
         name: "Turn 9–10 (final complex)",
         importance: "high",
-        note: "Final corner combination — traction here feeds the main straight directly.",
+        note: "Final right-hander at ~80 km/h — exit vector feeds the 900m main straight and T1 braking zone directly. Power diff lock 65–70%: the corner is taken at a speed where the diff lock effect on rotation is significant (below ~100 km/h the mechanical effect is higher vs. aero-dominated cornering). Rear spring rate directly governs squat under acceleration — stiffer reduces squat body motion but reduces contact patch load. Optimal rear spring: soft enough to allow rear squat without bottoming; stiffer than Hungaroring equivalent due to higher average speed. Trail braking: mandatory for a tight entry radius (~18m) to maintain front load for rotation.",
         rookie: {
           what: "The final corner before the main straight — a slow right-hander. Exit speed directly translates to a higher trap speed on the straight.",
           inputs: "Slow and patient entry. Rotate cleanly, late apex, then early and smooth throttle. Think about where you want to be at the exit, not the entry.",
@@ -573,7 +573,7 @@ export const TRACK_MAPS = {
       {
         name: "T1 (Opening hairpin)",
         importance: "critical",
-        note: "Slow right-hand hairpin — repeated heat cycles destroy the front tyres. Tyre management begins here.",
+        note: "Minimum speed ~60 km/h — a pattern repeated in near-identical geometry at T11, meaning the front tyre thermal cycle (heat-up, partial cool, heat-up again) occurs twice per lap at maximum mechanical grip demand. Inner front tyre operating temperature rises ~6–9°C per T1 pass; by lap 12–15, cumulative thermal degradation reduces front mechanical grip by 8–12%. Front camber balance target: inner-outer delta below 15°C across a full stint. Low-speed diff lock 55–65%: the hairpin radius requires rotation via front grip, not diff unlock — higher lock forces wider exit line and adds understeer scrub to already thermally stressed fronts.",
         rookie: {
           what: "The first corner and a tight hairpin. You brake from reasonable speed into a slow right-hander. This corner is repeated in almost the same form later in the lap, causing the fronts to overheat.",
           inputs: "Brake firmly, rotate the car, and apply smooth throttle. Don't attack the kerb on entry — it unbalances the car for the exit. Think about tyre conservation from lap one.",
@@ -583,7 +583,7 @@ export const TRACK_MAPS = {
       {
         name: "T4 (Long left-hander)",
         importance: "critical",
-        note: "The longest sustained corner — exposes every balance issue. Most front wear generated here.",
+        note: "~5.2 seconds of continuous lateral loading at ~145 km/h — the highest single-corner front tyre thermal input of any corner in the GT calendar. Front ARB stiffness governs the load distribution between inner and outer front tyres: stiffer ARB = more lateral load transfer = higher outer front grip demand = inner front thermal underload and outer front overload. Target outer-inner front delta: below 20°C. Soft front ARB (within ride height constraints) maximises contact patch area by allowing more suspension travel under load. Understeer mid-arc under sustained throttle is the primary driver complaint — caused by front tyre degradation interacting with diff lock, not setup imbalance per se.",
         rookie: {
           what: "The longest corner on the lap — a sustained left-hander that keeps the front tyres under load for a long time. If your front tyres are worn by the end of a stint, this is why.",
           inputs: "Don't try to carry maximum speed — tyre protection matters more than lap time on a single corner here. Smooth throttle, avoid fighting understeer with steering force.",
@@ -593,7 +593,7 @@ export const TRACK_MAPS = {
       {
         name: "T6–T7 complex",
         importance: "high",
-        note: "Mid-circuit esses — faster than they appear, the key aero balance diagnosis section.",
+        note: "Direction changes at ~160–185 km/h over a smooth surface — the transition speed makes this the only section at the Hungaroring where aerodynamic balance is the primary grip variable rather than mechanical. Front-rear aero imbalance amplifies through the sequential direction changes identically to Maggots-Becketts at Silverstone but at lower speeds. Rear toe-in 0.8–1.0mm provides passive yaw stability between direction changes. Rear ARB stiffness governs lateral load transfer speed at each direction change — stiffer than 65% of max creates snap oversteer as weight transfers. This section is the aero setup diagnostic tool for the Hungaroring.",
         rookie: {
           what: "A flowing S-bend section in the middle of the circuit. It's faster than it looks and the car changes direction quickly.",
           inputs: "Flow through — small inputs. The car should feel planted and confident. If it doesn't, your aero balance is off. Be progressive with throttle through the second part.",
@@ -603,7 +603,7 @@ export const TRACK_MAPS = {
       {
         name: "T11 (Final hairpin)",
         importance: "critical",
-        note: "Tight hairpin — traction exit feeds the main straight. Differential settings are the key variable.",
+        note: "Minimum speed ~50 km/h — the sole traction opportunity on a circuit with almost no meaningful straight. Power diff lock 65–75%: at the Hungaroring, this corner produces the highest lap time sensitivity to diff lock setting of any corner in the GT calendar due to the absence of any other significant traction zone. Every 5% increase in lock above the understeer threshold (usually ~70%) costs ~0.05s through the corner but recovers ~0.12s on the main straight — net positive only if the lock value is below the rotation-constraint threshold. Rear spring rate governs squat under acceleration: softer rear spring allows more squat, increasing rear contact patch load and modulating wheelspin. Front tyre thermal state at T11 determines rotation quality — degraded fronts cannot generate sufficient load for clean rotation, causing the car to push wide regardless of diff setting.",
         rookie: {
           what: "The final hairpin before the main straight. This is the last chance to build speed for the straight, so exit traction is the priority.",
           inputs: "Very slow in, very late apex, very smooth throttle. The car needs to be pointed straight before you apply full power. Any wheelspin here wastes your only real acceleration opportunity.",
@@ -620,7 +620,7 @@ export const TRACK_MAPS = {
       {
         name: "Caracciola Karussell",
         importance: "critical",
-        note: "Banked concrete bowl — unload the car and let the banking do the work. Fighting it causes snap oversteer.",
+        note: "Concrete banking of 25–28° at the Karussell's base — the banking provides an effective vertical load increase equivalent to +1.5–2.0G lateral compensation when the car is fully in contact. The setup requirement is the inverse of every other corner: softer springs allow the car to drop into the banking and maximise contact area; stiffer springs resist the banking geometry and reduce the load advantage. Ride height must be sufficient to prevent floor contact at the banking transition (compression into the bowl). Any steering input fighting the banking geometry reduces the contact patch area and negates the banking's load benefit. Exit: the car unloads sharply as it leaves the banking — aggressive throttle at this moment causes rear slip.",
         rookie: {
           what: "A famous banked corner — the track dips into a concrete banking that tilts the car. The banking provides extra grip but only if you use it correctly.",
           inputs: "Drop into the banking (the lower line), let the car lean into it, and carry your speed through. Don't fight the car or try to steer out of the banking — the geometry does the work. Smooth, consistent throttle.",
@@ -630,7 +630,7 @@ export const TRACK_MAPS = {
       {
         name: "Pflanzgarten",
         importance: "critical",
-        note: "Two compressions and a jump — car goes airborne. Suspension compliance and ride height are everything here.",
+        note: "Two compression-rebound cycles followed by an airborne phase of ~0.15–0.25s at full speed — the highest ride height demand of any section at the Nordschleife. Floor contact at Pflanzgarten produces an instantaneous downforce loss that is non-recoverable at this speed. Minimum ride height: 10mm above the static clearance minimum. Bump damping: below 30% of max to absorb first compression; insufficient bump rate causes the car to bounce off the first compression and arrive at the second with excessive vertical velocity. Airborne: any steering input while the car is off the ground creates angular momentum — when the car lands with a steering angle applied, the resulting direction change is instantaneous and non-catchable. Brake before the crest, not on it — longitudinal deceleration during the airborne-to-compression transition creates rear instability.",
         rookie: {
           what: "A section with compressions and crests where the car can become airborne. One of the most dangerous sections of the Nordschleife at speed.",
           inputs: "Do not brake over the crests — you'll lock up immediately. Lift before the crest, not on it. Keep your hands still while airborne — steering inputs while the car is light cause huge instability on landing.",
@@ -640,7 +640,7 @@ export const TRACK_MAPS = {
       {
         name: "Schwedenkreuz / Aremberg",
         importance: "critical",
-        note: "High-speed left-right over blind crests — the most dangerous section. Commitment builds over many laps.",
+        note: "~240–260 km/h left-right sequence over crests where the road surface is not visible from the entry braking point — aerodynamic stability is the primary safety variable at this speed. Rear wing below medium setting creates a rear instability condition over the crests where aero load drops; the car's yaw response at 260 km/h is non-linear and the correction window is <0.15s. Rear toe-in at the maximum allowable range provides passive yaw resistance. Rear ARB stiffness above 70% of max creates snap oversteer as the car transitions from one crest to the next — medium rear ARB is the stable range. Track knowledge is a setup surrogate: the committed driver line through Schwedenkreuz uses the full road width, which at these speeds requires absolute precision on the turn-in reference. Any deviation from the optimal line at this speed adds understeer load that cannot be corrected without a speed reduction.",
         rookie: {
           what: "A high-speed left-right sequence over blind crests — you can't see what's coming. This is the most intimidating section for newcomers to the Nordschleife.",
           inputs: "Build up to this section gradually over many laps. Use the barriers and tree lines as visual guides for where the track goes. Hold the throttle steadily — any sudden lift over the crests can unsettle the car. Trust the car.",
@@ -650,7 +650,7 @@ export const TRACK_MAPS = {
       {
         name: "Brünnchen complex",
         importance: "high",
-        note: "Long mid-speed right — bumpy and traction-sensitive. More incidents occur here than anywhere on the lap.",
+        note: "~170 km/h sustained right-hander over a series of surface undulations with amplitude 20–40mm at 4–8 Hz — the highest combined bump-frequency and lateral-load demand at the Nordschleife. Tyre contact loss under lateral G at a bump creates a brief understeer-to-oversteer transition: the initial contact loss feels like understeer, but on contact restoration the tyre bites immediately and snaps oversteer follows. Bump damping below 35% of max prevents the oscillation from building across sequential undulations. Rebound rate: slightly stiffer than bump prevents the car from rebounding into the next undulation at increased vertical velocity. Throttle management: any wheelspin on a bump at this speed produces instantaneous oversteer — TC sensitivity should be raised specifically for the Brünnchen section if the sim allows per-section adjustment.",
         rookie: {
           what: "A long, medium-speed right-hander over a bumpy surface. The car can bounce and lose grip unexpectedly — this section catches many drivers out.",
           inputs: "Take a wide entry line, be smooth throughout, and don't fight the bumps with the steering. Apply throttle progressively — wheelspin on bumps causes instant oversteer. Margin is your friend here.",
