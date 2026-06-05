@@ -60,20 +60,35 @@ function RookieCornerCard({ corner }) {
   );
 }
 
-// Pro corner card — concise
+// Pro corner card — technical with inputs/setup
 function ProCornerCard({ corner }) {
   const isCritical = corner.importance === "critical";
+  const r = corner.rookie;
   return (
-    <div className={`flex items-start gap-2.5 p-3 rounded-lg border ${
+    <div className={`rounded-lg border p-3 space-y-2 ${
       isCritical ? "bg-destructive/5 border-destructive/20" : "bg-chart-1/5 border-chart-1/20"
     }`}>
-      <div className={`mt-0.5 shrink-0 ${isCritical ? "text-destructive" : "text-chart-1"}`}>
-        {isCritical ? <Flame className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+      <div className="flex items-start gap-2">
+        <div className={`mt-0.5 shrink-0 ${isCritical ? "text-destructive" : "text-chart-1"}`}>
+          {isCritical ? <Flame className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+        </div>
+        <div>
+          <p className={`text-xs font-semibold ${isCritical ? "text-destructive" : "text-chart-1"}`}>{corner.name}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{corner.note}</p>
+        </div>
       </div>
-      <div>
-        <p className={`text-xs font-semibold ${isCritical ? "text-destructive" : "text-chart-1"}`}>{corner.name}</p>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{corner.note}</p>
-      </div>
+      {r && (
+        <div className="space-y-1.5 pl-5">
+          <div className="flex gap-2 items-start">
+            <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded shrink-0 mt-0.5">INPUTS</span>
+            <p className="text-xs text-muted-foreground leading-relaxed">{r.inputs}</p>
+          </div>
+          <div className="flex gap-2 items-start">
+            <span className="text-[10px] font-semibold text-chart-2 bg-chart-2/10 px-1.5 py-0.5 rounded shrink-0 mt-0.5">SETUP</span>
+            <p className="text-xs text-muted-foreground leading-relaxed">{r.setup}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -168,7 +183,7 @@ function TrackCard({ track, data, isRookie }) {
                     <Flame className="w-3 h-3 text-destructive" />
                     {isRookie ? "Key corners to learn" : "Where time is lost"}
                   </p>
-                  <div className={`grid gap-2 ${isRookie ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
+                  <div className="grid gap-2 grid-cols-1">
                     {mapData.keyCorners.map((corner, i) =>
                       isRookie
                         ? <RookieCornerCard key={i} corner={corner} />
