@@ -29,7 +29,7 @@ const FEATURES = [
     desc: "Wing levels, brake cooling, and key focus areas for popular circuits across all sims.",
     accent: "text-chart-2",
     bg: "bg-chart-2/10",
-    href: "/tuning-guide",
+    href: "/setup-guide?tab=tracks",
   },
   {
     icon: Gauge,
