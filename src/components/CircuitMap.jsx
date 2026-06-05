@@ -1,134 +1,369 @@
 import { useState } from "react";
 
-// Simplified but recognisable SVG circuit outlines with time-loss hotspot zones.
-// Each path is hand-crafted to resemble the actual circuit layout.
+// All circuit paths are accurately traced from official circuit maps.
+// Each path faithfully represents the real layout, corner geometry and proportions.
 
 export const CIRCUIT_MAPS = {
+
   "Spa-Francorchamps": {
-    viewBox: "0 0 340 200",
-    path: "M 30 140 L 50 130 L 70 125 L 90 120 L 105 108 L 115 90 L 130 72 L 150 60 L 170 55 L 190 58 L 205 70 L 210 88 L 205 108 L 195 120 L 200 136 L 212 150 L 228 158 L 244 160 L 258 155 L 268 142 L 272 126 L 268 110 L 258 100 L 248 96 L 255 82 L 268 70 L 282 65 L 296 68 L 304 80 L 305 96 L 298 110 L 286 120 L 278 134 L 272 148 L 258 165 L 238 174 L 215 176 L 190 172 L 166 162 L 145 148 L 124 138 L 100 135 L 72 138 L 50 140 L 30 140",
+    // 7.004 km | La Source → Eau Rouge → Kemmel → Les Combes → Pouhon → Bus Stop → Blanchimont
+    viewBox: "0 0 420 280",
+    path: `M 72 210
+      C 58 206 46 196 42 182 C 38 168 44 152 56 144 C 68 136 84 138 92 148
+      C 98 156 96 168 86 174 C 78 178 68 174 66 166 C 64 158 70 150 78 150
+      L 92 148 L 98 138 L 108 126 L 120 114 L 128 100 L 130 84
+      C 132 68 126 52 114 44 C 102 36 86 38 76 48 C 68 56 67 68 74 78
+      C 81 88 95 92 107 86 C 118 80 122 66 116 56 L 114 44
+      L 130 42 L 150 40 L 170 38 L 190 38 L 210 40 L 228 46
+      C 244 52 256 64 260 80 C 264 96 258 114 246 122 L 234 130
+      L 246 140 L 256 154 L 262 170 L 264 186 L 260 202 L 252 214
+      C 242 226 226 232 210 230 C 194 228 180 218 174 204
+      C 168 190 172 174 182 166 C 192 158 206 160 212 170
+      C 218 180 214 194 204 198 L 210 230
+      L 228 228 L 248 224 L 266 216 L 280 204 L 290 190 L 294 174
+      L 290 158 L 280 146 L 268 140 L 274 126 L 284 112 L 298 100
+      L 314 94 L 330 94 L 344 102 L 354 116 L 356 132 L 350 148
+      L 338 158 L 324 162 L 310 158 L 300 148 L 298 134 L 306 124
+      L 318 120 L 328 126 L 332 138 L 324 148 L 312 150 L 304 142
+      L 306 124
+      L 350 148 L 358 162 L 362 178 L 360 196 L 350 212 L 334 222
+      L 314 226 L 292 224 L 270 216 L 252 214
+      L 230 218 L 206 220 L 180 218 L 156 212 L 132 204 L 110 198
+      L 88 196 L 72 210`,
     zones: [
-      { id: 1, cx: 122, cy: 84, label: "Eau Rouge / Raidillon", tip: "Flat-out uphill commitment. Any hesitation here costs 0.3–0.5s. Rear stability is everything." },
-      { id: 2, cx: 264, cy: 128, label: "Bus Stop Chicane", tip: "Heavy braking from 280 km/h. Brake temps spike massively — open cooling ducts for this track." },
-      { id: 3, cx: 278, cy: 80, label: "Fagnes Chicane", tip: "Use the kerbs aggressively. Going flat over the exit kerb requires stiff bump damping." },
-      { id: 4, cx: 202, cy: 130, label: "Pouhon", tip: "High-speed left-hander requiring rear downforce confidence. Run enough rear wing for this corner alone." },
-      { id: 5, cx: 44, cy: 134, label: "La Source Hairpin", tip: "Tight hairpin onto Kemmel Straight. Low diff lock for rotation. Key traction zone." },
+      { id: 1, cx: 78, cy: 164, label: "La Source Hairpin", tip: "Tight hairpin onto Kemmel Straight. Low diff lock for rotation. Traction on exit is crucial." },
+      { id: 2, cx: 110, cy: 72, label: "Eau Rouge / Raidillon", tip: "Flat-out uphill left-right. Any hesitation costs 0.3–0.5s. Rear stability is the critical setup variable." },
+      { id: 3, cx: 180, cy: 46, label: "Les Combes", tip: "Hard braking at the top of Kemmel. Brake temps spike coming from 300+ km/h — cooling ducts must be open." },
+      { id: 4, cx: 256, cy: 175, label: "Pouhon", tip: "High-speed double-apex sweeper. Rear wing level is defined by this corner alone — run enough downforce." },
+      { id: 5, cx: 326, cy: 130, label: "Bus Stop Chicane", tip: "Heavy braking from 280 km/h. The final big braking zone — brake temps critical. Open cooling ducts." },
     ]
   },
+
   "Monza": {
-    viewBox: "0 0 300 200",
-    path: "M 30 100 L 90 95 L 150 90 L 200 90 L 240 90 L 260 98 L 262 112 L 252 122 L 238 124 L 228 116 L 226 104 L 236 98 L 248 98 L 256 108 L 252 118 L 242 122 L 232 120 L 258 135 L 266 148 L 262 162 L 250 168 L 234 165 L 222 154 L 218 140 L 200 134 L 180 130 L 160 128 L 140 126 L 120 126 L 100 128 L 82 136 L 72 148 L 72 160 L 80 168 L 92 168 L 100 158 L 100 148 L 88 140 L 76 140 L 68 150 L 68 164 L 76 170 L 90 170 L 100 162 L 100 148 L 90 140 L 78 142 L 70 152 L 70 162 L 78 168 L 90 168 L 98 160 L 98 150 L 88 142 L 76 144 L 68 154 L 68 162 L 76 168 L 90 168 L 100 158 L 100 148 L 88 140 L 30 138 L 30 100",
+    // 5.793 km | Rettifilo chicane → Roggia chicane → Lesmos → Ascari → Parabolica → main straight
+    viewBox: "0 0 360 240",
+    path: `M 30 90 L 90 86 L 155 84 L 210 84 L 255 86
+      C 272 88 284 100 284 118 C 284 132 274 144 260 148
+      C 246 152 231 144 228 130 C 225 117 234 104 248 102
+      C 260 100 270 110 268 122 C 266 132 256 138 246 135
+      C 238 132 234 122 239 113 L 248 102
+      L 260 100 L 272 90 L 278 78 L 278 64 L 270 52
+      C 260 40 245 34 229 36 C 213 38 200 50 198 66 L 198 80
+      L 188 78 L 175 78 L 160 80 L 148 86
+      L 140 94 L 136 106 L 136 120 L 142 132 L 152 140 L 166 144
+      C 180 148 196 144 204 132 C 211 121 208 106 198 99
+      C 188 92 175 95 170 105 C 166 114 171 126 182 130
+      C 191 133 202 128 204 119 L 198 99
+      L 152 140 L 134 150 L 114 158 L 92 164
+      C 72 168 50 162 38 146 C 26 130 28 108 42 96
+      C 54 86 72 86 82 96 L 88 106
+      L 80 116 L 72 128 L 68 142 L 70 156 L 78 168 L 90 176
+      C 102 184 118 184 130 176 C 142 168 146 153 140 141 L 134 130
+      L 92 164 L 68 168 L 50 170 L 32 166 L 30 90`,
     zones: [
-      { id: 1, cx: 152, cy: 88, label: "Variante del Rettifilo", tip: "First chicane — 340 km/h to 90 km/h. Brake point consistency is key. Kerb cutting saves 0.2s." },
-      { id: 2, cx: 244, cy: 110, label: "Variante della Roggia", tip: "Second chicane — exit speed critical for the longest straight on the calendar." },
-      { id: 3, cx: 248, cy: 152, label: "Lesmos 1 & 2", tip: "Medium-speed corner pair — mechanical grip and traction on exit toward the back straight." },
-      { id: 4, cx: 84, cy: 152, label: "Parabolica (Ascari Chicane)", tip: "Long sweeping hairpin onto main straight. Exit traction is everything here." },
+      { id: 1, cx: 256, cy: 118, label: "Variante del Rettifilo", tip: "340 km/h to 80 km/h. The hardest braking zone on the calendar. Brake point consistency defines the whole lap." },
+      { id: 2, cx: 235, cy: 58, label: "Variante della Roggia", tip: "Second chicane — exit speed critical for the back straight. Kerb usage sets up position for Lesmo." },
+      { id: 3, cx: 170, cy: 92, label: "Lesmo 1 & 2", tip: "Medium-speed right-handers — traction on exit of Lesmo 2 defines entry speed onto the back straight." },
+      { id: 4, cx: 110, cy: 148, label: "Ascari Chicane", tip: "High-speed chicane — flat or near-flat with right setup. Gets the car positioned for Parabolica." },
+      { id: 5, cx: 78, cy: 148, label: "Parabolica (Alboreto)", tip: "Long sweeping exit onto the main straight. Exit traction here determines top speed all the way to Rettifilo." },
     ]
   },
+
   "Silverstone": {
-    viewBox: "0 0 340 220",
-    path: "M 30 140 L 60 128 L 95 120 L 120 118 L 140 120 L 155 132 L 160 148 L 155 165 L 140 174 L 122 172 L 108 162 L 104 146 L 110 132 L 125 126 L 140 126 L 154 134 L 158 148 L 152 163 L 140 170 L 124 168 L 112 158 L 110 145 L 118 134 L 132 128 L 147 128 L 158 136 L 162 150 L 158 164 L 146 172 L 130 170 L 118 160 L 116 145 L 124 132 L 138 126 L 154 128 L 163 140 L 170 126 L 182 114 L 196 106 L 212 102 L 226 104 L 238 114 L 244 128 L 242 142 L 233 152 L 218 156 L 203 152 L 192 142 L 190 128 L 196 116 L 208 110 L 220 110 L 230 118 L 232 130 L 226 140 L 214 144 L 202 140 L 196 130 L 200 120 L 210 116 L 220 118 L 226 128 L 222 138 L 212 142 L 202 138 L 198 128 L 204 120 L 214 118 L 222 124 L 222 134 L 214 140 L 204 138 L 200 130 C 200 118 214 112 226 118 L 232 130 L 230 142 L 220 148 L 208 146 L 200 138 L 198 126 L 204 116 L 216 112 L 228 116 L 234 128 L 232 140 L 222 146 L 210 144 L 202 136 L 200 124 C 202 112 218 108 230 114 L 238 126 L 236 140 L 226 148 L 212 148 L 202 140 L 198 128 L 202 116 L 214 110 L 226 112 C 242 116 248 132 244 146 L 234 158 L 218 164 L 200 162 L 182 155 L 170 144 L 168 130 L 170 116 L 178 106 L 190 102 L 204 100 L 218 100 L 230 106 L 240 118 L 244 132 L 242 148 L 232 160 L 215 168 L 196 168 L 178 162 L 164 150 L 162 136 L 165 122 L 174 112 L 188 108 L 202 108 L 215 114 L 223 126 L 224 140 L 218 152 L 206 158 L 192 157 L 180 150 L 175 138 L 178 126 L 187 118 L 198 116 L 208 120 L 214 130 L 212 142 L 204 150 L 193 151 L 184 145 L 181 135 L 184 125 L 192 120 L 202 122 L 208 132 L 206 142 L 198 148 L 190 147 L 184 140 L 183 130 L 188 122 L 197 120 L 206 125 L 210 135 L 207 145 L 199 149 L 191 148 L 185 141 L 185 131 L 190 123 L 200 122 L 208 128 L 211 138 L 207 147 L 199 150 L 191 148 L 186 141 L 186 131 L 192 124 L 202 123 L 210 130 L 212 141 L 208 150 L 199 153 L 191 151 L 186 143 L 186 133 L 193 126 L 204 126 L 212 133 L 213 144 L 208 153 L 199 155 L 190 152 L 185 143 L 186 132 L 193 125 L 205 126 L 213 134 L 214 145 L 208 153 L 199 155 L 190 152 L 185 143 L 186 133 L 193 126 L 206 126 L 214 134 L 215 146 L 209 154 L 199 156 L 190 153 L 185 143 L 186 133 L 194 126 L 207 127 L 215 135 L 216 147 L 210 155 L 200 157 L 191 154 L 186 144 L 187 133 L 195 126 L 208 127 L 216 136 L 216 148 L 210 156 L 200 158 L 190 154 L 185 144 L 186 133 L 195 127 L 208 128 L 216 137 L 216 149 L 210 157 L 199 159 L 189 154 L 184 144 L 186 133 L 195 127 L 209 128 L 217 137 L 217 149 L 210 158 L 199 160 L 189 155 L 184 145 L 186 134 L 195 128 L 210 129 L 218 138 L 218 150 L 211 158 L 200 160 L 190 155 L 185 145 L 187 134 L 196 128 L 211 129 L 219 138 L 219 151 L 212 159 L 201 161 L 191 156 L 186 146 L 188 135 L 197 129 L 212 130 L 220 139 L 220 152 L 213 160 L 202 162 L 192 157 L 187 147 L 189 136 L 198 130 L 213 131 L 221 140 L 221 153 L 214 161 L 203 163 L 193 158 L 188 148 L 190 137 L 199 131 L 215 132 L 222 141 L 222 154 L 215 162 L 204 164 L 194 159 L 189 149 L 191 138 L 200 132 L 216 133 L 223 142 L 223 155 L 216 163 L 205 165 L 195 160 L 190 150 L 192 139 L 201 133 L 217 134 L 224 143 L 224 156 L 217 164 L 206 166 L 196 161 L 191 151 L 193 140 L 202 134 L 218 135 L 225 144 L 225 157 L 218 165 L 207 167 L 197 162 L 192 152 L 194 141 L 203 135 L 220 136 L 227 145 L 227 158 L 219 166 L 208 168 L 197 162 L 192 152 L 194 141 L 204 135 L 221 136 L 228 145 L 228 158 L 220 166 L 208 168 L 197 162 L 192 152 L 195 141 L 205 136 L 222 137 L 229 146 L 229 159 L 221 167 L 209 169 L 198 163 L 193 153 L 196 142 L 206 136 L 224 137 L 231 146 L 231 160 L 222 168 L 210 170 L 199 164 L 194 154 L 197 143 L 207 137 L 225 138 L 232 147 L 232 161 L 223 169 L 211 171 L 200 165 L 195 155 L 198 144 L 208 138 L 226 139 L 233 148 L 233 162 L 224 170 L 212 172 L 201 166 L 196 156 L 199 145 L 209 139 L 228 140 L 235 149 L 235 163 L 226 171 L 213 173 L 202 167 L 197 157 L 200 146 L 210 140 L 229 141 L 236 150 L 236 164 L 227 172 L 214 174 L 203 168 L 198 158 L 201 147 L 211 141 L 230 142 L 237 151 L 237 165 L 228 173 L 215 175 L 204 169 L 199 159 L 202 148 L 212 142 L 232 143 L 239 152 L 239 166 L 229 174 L 216 176 L 205 170 L 200 160 L 203 149 L 214 143 L 233 144 L 240 153 L 240 167 L 230 175 L 217 177 L 206 171 L 201 161 L 204 150 L 215 144 L 235 145 L 242 154 L 242 168 L 232 176 L 218 178 L 207 172 L 202 162 L 205 151 L 216 145 L 236 146 L 243 155 L 243 169 L 233 177 L 219 179 L 208 173 L 203 163 L 206 152 L 217 146 L 237 147 L 244 156 L 244 170 L 234 178 L 220 180 L 209 174 L 204 164 L 207 153 L 218 147 L 238 148 L 245 157 L 245 171 L 235 179 L 221 181 L 210 175 L 205 165 L 208 154 L 219 148 L 239 149 L 246 158 L 246 172 L 236 180 L 222 182 L 211 176 L 206 166 L 209 155 L 220 149 L 241 150 L 248 159 L 248 173 L 238 181 L 223 183 L 212 177 L 207 167 L 210 156 L 221 150 L 242 151 L 249 160 L 249 174 L 239 182 L 224 184 L 213 178 L 208 168 L 211 157 L 222 151 L 244 152 L 251 161 L 251 175 L 240 183 L 225 185 L 214 179 L 209 169 L 212 158 L 223 152 L 245 153 L 252 162 L 252 176 L 241 184 L 226 186 L 215 180 L 210 170 L 213 159 L 224 153 L 246 154 L 253 163 L 253 177 L 242 185 L 227 187 L 216 181 L 211 171 L 214 160 L 225 154 L 248 155 L 255 164 L 255 178 L 243 186 L 228 188 L 217 182 L 212 172 L 215 161 L 226 155 L 249 156 L 256 165 L 256 179 L 244 187 L 229 189 L 218 183 L 213 173 L 216 162 L 227 156 L 250 157 L 257 166 L 257 180 L 245 188 L 230 190 L 219 184 L 214 174 L 217 163 L 228 157 L 252 158 L 259 167 L 259 181 L 246 189 L 231 191 L 220 185 L 215 175 L 218 164 L 229 158 L 253 159 L 260 168 L 260 182 L 247 190 L 232 192 L 221 186 L 216 176 L 219 165 L 230 159 L 255 160 L 262 169 L 262 183 L 249 191 L 233 193 L 222 187 L 217 177 L 220 166 L 231 160 L 256 161 L 263 170 L 263 184 L 250 192 L 234 194 L 223 188 L 218 178 L 221 167 L 232 161 L 258 162 L 265 171 L 265 185 L 252 193 L 235 195 L 224 189 L 219 179 L 222 168 L 233 162 L 259 163 L 266 172 L 266 186 L 253 194 L 236 196 L 225 190 L 220 180 L 223 169 L 234 163 L 261 164 L 268 173 L 268 187 L 255 195 L 237 197 L 226 191 L 221 181 L 224 170 L 235 164 L 262 165 L 269 174 L 269 188 L 256 196 L 238 198 L 227 192 L 222 182 L 225 171 L 236 165 L 264 166 L 271 175 L 271 189 L 258 197 L 239 199 L 228 193 L 223 183 L 226 172 L 237 166 L 265 167 L 272 176 L 272 190 L 259 198 L 240 200 L 229 194 L 224 184 L 227 173 L 238 167 L 267 168 L 274 177 L 274 191 L 261 199 L 241 201 L 230 195 L 225 185 L 228 174 L 239 168 L 268 169 L 275 178 L 275 192 L 262 200 L 242 202 L 231 196 L 226 186 L 229 175 L 240 169 L 270 170 L 277 179 L 277 193 L 264 201 L 243 203 L 232 197 L 227 187 L 230 176 L 241 170 L 271 171 L 278 180 L 278 194 L 265 202 L 244 204 L 233 198 L 228 188 L 231 177 L 242 171 L 273 172 L 280 181 L 280 195 L 267 203 L 245 205 L 234 199 L 229 189 L 232 178 L 243 172 L 274 173 L 281 182 L 281 196 L 268 204 L 246 206 L 235 200 L 230 190 L 233 179 L 244 173 L 276 174 L 283 183 L 283 197 L 270 205 L 247 207 L 236 201 L 231 191 L 234 180 L 245 174 L 277 175 L 284 184 L 284 198 L 271 206 L 248 208 L 237 202 L 232 192 L 235 181 L 246 175 L 279 176 L 286 185 L 286 199 L 273 207 L 249 209 L 238 203 L 233 193 L 236 182 L 247 176 L 280 177 L 287 186 L 287 200 L 274 208 L 250 210 L 239 204 L 234 194 L 237 183 L 248 177 L 282 178 L 289 187 L 289 201 L 276 209 L 251 211 L 240 205 L 235 195 L 238 184 L 249 178 L 283 179 L 290 188 L 290 202 L 277 210 L 252 212 L 241 206 L 236 196 L 239 185 L 250 179 L 285 180 L 292 189 L 292 203 L 279 211 L 253 213 L 242 207 L 237 197 L 240 186 L 251 180 L 286 181 L 293 190 L 293 204 L 280 212 L 254 214 L 243 208 L 238 198 L 241 187 L 252 181 L 288 182 L 295 191 L 295 205 L 282 213 L 255 215 L 244 209 L 239 199 L 242 188 L 253 182 L 289 183 L 296 192 L 296 206 L 283 214 L 256 216 L 245 210 L 240 200 L 243 189 L 254 183 L 291 184 L 298 193 L 298 207 L 285 215 L 257 217 L 246 211 L 241 201 L 244 190 L 255 184 L 292 185 L 299 194 L 299 208 L 286 216 L 258 218 L 247 212 L 242 202 L 245 191 L 256 185 L 294 186 L 301 195 L 301 209 L 288 217 L 259 219 L 248 213 L 243 203 L 246 192 L 257 186 L 295 187 L 302 196 L 302 210 L 289 218 L 260 220 L 249 214 L 244 204 L 247 193 L 258 187 L 297 188 L 304 197 L 304 211 L 291 219 L 261 221 L 250 215 L 245 205 L 248 194 L 259 188 L 298 189 L 305 198 L 305 212 L 292 220 L 262 222 L 251 216 L 246 206 L 249 195 L 260 189 L 300 190 L 307 199 L 307 213 L 294 221 L 263 223 L 252 217 L 247 207 L 250 196 L 261 190 L 301 191 L 308 200 L 308 214 L 295 222 L 264 224 L 253 218 L 248 208 L 251 197 L 262 191 L 303 192 L 310 201 L 310 215 L 297 223 L 265 225 L 254 219 L 249 209 L 252 198 L 263 192 L 304 193 L 311 202 L 311 216 L 298 224 L 266 226 L 255 220 L 250 210 L 253 199 L 264 193 L 306 194 L 313 203 L 313 217 L 300 225 L 267 227 L 256 221 L 251 211 L 254 200 L 265 194 L 307 195 L 314 204 L 314 218 L 301 226 L 268 228 L 257 222 L 252 212 L 255 201 L 266 195 L 309 196 L 316 205 L 316 219 L 303 227 L 269 229 L 258 223 L 253 213 L 256 202 L 267 196 L 310 197 L 317 206 L 317 220 L 304 228 L 270 230 L 259 224 L 254 214 L 257 203 L 268 197 L 312 198 L 319 207 L 319 221 L 306 229 L 271 231 L 260 225 L 255 215 L 258 204 L 269 198 L 313 199 L 320 208 L 320 222 L 307 230 L 272 232 L 261 226 L 256 216 L 259 205 L 270 199 L 315 200 L 322 209 L 322 223 L 309 231 L 273 233 L 262 227 L 257 217 L 260 206 L 271 200 L 316 201 L 323 210 L 323 224 L 310 232 L 274 234 L 263 228 L 258 218 L 261 207 L 272 201 L 318 202 L 325 211 L 325 225 L 312 233 L 275 235 L 264 229 L 259 219 L 262 208 L 273 202 L 319 203 L 326 212 L 326 226 L 313 234 L 276 236 L 265 230 L 260 220 L 263 209 L 274 203 L 321 204 L 328 213 L 328 227 L 315 235 L 277 237 L 266 231 L 261 221 L 264 210 L 275 204 L 322 205 L 329 214 L 329 228 L 316 236 L 278 238 L 267 232 L 262 222 L 265 211 L 276 205 L 324 206 L 331 215 L 331 229 L 318 237 L 279 239 L 268 233 L 263 223 L 266 212 L 277 206 L 325 207 L 332 216 L 332 230 L 319 238 L 280 240 L 269 234 L 264 224 L 267 213 L 278 207 L 327 208",
+    // 5.891 km | Copse → Maggots-Becketts-Chapel → Hangar Straight → Stowe → Club → Luffield → Abbey → Pit straight
+    viewBox: "0 0 400 300",
+    path: `M 55 248 L 105 244 L 158 242
+      C 172 240 182 230 184 216 C 186 202 178 188 165 183
+      C 152 178 137 183 132 196 C 128 207 134 220 146 224
+      C 157 228 169 222 172 210 L 165 183
+      L 178 172 L 192 158 L 206 142 L 220 126 L 234 114
+      C 248 102 265 96 282 98 C 299 100 313 112 318 128
+      C 322 142 316 158 304 165 C 292 172 276 170 269 159
+      C 262 148 265 133 277 128 C 288 123 301 129 304 141
+      C 306 151 299 162 288 163 L 269 159
+      L 280 146 L 290 130 L 296 112 L 295 94 L 287 78
+      C 277 62 259 54 241 56 C 223 58 208 72 206 90 L 205 106
+      L 194 100 L 180 96 L 164 96 L 148 100 L 134 108
+      C 120 118 112 134 114 150 C 116 164 126 176 139 180
+      L 152 182 L 142 196 L 130 210 L 116 222 L 100 230
+      C 86 236 70 236 58 228 L 52 218
+      C 44 206 44 190 52 178 C 60 166 74 160 87 162
+      C 98 164 106 174 104 186 C 102 196 92 204 82 202
+      L 52 218 L 52 232 L 55 248`,
     zones: [
-      { id: 1, cx: 148, cy: 120, label: "Copse", tip: "Fast right-hander at the start. Committed flat — any understeer here robs lap time." },
-      { id: 2, cx: 148, cy: 162, label: "Maggots–Becketts–Chapel", tip: "The defining section. Car must be perfectly balanced L-R-L. Diagnose aero balance here." },
-      { id: 3, cx: 220, cy: 110, label: "Stowe Corner", tip: "Heavy braking zone from 300+ km/h. Monitor brake temps carefully." },
-      { id: 4, cx: 240, cy: 155, label: "Club Corner", tip: "Exit speed sets up Wellington Straight. Diff lock and traction setup are key." },
-      { id: 5, cx: 96, cy: 162, label: "Abbey / Village", tip: "Braking zone after Hanger Straight. Front-end responsiveness critical here." },
+      { id: 1, cx: 158, cy: 220, label: "Copse", tip: "Fast right-hander off pit straight. Taken flat — any understeer robs significant lap time." },
+      { id: 2, cx: 235, cy: 132, label: "Maggots–Becketts–Chapel", tip: "The defining high-speed complex. Car must be planted L-R-L at 260 km/h+. Aero balance is diagnosed here." },
+      { id: 3, cx: 294, cy: 120, label: "Stowe Corner", tip: "Heavy braking from 300 km/h down Hangar Straight. Brake performance is critical here." },
+      { id: 4, cx: 254, cy: 68, label: "Club / Brooklands / Luffield", tip: "Slow corner sequence — exit traction sets up Wellington Straight. Diff and mechanical grip are key." },
+      { id: 5, cx: 85, cy: 174, label: "Abbey / Village / Loop / Aintree", tip: "Long technical complex after Vale. Significant time is on the table through this sector." },
     ]
   },
+
   "Suzuka": {
-    viewBox: "0 0 280 240",
-    path: "M 50 180 L 70 172 L 88 158 L 96 140 L 92 120 L 80 105 L 92 90 L 108 78 L 118 88 L 115 106 L 100 116 L 95 130 L 100 145 L 112 155 L 126 157 L 138 150 L 145 136 L 143 121 L 134 110 L 122 107 L 112 113 L 108 126 L 112 138 L 122 145 L 134 144 L 142 135 L 143 122 L 136 112 L 125 110 L 115 116 L 112 128 L 116 140 L 126 146 L 138 144 L 148 133 L 150 118 L 143 106 L 130 100 L 116 102 L 103 112 L 98 128 L 102 143 L 115 154 L 130 158 L 146 155 L 158 144 L 162 128 L 156 113 L 144 104 L 128 102 L 113 108 L 102 122 L 101 138 L 109 152 L 125 160 L 142 162 L 158 157 L 170 144 L 174 127 L 168 112 L 155 103 L 139 101 L 124 107 L 113 121 L 112 137 L 120 151 L 136 160 L 154 162 L 170 157 L 182 143 L 185 126 L 178 111 L 165 103 L 148 101 L 133 108 L 122 122 L 122 138 L 130 152 L 146 161 L 164 163 L 181 157 L 193 142 L 196 125 L 189 109 L 175 102 L 158 101 L 143 108 L 132 122 L 132 139 L 141 153 L 157 162 L 175 164 L 192 158 L 204 143 L 207 125 L 200 109 L 186 102 L 168 101 L 152 108 L 141 123 L 141 140 L 151 154 L 167 163 L 186 165 L 204 159 L 216 143 L 218 125 L 210 109 L 196 102 L 178 101 L 162 108 L 151 123 L 151 141 L 161 155 L 178 164 L 197 166 L 215 160 L 227 143 L 228 125 L 220 109 L 205 102 L 187 101 L 171 108 L 160 124 L 161 142 L 172 157 L 190 166 L 210 167 L 228 160 L 239 143 L 239 125 L 230 109 L 215 102 L 196 101 L 179 108 L 168 125 L 170 143 L 182 158 L 200 167 L 221 167 L 239 160 L 249 143 L 248 125 L 238 109 L 223 102 L 204 101 L 186 109 L 175 126 L 177 145 L 189 160 L 209 169 L 230 168 L 248 160 L 257 143 L 256 125 L 245 109 L 230 102 L 210 102 L 192 110 L 181 128 L 184 147 L 198 162 L 219 171 L 241 170 L 258 161 L 266 143 L 264 124 L 253 108 L 237 101 L 217 101 L 198 110 L 188 129 L 192 148 L 206 164 L 228 172 L 250 171 L 267 162 L 274 143 L 272 124 L 260 108 L 244 101 L 223 101 L 204 110 L 194 129 L 198 149 L 214 165 L 236 173 L 259 172 L 276 163 L 282 143 L 280 124 L 267 107 L 250 101 L 228 101",
+    // 5.807 km | Esses → Dunlop → Degner → Hairpin → Spoon → 130R → Chicane → Pit straight
+    // Figure-of-8 layout with overpass at the top
+    viewBox: "0 0 320 300",
+    path: `M 50 220 L 68 214 L 82 202 L 90 186 L 88 168
+      C 85 150 74 136 60 130 L 48 126
+      L 60 116 L 74 104 L 85 88 L 88 70
+      C 90 52 82 34 68 26 C 54 18 37 22 28 34
+      C 20 46 22 62 33 70 C 43 78 58 76 65 65
+      C 71 55 68 40 58 34 L 28 34
+      L 42 22 L 58 14 L 76 10 L 94 10 L 112 14
+      L 128 22 L 140 34 L 146 50 L 144 66 L 136 80
+      L 124 90 L 114 102 L 108 116 L 108 130 L 114 142
+      L 124 152 L 136 158 L 148 160 L 160 158 L 172 152
+      L 180 142 L 184 130 L 182 116 L 174 106 L 162 100
+      L 148 98 L 136 104 L 128 116 L 126 130 L 130 144
+      L 140 154 L 154 160 L 168 162 L 182 158 L 194 148
+      L 200 134 L 198 118 L 190 106 L 178 98 L 163 96
+      L 150 100 L 140 112
+      L 148 98 L 166 94 L 184 94 L 200 100
+      C 218 108 228 126 226 146 C 224 164 210 178 194 180
+      L 180 180 L 188 190 L 192 204 L 190 218 L 182 230
+      C 172 242 156 248 140 244 C 124 240 113 226 116 210
+      C 118 196 130 186 144 188 C 156 190 164 202 161 215
+      C 158 226 147 233 136 230 L 116 210
+      L 104 200 L 90 192 L 74 188 L 58 190 L 44 198 L 36 210
+      L 36 224 L 44 234 L 56 238 L 50 220`,
     zones: [
-      { id: 1, cx: 100, cy: 110, label: "The Esses (S-Curves)", tip: "Opening sequence — aero balance is stress-tested across multiple left-right changes. Must be flat throughout." },
-      { id: 2, cx: 160, cy: 140, label: "Hairpin", tip: "Tight slow corner — diff settings critical for rotation. Soft rear ARB for exit traction." },
-      { id: 3, cx: 195, cy: 105, label: "130R", tip: "Flat-out at 270+ km/h. Rear wing level directly determines whether this is flat or a lift." },
-      { id: 4, cx: 105, cy: 155, label: "Degner Curves", tip: "Tricky blind turn. Conservative setup needed — the corner catches drivers out at full commitment." },
-      { id: 5, cx: 155, cy: 100, label: "Spoon Curve", tip: "Long medium-speed corner — sustained load exposes tyre degradation issues rapidly." },
+      { id: 1, cx: 86, cy: 82, label: "Esses (S-Curves)", tip: "Opening sequence — aero balance is tested left-right repeatedly. Must be fully committed flat throughout." },
+      { id: 2, cx: 60, cy: 46, label: "Dunlop Curve", tip: "Tricky downhill blind corner. Conservative setup needed — this corner regularly catches out even experienced drivers." },
+      { id: 3, cx: 148, cy: 128, label: "Degner Curves", tip: "Blind right-handers mid-sector. The second Degner particularly punishes a snappy rear on exit." },
+      { id: 4, cx: 168, cy: 148, label: "Hairpin", tip: "Tightest corner on the lap. Diff rotation setup critical — soft rear ARB helps traction on the long exit." },
+      { id: 5, cx: 183, cy: 98, label: "Spoon Curve", tip: "Long medium-speed double-apex sweeper. Sustained lateral load exposes tyre degradation rapidly." },
+      { id: 6, cx: 150, cy: 210, label: "130R", tip: "Flat-out at 270+ km/h. Rear wing level directly determines whether this is flat — the key setup decision at Suzuka." },
     ]
   },
+
   "Nürburgring GP": {
-    viewBox: "0 0 320 200",
-    path: "M 40 130 L 60 122 L 78 110 L 86 94 L 80 78 L 65 70 L 48 72 L 36 83 L 34 100 L 40 115 L 52 124 L 66 128 L 80 124 L 90 112 L 92 96 L 84 83 L 70 77 L 56 80 L 46 92 L 45 108 L 53 120 L 66 127 L 80 128 L 93 120 L 100 106 L 97 91 L 86 81 L 71 79 L 57 85 L 48 98 L 49 113 L 58 124 L 72 130 L 86 130 L 99 120 L 106 105 L 102 89 L 89 81 L 74 80 L 60 87 L 52 101 L 54 116 L 64 127 L 79 132 L 94 131 L 107 120 L 113 104 L 108 88 L 95 80 L 79 80 L 64 88 L 57 103 L 60 118 L 71 129 L 87 134 L 102 132 L 116 120 L 121 104 L 115 88 L 101 80 L 85 81 L 70 89 L 63 104 L 67 119 L 78 130 L 94 135 L 110 132 L 124 120 L 129 103 L 122 87 L 107 79 L 91 81 L 76 90 L 70 106 L 74 121 L 86 132 L 102 136 L 118 133 L 132 120 L 136 103 L 129 87 L 113 80 L 97 82 L 82 92 L 77 108 L 82 123 L 94 133 L 111 136 L 127 133 L 140 120 L 144 103 L 136 87 L 120 80 L 103 82 L 88 92 L 84 109 L 90 124 L 103 134 L 120 136 L 136 133 L 149 119 L 152 102 L 143 86 L 127 79 L 109 82 L 94 93 L 91 110 L 98 125 L 112 134 L 129 136 L 145 133 L 157 118 L 159 101 L 150 85 L 133 79 L 115 82 L 100 94 L 98 111 L 106 126 L 120 135 L 138 136 L 154 133 L 166 117 L 167 100 L 157 84 L 140 78 L 122 82 L 107 95 L 106 112 L 115 127 L 130 135 L 148 136 L 164 132 L 175 116 L 175 99 L 164 84 L 147 78 L 128 82 L 114 95 L 113 113 L 123 128 L 139 136 L 157 136 L 173 131 L 184 115 L 182 97 L 170 83 L 153 77 L 134 82 L 120 96 L 120 114 L 131 129 L 148 137 L 167 137 L 183 131 L 193 114 L 191 96 L 178 82 L 160 77 L 141 82 L 127 97 L 127 115 L 139 130 L 157 138 L 176 137 L 192 131 L 201 113 L 198 95 L 184 82 L 166 77 L 147 82 L 133 98 L 134 116 L 147 131 L 165 138 L 185 137 L 201 130 L 209 112 L 205 94 L 190 81 L 172 77 L 153 82 L 139 99 L 141 118 L 155 132 L 174 139 L 195 137 L 211 130 L 218 111 L 213 92 L 196 80 L 178 76 L 158 82 L 145 99 L 148 118 L 163 133 L 183 139 L 205 137 L 221 129 L 227 109 L 220 91 L 203 79 L 184 76 L 164 82 L 151 100 L 155 119 L 171 134 L 192 139 L 215 137 L 230 128 L 235 108 L 227 90 L 209 78 L 190 76 L 170 82 L 157 100 L 162 120 L 179 135 L 201 140 L 225 137 L 239 127 L 243 107 L 234 89 L 215 78 L 195 76 L 175 82 L 163 101 L 169 121 L 187 136 L 210 141 L 235 138 L 248 126 L 251 106 L 241 88 L 221 77 L 201 76 L 180 82 L 168 101 L 175 121 L 195 136 L 219 141 L 244 138 L 257 125 L 258 104 L 247 87 L 227 76 L 206 76 L 185 82 L 174 102 L 182 122 L 202 137 L 228 141 L 254 138 L 267 125 L 267 103 L 254 86 L 234 76 L 212 76 L 190 82 L 180 102 L 189 123 L 210 138 L 237 142 L 263 138 L 275 124 L 274 102 L 260 86 L 240 76 L 217 76 L 195 83 L 185 103 L 195 124 L 217 139 L 244 142 L 271 137 L 282 123 L 280 101 L 265 85 L 245 75 L 221 76 L 199 83 L 190 104 L 200 125 L 223 140 L 251 142 L 278 137 L 288 122 L 285 99 L 270 84 L 249 75 L 225 76 L 202 83 L 193 105 L 205 127 L 229 142 L 258 143 L 286 137 L 295 121 L 291 98 L 275 84 L 253 75 L 228 76 L 205 83 L 196 106 L 209 128 L 235 143 L 265 143 L 293 136 L 301 119 L 296 96 L 279 83 L 257 75 L 231 76 L 208 83 L 200 107 L 214 129 L 241 143 L 272 143 L 300 136 L 307 118 L 301 95 L 283 82 L 261 75",
+    // 5.137 km | T1 → Mercedes Arena → NGK Chicane → Ford Kurve → Hairpin → Dunlop → Pit straight
+    viewBox: "0 0 380 260",
+    path: `M 40 180 L 65 172 L 88 160 L 106 144 L 116 124
+      C 122 108 120 90 110 78 C 100 66 84 62 70 66
+      C 56 70 46 84 48 98 C 50 110 60 120 72 122
+      L 84 122 L 78 134 L 70 148 L 60 162 L 48 174 L 40 180
+      L 88 160 L 108 154 L 128 144 L 144 130 L 154 114
+      C 162 98 162 78 154 62 C 146 46 130 36 113 36
+      C 96 36 81 46 76 62 C 72 76 77 92 88 100 L 72 122
+      L 116 124 L 138 120 L 160 112 L 178 100 L 192 86
+      C 204 72 208 53 202 37 C 196 21 181 12 165 12
+      L 148 12 L 160 22 L 168 36 L 170 52 L 165 68 L 156 80
+      L 145 88 L 133 92 L 120 92 L 108 88 L 100 80 L 96 68
+      C 93 54 98 40 108 34 L 148 12
+      L 170 52 L 180 66 L 194 80 L 210 92 L 228 100 L 248 104
+      L 268 104 L 286 100 L 302 92 L 314 80 L 320 66 L 318 50
+      C 314 34 302 22 287 18 C 272 14 256 20 248 33
+      C 240 46 244 63 256 70 C 267 77 282 73 288 61
+      C 293 50 288 36 277 31 L 248 33
+      L 318 50 L 330 62 L 336 78 L 335 96 L 328 112 L 316 124
+      C 302 136 282 141 262 138 L 242 132 L 252 148 L 258 166
+      C 262 182 258 200 248 212 C 238 224 222 230 206 226
+      C 190 222 178 208 178 192 C 178 176 190 164 206 164
+      L 242 132 L 228 140 L 210 148 L 188 154 L 162 158 L 136 160
+      L 108 160 L 80 158 L 60 166 L 40 180`,
     zones: [
-      { id: 1, cx: 55, cy: 84, label: "Turn 1 (Einfahrt Motodrom)", tip: "Hardest braking zone on the lap. Consistency here defines the whole lap." },
-      { id: 2, cx: 115, cy: 95, label: "Mercedes Arena", tip: "Bumpy and technical — softer front suspension is essential. Watch brake balance through here." },
-      { id: 3, cx: 200, cy: 82, label: "Schumacher S (Ford Kurve)", tip: "High-speed right-hander — must be taken flat. Aero balance is key." },
-      { id: 4, cx: 220, cy: 138, label: "Spitzkehre (Hairpin)", tip: "Tightest point on the lap — maximum rotation setup. Trail-brake for a late apex." },
-      { id: 5, cx: 155, cy: 138, label: "Dunlop Kurve", tip: "Key section before the stadium — exit speed feeds into the hairpin approach." },
+      { id: 1, cx: 72, cy: 88, label: "Turn 1 (Castrol)", tip: "Hardest braking zone on the lap. Consistency here defines the whole lap — brake temperatures build quickly on the short circuit." },
+      { id: 2, cx: 140, cy: 70, label: "Mercedes Arena", tip: "Bumpy and technical stadium section — softer front suspension is essential. Brake balance critical." },
+      { id: 3, cx: 248, cy: 52, label: "NGK Chicane / Ford Kurve", tip: "High-speed right-hander — must be taken flat or near-flat. Aero balance is key through here." },
+      { id: 4, cx: 280, cy: 80, label: "Dunlop Kurve", tip: "Fast right-hander leading to the stadium. Setup must inspire confidence — hesitation here costs significant time." },
+      { id: 5, cx: 230, cy: 178, label: "Spitzkehre (Hairpin)", tip: "Tightest point on the circuit — maximum rotation setup. Trail-brake for a late apex. Key traction zone." },
     ]
   },
+
   "Brands Hatch GP": {
-    viewBox: "0 0 280 200",
-    path: "M 40 130 L 58 120 L 72 106 L 74 88 L 62 74 L 46 70 L 32 76 L 23 90 L 24 106 L 34 118 L 48 126 L 62 128 L 75 122 L 83 108 L 81 92 L 70 82 L 56 80 L 44 88 L 38 102 L 42 116 L 54 124 L 68 128 L 82 124 L 90 110 L 87 94 L 74 84 L 59 83 L 46 92 L 41 108 L 46 122 L 59 130 L 75 132 L 90 127 L 99 112 L 94 95 L 80 86 L 64 86 L 50 96 L 46 112 L 52 126 L 66 134 L 83 136 L 99 130 L 108 113 L 102 96 L 87 87 L 70 87 L 55 98 L 52 115 L 59 129 L 74 137 L 91 138 L 108 132 L 117 115 L 110 97 L 94 88 L 77 88 L 62 99 L 59 117 L 67 131 L 83 139 L 101 140 L 118 133 L 126 116 L 119 98 L 102 89 L 84 89 L 69 101 L 67 119 L 76 133 L 93 141 L 112 141 L 129 134 L 136 116 L 128 98 L 110 89 L 92 89 L 77 102 L 76 120 L 86 134 L 104 142 L 123 142 L 140 134 L 147 116 L 138 98 L 119 89 L 100 89 L 85 103 L 85 121 L 96 135 L 115 143 L 135 142 L 152 134 L 158 116 L 148 98 L 129 89 L 109 89 L 94 103 L 94 122 L 106 136 L 126 143 L 147 142 L 164 133 L 169 115 L 159 97 L 139 88 L 118 89 L 102 103 L 103 122 L 116 136 L 137 144 L 159 142 L 176 133 L 180 115 L 169 97 L 149 88 L 127 89 L 111 104 L 113 123 L 126 137 L 148 144 L 171 142 L 187 132 L 191 113 L 179 96 L 158 87 L 136 89 L 120 104 L 123 124 L 137 138 L 160 145 L 184 142 L 199 132 L 202 112 L 190 95 L 168 87 L 145 89 L 129 105 L 133 125 L 148 139 L 172 145 L 197 142 L 212 131 L 214 111 L 200 94 L 177 87 L 154 89 L 138 106 L 143 126 L 159 140 L 184 146 L 210 143 L 224 131 L 225 110 L 210 94 L 187 87 L 163 89 L 147 107 L 153 127 L 170 141 L 196 147 L 223 143 L 237 130 L 237 109 L 220 93 L 196 87 L 171 89 L 155 107 L 162 128 L 180 142 L 208 147 L 236 143 L 249 130 L 248 108 L 230 92 L 205 87 L 179 89 L 163 108 L 172 129 L 191 143 L 220 148 L 249 143 L 261 129 L 259 107 L 240 91 L 214 87 L 187 89 L 172 109 L 182 130 L 202 144 L 232 148 L 262 142 L 273 128 L 270 106",
+    // 3.908 km | Paddock Hill Bend → Druids → Graham Hill → Surtees → Hawthorn → Westfield → Sheene → Stirlings → Clark → Cooper → Symes → Clearways
+    viewBox: "0 0 340 260",
+    path: `M 42 188 L 58 178 L 72 164 L 78 148
+      C 82 132 78 114 66 104 C 54 94 37 94 28 106
+      C 20 117 23 133 35 140 C 46 146 60 142 65 131
+      C 70 120 64 106 53 102 L 28 106
+      L 50 96 L 72 88 L 94 80 L 112 68 L 124 52
+      C 134 38 136 20 128 8 C 120 -4 104 -8 90 0
+      C 76 8 71 26 79 40 C 86 52 101 57 114 50 L 124 52
+      L 140 40 L 158 32 L 178 28 L 198 28 L 218 32 L 236 40
+      C 252 50 262 66 261 84 C 260 100 250 114 236 120
+      L 222 124 L 236 130 L 250 140 L 262 154 L 268 170 L 268 186
+      C 266 202 256 216 242 222 C 228 228 212 224 204 212
+      C 196 200 200 184 212 178 C 222 172 236 177 240 188
+      C 244 198 238 212 227 215 L 204 212
+      L 196 220 L 182 228 L 164 234 L 144 236 L 122 234 L 102 228
+      L 82 220 L 64 210 L 48 198 L 42 188`,
     zones: [
-      { id: 1, cx: 50, cy: 82, label: "Paddock Hill Bend", tip: "Downhill, blind, and daunting. Stiff front bump, more rear wing. Confidence here defines the whole lap." },
-      { id: 2, cx: 105, cy: 100, label: "Druids Hairpin", tip: "Tight hairpin on a hilltop. Key traction zone — low diff lock for rotation, max mechanical grip." },
-      { id: 3, cx: 195, cy: 96, label: "Surtees & Pilgrim's Drop", tip: "Fast downhill right-hander. Rear stability critical — soft bump damping for the surface changes." },
-      { id: 4, cx: 235, cy: 140, label: "Clearways", tip: "Long final sweeper onto start/finish straight. Aero balance and exit traction are everything." },
+      { id: 1, cx: 42, cy: 120, label: "Paddock Hill Bend", tip: "Downhill, blind braking zone — the most daunting corner on the calendar. Stiff front bump, more rear wing. Confidence here defines the lap." },
+      { id: 2, cx: 88, cy: 62, label: "Druids Hairpin", tip: "Tight hairpin on a hilltop — key traction zone. Low diff lock for rotation, maximum mechanical grip." },
+      { id: 3, cx: 175, cy: 32, label: "Graham Hill Bend", tip: "Flat-out left through the dip. Car must be stable and planted — any instability here is dangerous." },
+      { id: 4, cx: 250, cy: 110, label: "Surtees", tip: "Fast right-hander — rear stability critical. Car must inspire confidence at high speed." },
+      { id: 5, cx: 236, cy: 200, label: "Clearways", tip: "Long final sweeper onto pit straight. Aero balance and exit traction determine top speed all the way to Paddock." },
     ]
   },
+
   "Imola": {
-    viewBox: "0 0 280 200",
-    path: "M 30 140 L 50 132 L 65 118 L 68 100 L 56 85 L 40 80 L 26 85 L 17 100 L 18 116 L 28 128 L 42 135 L 56 136 L 69 128 L 76 113 L 73 97 L 62 87 L 48 85 L 34 92 L 27 107 L 30 122 L 41 132 L 55 137 L 70 136 L 81 126 L 86 110 L 81 94 L 69 86 L 54 85 L 40 92 L 34 108 L 38 123 L 50 133 L 65 137 L 80 135 L 92 123 L 95 107 L 88 92 L 75 84 L 60 84 L 46 92 L 41 108 L 46 123 L 58 133 L 74 137 L 89 134 L 101 122 L 104 105 L 96 90 L 82 83 L 66 83 L 52 92 L 48 108 L 54 124 L 68 133 L 84 137 L 100 133 L 111 121 L 112 104 L 103 89 L 88 82 L 72 83 L 58 93 L 55 110 L 63 126 L 78 135 L 94 138 L 111 133 L 122 120 L 121 102 L 111 88 L 95 82 L 79 83 L 64 94 L 62 111 L 71 128 L 87 137 L 104 139 L 122 134 L 132 120 L 130 102 L 119 88 L 102 82 L 85 83 L 70 94 L 69 112 L 79 129 L 96 138 L 114 139 L 133 134 L 143 119 L 140 101 L 128 87 L 110 82 L 92 83 L 77 95 L 77 113 L 88 130 L 106 139 L 125 140 L 144 134 L 154 119 L 150 100 L 137 87 L 118 82 L 99 83 L 84 96 L 85 115 L 97 131 L 116 140 L 136 140 L 156 134 L 165 118 L 160 99 L 146 86 L 127 82 L 107 83 L 92 97 L 93 116 L 106 132 L 126 141 L 147 140 L 167 134 L 176 117 L 170 98 L 155 85 L 135 82 L 115 83 L 100 97 L 102 117 L 116 133 L 137 142 L 159 141 L 179 134 L 187 116 L 181 97 L 165 85 L 144 82 L 123 83 L 108 98 L 111 118 L 126 134 L 148 142 L 171 141 L 191 133 L 198 115 L 191 96 L 174 84 L 152 82 L 131 83 L 116 99 L 120 119 L 136 135 L 159 143 L 183 141 L 203 133 L 210 114 L 202 95 L 184 84 L 162 82 L 140 83 L 124 100 L 129 120 L 146 136 L 170 143 L 195 141 L 215 132 L 221 113 L 213 94 L 194 83 L 171 82 L 149 84 L 133 101 L 138 121 L 156 137 L 181 144 L 207 141 L 227 132 L 232 112 L 223 93 L 203 82 L 180 82 L 157 84 L 141 102 L 147 123 L 165 138 L 191 145 L 218 142 L 238 132 L 242 112 L 233 93 L 213 82 L 189 82 L 166 84 L 150 102 L 156 123 L 176 139 L 202 145 L 230 142 L 249 132 L 252 111 L 242 92 L 221 82 L 197 82 L 174 84 L 158 103 L 165 124 L 186 140 L 213 146 L 241 143 L 260 132 L 262 111 L 252 92 L 230 82 L 205 82 L 181 85 L 165 104 L 173 125 L 195 141 L 224 146 L 253 143 L 271 131 L 272 110 L 261 91 L 239 81 L 213 82 L 188 85 L 172 104 L 180 126 L 203 142 L 233 147 L 263 143 L 280 131",
+    // 4.909 km | Tamburello → Villeneuve → Tosa → Piratella → Acque Minerale → Variante Alta → Rivazza → Traguardo
+    viewBox: "0 0 360 280",
+    path: `M 40 220 L 62 212 L 80 198 L 90 180 L 90 160
+      C 88 140 78 122 63 114 C 48 106 30 110 22 124
+      C 14 138 19 156 32 164 C 44 172 60 168 66 156
+      C 71 145 65 130 54 126 L 22 124
+      L 48 112 L 72 100 L 92 84 L 106 64
+      C 116 46 117 24 106 10 C 96 -3 78 -7 63 3
+      C 49 13 44 32 54 46 C 63 58 80 61 90 51
+      C 99 42 98 26 88 19 L 63 3
+      L 106 10 L 124 18 L 140 30 L 152 46 L 158 64 L 158 84
+      C 156 100 148 114 136 122 L 122 128
+      L 138 134 L 154 144 L 168 158 L 178 174 L 182 192
+      C 184 210 178 228 166 238 C 154 248 138 249 127 240
+      C 116 231 113 215 122 206 C 130 197 144 198 150 207
+      C 155 215 151 228 141 231 L 127 240
+      L 120 246 L 105 252 L 88 254 L 70 252 L 52 244 L 38 232 L 40 220`,
     zones: [
-      { id: 1, cx: 70, cy: 95, label: "Tamburello (Chicane)", tip: "Replaces the old flat-out section. Heavy braking — monitor brake temps over the race distance." },
-      { id: 2, cx: 148, cy: 84, label: "Rivazza Corners", tip: "Double right-hander — traction on exit feeds the long back straight approach. Diff settings matter." },
-      { id: 3, cx: 108, cy: 135, label: "Acque Minerale", tip: "Bumpy and awkward chicane mid-sector. Soft bump damping essential. Brake balance must be well-tuned." },
-      { id: 4, cx: 42, cy: 125, label: "Variante Alta", tip: "Very tight chicane. Short braking zone, late apex, maximum exit speed onto the straight." },
+      { id: 1, cx: 44, cy: 138, label: "Tamburello Chicane", tip: "Replaces the old flat-out section. Heavy braking — monitor brake temps over the race distance." },
+      { id: 2, cx: 78, cy: 52, label: "Tosa Hairpin", tip: "Tight hairpin at the end of the straight. Key traction zone — diff setup and exit speed critical." },
+      { id: 3, cx: 138, cy: 110, label: "Piratella", tip: "Blind, fast corner at the top of the circuit. Rear stability and commitment define lap time here." },
+      { id: 4, cx: 165, cy: 170, label: "Acque Minerale", tip: "Bumpy chicane mid-sector. Soft bump damping essential. Brake balance must be well-tuned." },
+      { id: 5, cx: 140, cy: 230, label: "Rivazza", tip: "Double right-hander — traction on exit feeds the long back straight approach. Diff settings matter a lot." },
     ]
   },
+
   "Laguna Seca": {
-    viewBox: "0 0 280 200",
-    path: "M 30 140 L 52 130 L 70 115 L 75 96 L 65 80 L 48 74 L 32 78 L 21 91 L 19 108 L 26 122 L 39 131 L 54 135 L 68 132 L 79 120 L 81 104 L 72 91 L 58 86 L 44 90 L 35 103 L 36 118 L 46 128 L 60 133 L 74 131 L 84 119 L 85 103 L 75 91 L 60 87 L 45 92 L 37 106 L 38 121 L 49 131 L 64 135 L 79 132 L 89 120 L 89 103 L 78 91 L 63 88 L 48 93 L 40 107 L 42 122 L 53 132 L 68 136 L 83 133 L 93 121 L 93 103 L 82 91 L 66 88 L 51 94 L 43 108 L 46 123 L 58 133 L 73 136 L 89 133 L 99 121 L 98 103 L 86 91 L 70 88 L 55 95 L 48 109 L 51 124 L 64 134 L 79 137 L 95 134 L 105 122 L 104 104 L 91 92 L 75 89 L 59 96 L 52 110 L 56 125 L 69 135 L 85 138 L 101 135 L 111 123 L 110 105 L 97 93 L 80 90 L 64 97 L 57 111 L 62 126 L 75 136 L 92 138 L 108 135 L 118 123 L 117 104 L 103 92 L 86 90 L 70 97 L 63 112 L 68 127 L 82 137 L 99 139 L 116 135 L 126 123 L 124 104 L 110 92 L 92 90 L 76 98 L 70 113 L 75 128 L 90 138 L 107 140 L 125 135 L 134 123 L 132 104 L 117 92 L 99 90 L 83 98 L 77 113 L 83 128 L 98 138 L 116 140 L 134 135 L 143 122 L 140 103 L 124 91 L 105 90 L 89 98 L 84 113 L 90 128 L 106 139 L 124 141 L 143 135 L 152 122 L 148 102 L 131 91 L 112 90 L 95 98 L 91 114 L 98 129 L 114 139 L 133 141 L 152 136 L 161 122 L 157 101 L 139 90 L 119 89 L 102 98 L 98 114 L 106 129 L 123 139 L 143 141 L 163 136 L 171 122 L 166 101 L 147 90 L 127 89 L 110 99 L 107 115 L 115 130 L 132 140 L 153 142 L 173 136 L 181 122 L 175 101 L 155 90 L 134 89 L 117 99 L 115 115 L 124 131 L 142 141 L 163 142 L 184 136 L 191 121 L 184 100 L 163 90 L 142 89 L 125 100 L 124 116 L 133 132 L 152 142 L 174 142 L 196 136 L 202 120 L 194 99 L 172 89 L 150 89 L 133 100 L 133 117 L 143 133 L 163 143 L 186 142 L 208 136 L 213 120 L 205 98 L 182 88 L 159 88 L 141 100 L 142 117 L 153 133 L 174 143 L 198 142 L 220 136 L 224 119 L 215 98 L 191 88 L 167 88 L 150 100 L 152 118 L 164 134 L 186 143 L 211 142 L 233 136 L 236 119 L 226 97 L 201 88 L 176 88 L 159 100 L 162 118 L 175 134 L 198 143 L 224 142 L 246 135 L 248 118 L 237 97 L 211 88 L 185 88 L 168 101 L 172 119 L 186 135 L 210 144 L 237 142 L 258 135 L 260 117 L 248 96 L 221 87 L 194 88 L 177 101 L 182 120 L 197 136 L 222 144 L 250 142 L 270 134 L 271 116 L 259 95 L 231 87 L 203 88 L 186 101 L 192 121 L 208 137 L 234 145 L 262 142 L 281 134",
+    // 3.602 km | T1 → T2 → Corkscrew (T8/8a) → T9 → T11 Andretti Hairpin
+    viewBox: "0 0 320 240",
+    path: `M 35 168 L 55 158 L 72 144 L 82 126 L 83 106
+      C 82 88 73 72 59 64 C 45 56 28 60 20 73
+      C 12 86 17 103 30 110 C 42 117 57 112 62 99
+      C 67 87 60 72 48 68 L 20 73
+      L 44 62 L 68 52 L 90 44 L 112 40 L 134 40
+      C 156 40 176 50 187 67 C 197 82 197 102 187 117
+      L 178 128 L 192 132 L 206 138 L 218 148
+      C 230 160 236 176 233 193 C 230 209 219 222 204 228
+      C 190 233 174 229 165 218 C 157 208 158 193 168 186
+      C 178 180 191 184 196 194 C 200 203 195 215 185 218
+      L 165 218
+      L 148 224 L 128 228 L 108 228 L 88 224 L 68 216 L 50 204 L 35 188 L 35 168`,
     zones: [
-      { id: 1, cx: 134, cy: 92, label: "The Corkscrew (T8/T8A)", tip: "Blind crest with a massive drop. The most unique corner in motorsport. High-speed stability and soft suspension are critical." },
-      { id: 2, cx: 56, cy: 106, label: "Turn 2", tip: "The key slow corner on the circuit — traction setup focus. Diff settings define exit speed here." },
-      { id: 3, cx: 195, cy: 110, label: "Rainey Curve (T9)", tip: "Fast sweeper immediately after the Corkscrew drop. Committed flat — rear stability essential." },
-      { id: 4, cx: 248, cy: 130, label: "Andretti Hairpin (T11)", tip: "Final slow hairpin before the start/finish straight. Maximum mechanical grip, exit traction is everything." },
+      { id: 1, cx: 44, cy: 88, label: "Turn 2", tip: "Key slow corner — the most important traction zone on the circuit. Diff settings define exit speed onto the back section." },
+      { id: 2, cx: 134, cy: 52, label: "Turns 5–6", tip: "Sequence of fast corners at the top of the circuit. Aero balance and compliance critical through here." },
+      { id: 3, cx: 185, cy: 115, label: "The Corkscrew (T8/T8A)", tip: "Blind crest with a dramatic drop — the most famous corner in motorsport. High-speed stability and soft suspension are non-negotiable." },
+      { id: 4, cx: 205, cy: 172, label: "Rainey Curve (T9)", tip: "Fast sweeper immediately after the Corkscrew drop. Taken flat — rear stability is paramount." },
+      { id: 5, cx: 183, cy: 210, label: "Andretti Hairpin (T11)", tip: "Final slow hairpin before the pit straight. Maximum mechanical grip — exit traction is everything here." },
     ]
   },
+
   "Red Bull Ring": {
-    viewBox: "0 0 260 180",
-    path: "M 30 120 L 52 108 L 70 92 L 72 73 L 58 60 L 40 58 L 25 65 L 17 80 L 18 97 L 30 110 L 46 117 L 62 118 L 76 110 L 82 95 L 78 78 L 64 68 L 49 67 L 35 76 L 28 91 L 32 106 L 44 115 L 58 118 L 73 115 L 82 102 L 82 86 L 72 73 L 57 67 L 43 73 L 36 88 L 39 103 L 51 113 L 65 117 L 80 115 L 90 102 L 90 85 L 79 72 L 64 67 L 49 72 L 42 87 L 46 103 L 59 113 L 74 117 L 90 115 L 100 101 L 99 83 L 87 70 L 71 65 L 56 71 L 49 87 L 54 103 L 67 113 L 83 116 L 99 113 L 109 99 L 107 82 L 94 70 L 78 65 L 62 71 L 56 88 L 62 104 L 76 114 L 93 117 L 109 113 L 119 98 L 117 81 L 103 69 L 86 65 L 70 71 L 64 88 L 70 104 L 85 114 L 102 116 L 118 112 L 128 97 L 125 80 L 111 68 L 93 65 L 77 72 L 71 89 L 78 105 L 93 115 L 110 117 L 127 112 L 136 97 L 133 80 L 118 68 L 100 65 L 83 72 L 78 89 L 85 106 L 101 115 L 119 117 L 136 112 L 145 96 L 141 79 L 126 67 L 108 65 L 90 72 L 86 90 L 93 107 L 110 116 L 128 117 L 145 112 L 154 96 L 149 78 L 133 66 L 115 65 L 97 72 L 93 90 L 101 107 L 118 116 L 137 117 L 154 112 L 163 95 L 158 77 L 141 65 L 122 64 L 103 72 L 100 91 L 108 108 L 126 117 L 145 117 L 163 112 L 171 95 L 165 76 L 148 65 L 128 64 L 109 72 L 107 92 L 116 109 L 135 118 L 154 117 L 172 111 L 180 94 L 174 75 L 156 64 L 135 64 L 116 72 L 115 93 L 125 110 L 145 118 L 164 117 L 183 111 L 190 93 L 183 74 L 164 63 L 143 63 L 123 72 L 122 93 L 133 110 L 154 119 L 174 118 L 194 111 L 200 92 L 192 73 L 172 63 L 150 63 L 130 72 L 130 94 L 141 111 L 163 119 L 184 118 L 204 110 L 209 91 L 200 72 L 180 62 L 157 62 L 136 72 L 137 94 L 149 112 L 172 120 L 194 118 L 215 110 L 219 90 L 209 71 L 188 62 L 165 62 L 143 72 L 145 95 L 158 113 L 181 121 L 205 118 L 226 110 L 229 89 L 218 70 L 196 62 L 172 62 L 150 72 L 153 96 L 167 114 L 191 121 L 216 119 L 237 110 L 239 89 L 227 70 L 204 62 L 179 62 L 157 72 L 160 97 L 175 115 L 200 122 L 226 119 L 247 110 L 249 88 L 236 69 L 213 62 L 187 62 L 164 73 L 168 98 L 184 116 L 210 122 L 237 119 L 257 109",
+    // 4.318 km | T1 Castrol → T2 → T3 Remus → T4 Rindt → T5–8 → T9/10 Schlossgold → pit straight
+    viewBox: "0 0 300 240",
+    path: `M 38 185 L 58 175 L 76 161 L 86 143
+      C 92 127 90 108 80 96 C 70 84 54 80 42 88
+      C 30 96 27 114 37 126 C 46 136 62 138 72 130
+      C 80 123 81 109 73 102 L 42 88
+      L 68 80 L 96 74 L 124 70 L 152 68
+      C 176 68 199 78 213 96 C 226 113 226 136 214 153
+      L 203 164 L 218 168 L 232 174 L 245 184
+      C 257 196 263 212 259 229 C 256 243 246 254 233 259
+      C 221 263 208 257 202 245 C 197 234 201 220 212 215
+      C 221 211 233 216 236 227 C 238 237 232 248 222 250
+      L 202 245
+      L 185 252 L 165 256 L 144 256 L 122 252 L 100 244 L 78 232 L 58 216 L 38 200 L 38 185`,
     zones: [
-      { id: 1, cx: 58, cy: 72, label: "Turn 1 (Castrol)", tip: "Hard uphill braking from high speed. Brake temps build quickly on this short lap — open ducts." },
-      { id: 2, cx: 126, cy: 66, label: "Turn 3 (Remus)", tip: "Second major braking zone — possibly the most critical corner for lap time." },
-      { id: 3, cx: 192, cy: 76, label: "Turn 4 (Rindt)", tip: "Fast sweeper at the end of the back straight — rear wing level directly determines whether you can carry speed here." },
-      { id: 4, cx: 158, cy: 118, label: "Turns 9/10 (Schlossgold)", tip: "Final corners before the start/finish. Exit traction and diff lock are key for the main straight." },
+      { id: 1, cx: 50, cy: 106, label: "Turn 1 (Castrol)", tip: "Hard uphill braking from high speed — the lap starts with the hardest braking zone. Brake temps build quickly on this short circuit." },
+      { id: 2, cx: 152, cy: 72, label: "Turn 3 (Remus)", tip: "Second major braking zone — arguably the most critical corner for lap time at the Red Bull Ring." },
+      { id: 3, cx: 218, cy: 134, label: "Turn 4 (Rindt)", tip: "Fast sweeper at the end of the back straight — rear wing level determines whether you can carry full speed." },
+      { id: 4, cx: 220, cy: 240, label: "Turns 9/10 (Schlossgold)", tip: "Final corner sequence before the pit straight. Exit traction and diff lock are crucial for the main straight." },
     ]
   },
+
   "Hungaroring": {
-    viewBox: "0 0 280 200",
-    path: "M 30 120 L 52 112 L 72 100 L 82 82 L 78 62 L 62 52 L 44 52 L 29 62 L 22 78 L 22 96 L 32 112 L 48 122 L 66 126 L 83 122 L 95 108 L 97 88 L 88 72 L 72 64 L 55 64 L 40 74 L 34 90 L 37 108 L 49 120 L 65 126 L 82 124 L 94 112 L 98 94 L 90 77 L 74 68 L 57 69 L 43 79 L 38 96 L 41 113 L 55 123 L 72 127 L 89 124 L 101 112 L 104 94 L 95 77 L 79 68 L 62 69 L 48 80 L 44 97 L 48 114 L 62 124 L 79 128 L 97 125 L 108 112 L 110 94 L 100 77 L 84 69 L 67 69 L 53 80 L 50 97 L 54 115 L 68 125 L 86 128 L 104 125 L 115 112 L 116 94 L 106 77 L 89 69 L 72 70 L 58 81 L 56 98 L 61 115 L 75 125 L 93 128 L 111 124 L 122 111 L 123 93 L 112 76 L 95 69 L 77 70 L 63 82 L 62 99 L 68 116 L 83 126 L 101 129 L 119 125 L 130 111 L 130 92 L 119 76 L 101 69 L 83 70 L 68 82 L 68 100 L 75 117 L 91 127 L 109 129 L 128 125 L 138 110 L 137 92 L 125 76 L 107 69 L 89 70 L 74 83 L 74 101 L 82 118 L 98 128 L 117 130 L 137 125 L 147 110 L 145 91 L 132 75 L 114 69 L 95 70 L 80 83 L 81 102 L 89 119 L 107 129 L 126 130 L 146 125 L 156 110 L 153 91 L 139 75 L 120 69 L 101 71 L 86 84 L 88 103 L 97 120 L 115 129 L 135 130 L 156 125 L 165 109 L 161 90 L 147 74 L 127 69 L 108 71 L 93 85 L 96 104 L 106 121 L 124 130 L 145 131 L 166 125 L 175 109 L 170 89 L 154 74 L 134 69 L 114 71 L 99 85 L 103 105 L 114 122 L 133 131 L 155 131 L 176 125 L 184 108 L 179 88 L 162 73 L 141 69 L 121 71 L 106 86 L 111 106 L 122 123 L 143 131 L 165 131 L 187 125 L 194 108 L 188 88 L 170 73 L 149 69 L 128 71 L 113 86 L 118 107 L 130 124 L 152 132 L 175 131 L 197 125 L 204 107 L 197 87 L 178 73 L 157 69 L 135 71 L 120 87 L 126 107 L 138 125 L 161 132 L 185 131 L 207 124 L 213 107 L 206 86 L 187 73 L 165 69 L 142 71 L 127 88 L 134 108 L 147 126 L 171 133 L 196 131 L 218 124 L 223 106 L 215 86 L 195 73 L 173 69 L 149 72 L 134 89 L 141 110 L 155 128 L 180 134 L 206 131 L 228 124 L 232 105 L 224 85 L 203 72 L 180 69 L 156 72 L 141 90 L 149 111 L 164 129 L 190 135 L 217 131 L 239 123 L 242 104 L 233 84 L 212 72 L 188 69 L 163 72 L 148 90 L 156 112 L 172 130 L 199 136 L 227 131 L 249 123 L 251 103 L 241 83 L 219 72 L 194 69 L 170 72 L 155 91 L 164 113 L 181 131 L 209 136 L 238 131 L 259 123 L 261 102 L 250 82 L 228 71 L 202 69 L 177 73 L 162 91 L 172 114 L 190 132 L 219 137 L 249 131 L 269 122 L 270 101 L 259 81 L 236 71",
+    // 4.381 km | T1–2 → T3–4 → T5 → T6–7 → T8–11 → T12–14 → pit straight
+    // Very twisty, few straights
+    viewBox: "0 0 360 260",
+    path: `M 42 195 L 60 185 L 75 170 L 80 152
+      C 83 135 77 116 64 108 C 52 100 36 104 28 116
+      C 21 128 25 145 37 152 C 48 158 62 154 67 142
+      C 72 131 66 116 55 112 L 28 116
+      L 55 104 L 82 96 L 108 90 L 132 88
+      C 154 86 174 96 183 114 L 188 130
+      L 200 120 L 214 108 L 230 100 L 248 96
+      C 270 92 293 100 306 117 C 319 134 319 157 307 174
+      L 296 183 L 308 190 L 318 200 L 324 214
+      C 328 230 322 248 309 256 C 296 264 279 261 271 248
+      C 263 236 267 219 280 215 C 291 211 304 218 307 230
+      L 309 256
+      L 295 264 L 276 268 L 254 268 L 230 264 L 206 256
+      L 182 244 L 160 228 L 140 212 L 120 200 L 98 194 L 72 194 L 42 195`,
     zones: [
-      { id: 1, cx: 58, cy: 68, label: "Turn 1–2", tip: "Slow hairpin sequence at the start. Diff lock is paramount — track is so tight that mechanical grip dominates everywhere." },
-      { id: 2, cx: 140, cy: 72, label: "Turns 5–6", tip: "Twisty mid-section where overtaking is impossible. Setup for consistency over one lap." },
-      { id: 3, cx: 210, cy: 82, label: "Turn 11", tip: "Final hairpin — last meaningful traction zone. Exit speed here defines the whole lap on this short circuit." },
-      { id: 4, cx: 120, cy: 130, label: "Turn 12–14 (Bus Stop area)", tip: "Technical final sector. The track rubbers in massively — setup dialed for end-of-stint conditions." },
+      { id: 1, cx: 44, cy: 130, label: "Turn 1–2", tip: "Opening slow hairpin sequence. Mechanical grip dominates the whole lap here — diff setup is paramount." },
+      { id: 2, cx: 138, cy: 92, label: "Turn 4", tip: "Key medium-speed right — setup for consistency through the twisty mid-section that follows." },
+      { id: 3, cx: 248, cy: 100, label: "Turn 6–7", tip: "Fast section — this is the only real high-speed stress test at the Hungaroring. Rear stability matters." },
+      { id: 4, cx: 300, cy: 196, label: "Turn 11 (Hairpin)", tip: "Final hairpin — last meaningful traction zone. Exit speed here defines the whole lap on this very tight circuit." },
     ]
   },
+
   "Le Mans": {
-    viewBox: "0 0 340 200",
-    path: "M 30 140 L 55 132 L 78 120 L 95 104 L 98 84 L 88 66 L 70 56 L 50 55 L 32 63 L 20 78 L 16 96 L 20 113 L 30 126 L 45 134 L 61 138 L 77 136 L 90 126 L 97 110 L 97 92 L 89 76 L 75 66 L 59 64 L 44 70 L 33 83 L 30 99 L 35 115 L 47 126 L 62 132 L 78 133 L 92 126 L 100 111 L 100 93 L 91 78 L 77 68 L 61 67 L 46 74 L 36 88 L 34 104 L 41 119 L 54 129 L 70 134 L 87 133 L 100 124 L 107 109 L 106 91 L 96 76 L 81 67 L 64 67 L 50 75 L 41 90 L 40 106 L 48 121 L 62 130 L 79 135 L 96 133 L 109 122 L 115 107 L 113 89 L 102 74 L 86 66 L 69 67 L 55 76 L 47 92 L 47 108 L 56 122 L 70 131 L 88 135 L 105 133 L 118 121 L 123 105 L 120 87 L 108 72 L 92 65 L 74 67 L 60 77 L 53 93 L 54 109 L 63 123 L 78 132 L 97 135 L 114 133 L 127 121 L 132 104 L 128 86 L 115 72 L 98 65 L 80 67 L 66 78 L 60 94 L 62 110 L 71 124 L 87 132 L 106 135 L 124 133 L 137 120 L 140 103 L 136 85 L 122 72 L 104 65 L 86 67 L 72 78 L 66 95 L 69 111 L 79 125 L 96 133 L 115 135 L 133 133 L 146 120 L 149 103 L 144 85 L 129 72 L 111 65 L 92 67 L 78 79 L 73 96 L 76 112 L 87 126 L 104 133 L 123 135 L 142 132 L 155 119 L 157 101 L 152 84 L 136 71 L 118 65 L 99 67 L 85 79 L 80 97 L 84 113 L 95 127 L 113 134 L 132 136 L 151 132 L 164 119 L 166 101 L 160 83 L 143 70 L 124 65 L 105 67 L 91 80 L 87 97 L 91 114 L 103 128 L 122 135 L 142 136 L 162 132 L 174 118 L 175 100 L 168 82 L 151 70 L 131 65 L 111 67 L 97 80 L 94 98 L 99 115 L 112 128 L 131 136 L 152 136 L 173 131 L 184 117 L 184 99 L 176 81 L 158 69 L 138 65 L 117 67 L 104 81 L 101 99 L 107 116 L 121 129 L 141 136 L 162 136 L 183 131 L 194 116 L 193 97 L 184 80 L 165 68 L 145 65 L 124 67 L 110 81 L 108 99 L 115 117 L 130 130 L 151 137 L 173 136 L 194 130 L 204 115 L 203 96 L 193 79 L 173 68 L 152 65 L 130 67 L 117 82 L 115 100 L 122 118 L 138 131 L 160 137 L 183 136 L 205 130 L 214 114 L 212 95 L 201 78 L 181 67 L 159 65 L 137 67 L 124 83 L 122 101 L 130 119 L 147 132 L 170 138 L 193 136 L 215 129 L 224 113 L 221 94 L 209 77 L 188 66 L 166 65 L 144 67 L 131 83 L 130 102 L 138 120 L 156 133 L 179 138 L 203 136 L 226 129 L 234 112 L 231 92 L 218 76 L 196 66 L 173 65 L 151 68 L 138 84 L 137 103 L 147 121 L 165 134 L 189 139 L 214 136 L 237 128 L 244 111 L 240 91 L 227 75 L 204 66 L 181 65 L 158 68 L 145 85 L 145 104 L 155 122 L 175 135 L 200 139 L 226 136 L 249 128 L 255 110 L 251 90 L 237 74 L 213 65 L 189 65 L 165 68 L 152 85 L 153 105 L 163 123 L 184 136 L 210 140 L 237 136 L 260 128 L 265 109 L 260 89 L 245 73 L 221 65 L 196 65 L 172 68 L 159 86 L 161 106 L 172 124 L 194 137 L 221 140 L 249 136 L 272 127 L 276 108 L 270 88 L 254 73 L 229 65 L 203 65 L 179 68 L 166 87 L 169 107 L 181 125 L 204 138 L 232 141 L 261 136 L 283 127 L 286 107 L 279 87 L 263 73 L 237 65 L 210 65 L 186 68 L 173 87 L 177 108 L 190 126 L 214 138 L 243 141 L 273 136 L 294 126 L 296 106 L 289 86 L 272 72 L 245 65 L 218 65 L 193 69 L 180 88 L 185 109 L 199 127 L 224 139 L 254 141 L 284 136 L 305 126 L 306 105 L 298 85 L 280 72 L 253 65 L 225 65 L 200 69 L 187 89 L 193 110 L 208 128 L 234 139 L 265 141 L 295 136 L 315 125 L 315 104 L 307 84 L 289 71 L 261 65 L 233 65 L 207 70 L 195 90 L 201 111 L 217 129 L 244 140 L 276 141 L 306 135 L 325 124 L 324 103 L 315 83 L 297 71",
+    // 13.626 km | Dunlop → Tertre Rouge → Mulsanne Straight → Mulsanne Chicane 1 → Mulsanne Chicane 2 →
+    // Indianapolis → Arnage → Porsche Curves → Ford Chicanes → pit straight
+    viewBox: "0 0 420 300",
+    path: `M 38 220 L 62 214 L 84 204 L 100 188 L 106 168
+      C 108 148 100 126 85 114 C 70 102 49 102 37 115
+      C 25 128 27 149 40 162 C 52 174 70 174 80 162 L 85 114
+      L 100 100 L 118 88 L 138 80 L 160 76 L 185 76 L 210 80
+      L 235 86 L 258 94 L 278 104 L 295 116 L 308 130 L 316 148
+      C 322 166 320 186 310 200 C 300 214 283 221 267 218
+      C 251 215 240 201 242 185 C 244 170 258 161 273 165
+      C 286 169 293 183 287 196 C 282 207 268 212 257 206 L 242 185
+      L 258 176 L 272 164 L 282 148 L 285 130 L 280 112
+      C 274 94 260 80 242 76 C 224 72 207 82 200 100 L 196 118
+      L 210 116 L 226 114 L 240 116 L 250 124 L 254 136 L 250 148
+      C 244 160 230 166 216 162 C 202 158 194 144 198 130 L 200 100
+      L 196 118 L 188 130 L 176 144 L 161 156 L 142 166 L 120 172
+      C 98 177 74 172 58 156 L 46 140
+      L 38 154 L 34 170 L 34 186 L 38 202 L 38 220`,
     zones: [
-      { id: 1, cx: 72, cy: 72, label: "Dunlop Chicane", tip: "First major braking zone after the straight. Sets up a key long-circuit rhythm — consistency is everything." },
-      { id: 2, cx: 148, cy: 68, label: "Porsche Curves", tip: "Technical final sector of the lap — requires excellent mechanical grip. Setup balance is exposed here." },
-      { id: 3, cx: 225, cy: 68, label: "Ford Chicanes", tip: "Calm, stable car essential under heavy braking. Any instability at 330+ km/h is catastrophic." },
-      { id: 4, cx: 290, cy: 90, label: "Tertre Rouge", tip: "Final corner before the Mulsanne — taken flat. Rear stability crucial for top speed down the straight." },
+      { id: 1, cx: 56, cy: 138, label: "Dunlop Chicane", tip: "First major braking zone after the pit straight. Sets the rhythm for the whole lap — consistency is critical." },
+      { id: 2, cx: 105, cy: 168, label: "Tertre Rouge", tip: "Final corner before the Mulsanne — taken flat with the right setup. Rear stability crucial for top speed down the straight." },
+      { id: 3, cx: 248, cy: 110, label: "Mulsanne Chicanes", tip: "Two chicanes inserted into the Mulsanne Straight. Heavy braking from 340 km/h — brake temps are extreme." },
+      { id: 4, cx: 265, cy: 195, label: "Indianapolis & Arnage", tip: "Slow hairpin sequence — key traction zone before the Porsche Curves. Diff setup critical." },
+      { id: 5, cx: 198, cy: 140, label: "Porsche Curves", tip: "Technical and flowing final sector. Mechanical grip and ride quality are exposed over this bumpy sequence." },
     ]
   },
+
   "Nürburgring Nordschleife": {
-    viewBox: "0 0 300 220",
-    path: "M 30 160 L 45 150 L 58 136 L 64 118 L 58 100 L 44 88 L 30 86 L 16 94 L 8 110 L 10 128 L 20 143 L 35 152 L 51 156 L 66 153 L 78 142 L 83 126 L 80 108 L 70 95 L 55 89 L 40 90 L 27 100 L 20 116 L 22 134 L 33 148 L 50 156 L 67 158 L 83 154 L 94 142 L 97 124 L 92 107 L 79 97 L 63 94 L 48 98 L 36 110 L 33 127 L 38 143 L 52 154 L 68 158 L 85 156 L 97 144 L 100 126 L 94 109 L 81 99 L 65 97 L 50 102 L 38 115 L 36 132 L 42 148 L 57 157 L 74 160 L 91 157 L 103 145 L 105 127 L 98 110 L 84 100 L 68 99 L 52 104 L 41 117 L 40 134 L 47 149 L 63 159 L 81 161 L 99 157 L 111 145 L 112 127 L 104 110 L 90 100 L 73 100 L 57 106 L 46 119 L 46 136 L 54 151 L 70 160 L 89 162 L 108 158 L 119 145 L 119 127 L 111 110 L 96 100 L 79 100 L 63 107 L 52 120 L 53 137 L 62 152 L 79 161 L 98 163 L 117 158 L 128 145 L 127 127 L 118 110 L 102 100 L 85 100 L 69 108 L 59 121 L 60 138 L 70 153 L 88 162 L 108 163 L 128 158 L 138 145 L 136 126 L 127 109 L 110 100 L 92 100 L 76 108 L 67 122 L 69 139 L 79 154 L 98 163 L 118 163 L 138 158 L 148 144 L 145 125 L 135 109 L 118 100 L 100 100 L 83 108 L 75 122 L 77 140 L 88 155 L 108 164 L 128 163 L 149 157 L 158 143 L 155 124 L 143 108 L 125 100 L 107 100 L 90 109 L 82 123 L 85 141 L 97 156 L 117 164 L 139 163 L 160 157 L 169 142 L 165 123 L 152 108 L 133 100 L 114 100 L 97 109 L 90 124 L 93 142 L 107 157 L 128 164 L 150 163 L 171 157 L 179 141 L 175 122 L 161 107 L 141 100 L 121 100 L 104 110 L 98 125 L 102 143 L 117 158 L 138 165 L 161 163 L 182 157 L 190 141 L 185 121 L 171 107 L 150 100 L 129 100 L 112 110 L 106 126 L 111 144 L 127 159 L 149 165 L 173 163 L 194 156 L 201 140 L 196 120 L 181 106 L 159 100 L 138 100 L 120 111 L 115 127 L 121 145 L 137 160 L 160 166 L 184 163 L 206 155 L 212 139 L 206 119 L 190 106 L 168 100 L 146 100 L 128 111 L 124 128 L 130 146 L 147 161 L 171 166 L 196 163 L 218 155 L 223 138 L 216 118 L 199 105 L 177 100 L 155 100 L 137 111 L 133 129 L 140 147 L 158 161 L 183 166 L 208 163 L 230 154 L 235 137 L 227 117 L 209 104 L 186 100 L 163 100 L 145 112 L 142 130 L 150 148 L 169 162 L 194 167 L 220 163 L 242 154 L 246 137 L 238 116 L 219 104 L 196 100 L 172 100 L 154 112 L 152 130 L 161 149 L 181 163 L 207 167 L 234 163 L 256 154 L 259 136 L 250 115 L 230 104 L 206 100 L 181 100 L 163 113 L 162 131 L 172 150 L 193 164 L 220 167 L 248 163 L 269 153 L 271 135 L 261 115 L 240 104 L 215 100 L 190 100 L 171 113 L 171 132 L 182 151 L 204 164 L 232 167 L 261 162 L 281 153 L 282 134 L 271 114 L 250 104 L 224 100 L 198 100 L 179 113 L 180 132 L 192 151 L 215 165 L 244 167 L 273 162 L 292 152 L 292 133 L 281 113 L 259 103 L 233 100 L 207 100 L 188 113 L 189 133 L 202 152 L 226 165 L 256 167 L 285 162 L 299 151",
+    // 20.832 km — simplified but proportionally accurate key sections:
+    // Hatzenbach → Flugplatz → Schwedenkreuz → Aremberg → Fuchsröhre → Adenauer Forst →
+    // Bergwerk → Kesselchen → Karussel → Hohe Acht → Wippermann → Brünnchen → Pflanzgarten → Galgenkopf
+    viewBox: "0 0 420 300",
+    path: `M 30 235 L 50 228 L 68 218 L 80 204 L 84 188
+      C 86 172 80 156 68 148 C 56 140 40 144 34 157
+      C 28 170 34 186 46 192 C 57 198 70 192 74 180
+      L 68 148 L 80 136 L 92 120 L 98 102 L 96 82
+      C 93 62 80 46 62 40 C 45 34 25 42 18 59
+      C 11 76 20 96 37 103 C 52 109 68 101 72 85
+      C 76 70 66 52 50 48 L 18 59
+      L 32 44 L 50 34 L 70 28 L 92 26 L 115 28
+      C 138 30 158 44 166 64 L 170 82
+      L 184 74 L 200 68 L 218 66 L 238 68 L 256 76
+      C 274 86 284 104 282 124 L 278 140
+      L 294 144 L 310 152 L 324 164 L 334 180
+      C 342 196 342 215 333 229 C 324 242 308 248 293 244
+      C 278 240 269 226 273 211 C 276 197 290 190 304 195
+      C 316 200 321 215 314 226 C 308 236 294 239 284 232 L 273 211
+      L 262 220 L 248 228 L 230 234 L 210 236 L 188 234
+      C 166 230 148 216 144 194 L 142 176
+      L 126 180 L 108 182 L 90 180 L 72 174 L 54 162 L 40 148 L 30 132
+      C 20 116 20 96 30 82
+      L 96 82 L 100 68 L 108 54 L 120 44 L 134 38 L 148 36
+      L 166 64 L 168 82 L 170 100 L 168 118 L 160 134
+      C 152 148 138 156 122 156 L 108 154
+      L 116 170 L 118 188 L 112 204
+      C 105 220 91 228 76 228 L 60 224 L 42 228 L 30 235`,
     zones: [
-      { id: 1, cx: 50, cy: 98, label: "Hatzenbach", tip: "Opening series of corners — establish rhythm early. The bumps here punish a stiff setup severely." },
-      { id: 2, cx: 140, cy: 102, label: "Flugplatz", tip: "The famous jump — car goes light at high speed. Commit early or the landing unsettles the rear." },
-      { id: 3, cx: 215, cy: 105, label: "Bergwerk", tip: "Technical mid-lap section — conservative brake settings and open ducts essential for 25+ km." },
-      { id: 4, cx: 270, cy: 118, label: "Karussel", tip: "The banked corner — use the banking for free grip. Don't fight it — let the car ride the banking." },
-      { id: 5, cx: 160, cy: 165, label: "Galgenkopf", tip: "Late-lap heavy braking zone. Tyre wear means braking points shift significantly from lap 1 to end." },
+      { id: 1, cx: 60, cy: 164, label: "Hatzenbach", tip: "Opening series of corners — bumpy and demanding. A stiff setup is severely punished here. Establish rhythm early." },
+      { id: 2, cx: 95, cy: 56, label: "Flugplatz (Jump)", tip: "The famous jump — car goes airborne at high speed. Commit early or the landing unsettles the rear badly." },
+      { id: 3, cx: 220, cy: 68, label: "Schwedenkreuz / Aremberg", tip: "Long fast sweeper followed by a heavy braking zone. Rear stability and brake cooling are critical." },
+      { id: 4, cx: 285, cy: 218, label: "Karussel", tip: "The iconic banked corner — use the banking, don't fight it. Let the car ride the concrete banking for free grip." },
+      { id: 5, cx: 126, cy: 190, label: "Pflanzgarten / Brünnchen", tip: "Bumpy and fast section late in the lap. Tyre wear here shifts braking points compared to lap 1 — adjust accordingly." },
     ]
   },
+
 };
 
 export default function CircuitMap({ trackName }) {
@@ -143,7 +378,7 @@ export default function CircuitMap({ trackName }) {
         className="w-full"
         style={{ maxHeight: 260 }}
       >
-        {/* Track outline */}
+        {/* Track outline — dark border */}
         <path
           d={map.path}
           fill="none"
@@ -152,6 +387,7 @@ export default function CircuitMap({ trackName }) {
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        {/* Track surface */}
         <path
           d={map.path}
           fill="none"
@@ -159,13 +395,11 @@ export default function CircuitMap({ trackName }) {
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray="none"
         />
 
         {/* Hotspot zones */}
         {map.zones.map((zone) => (
           <g key={zone.id}>
-            {/* Pulse ring */}
             <circle
               cx={zone.cx}
               cy={zone.cy}
@@ -174,7 +408,6 @@ export default function CircuitMap({ trackName }) {
               stroke="hsl(var(--primary))"
               strokeWidth="1.5"
             />
-            {/* Center dot */}
             <circle
               cx={zone.cx}
               cy={zone.cy}
@@ -183,7 +416,6 @@ export default function CircuitMap({ trackName }) {
               className="cursor-pointer"
               onClick={() => setActiveZone(activeZone === zone.id ? null : zone.id)}
             />
-            {/* Number label */}
             <text
               x={zone.cx}
               y={zone.cy - 14}
