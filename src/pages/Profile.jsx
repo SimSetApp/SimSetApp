@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users, Search, Copy, UserPlus } from "lucide-react";
+import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users, Search, Copy, UserPlus, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -89,7 +89,9 @@ export default function Profile() {
   });
 
   const incoming = friendRequests.filter(r => r.to_id === user?.id && r.status === "pending");
+  const sent = friendRequests.filter(r => r.from_id === user?.id && r.status === "pending");
   const incomingIds = incoming.map(r => r.from_id);
+  const sentIds = sent.map(r => r.to_id);
 
   const { data: incomingProfiles = [] } = useQuery({
     queryKey: ["incoming-profiles", incomingIds.join(",")],
@@ -101,6 +103,26 @@ export default function Profile() {
       return results.filter(Boolean);
     },
     enabled: incomingIds.length > 0,
+  });
+
+  const { data: sentProfiles = [] } = useQuery({
+    queryKey: ["sent-profiles", sentIds.join(",")],
+    queryFn: async () => {
+      if (sentIds.length === 0) return [];
+      const results = await Promise.all(
+        sentIds.map(id => base44.entities.User.filter({ id }).then(r => r?.[0] || null).catch(() => null))
+      );
+      return results.filter(Boolean);
+    },
+    enabled: sentIds.length > 0,
+  });
+
+  const cancelRequestMutation = useMutation({
+    mutationFn: (reqId) => base44.entities.FriendRequest.delete(reqId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+      toast.success("Request cancelled.");
+    },
   });
 
   const acceptMutation = useMutation({
@@ -335,42 +357,89 @@ export default function Profile() {
                     </div>
                   )}
                 </div>
-                {incoming.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-card p-8 text-center">
-                    <Users className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
-                    <p className="text-sm text-muted-foreground">No pending friend requests.</p>
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-border bg-card divide-y divide-border">
-                    {incoming.map(req => {
-                      const sender = incomingProfiles.find(p => p.id === req.from_id);
-                      const name = sender?.display_name || sender?.full_name || req.from_id;
-                      return (
-                        <div key={req.id} className="flex items-center justify-between gap-3 p-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold overflow-hidden shrink-0">
-                              {sender?.avatar_url
-                                ? <img src={sender.avatar_url} className="w-full h-full object-cover" alt={name} />
-                                : name[0]?.toUpperCase()}
+                {/* Incoming requests */}
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5" />Incoming Requests
+                    {incoming.length > 0 && <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{incoming.length}</span>}
+                  </p>
+                  {incoming.length === 0 ? (
+                    <div className="rounded-xl border border-border bg-card p-6 text-center">
+                      <p className="text-sm text-muted-foreground">No incoming requests.</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                      {incoming.map(req => {
+                        const sender = incomingProfiles.find(p => p.id === req.from_id);
+                        const name = sender?.display_name || sender?.full_name || req.from_id;
+                        return (
+                          <div key={req.id} className="flex items-center justify-between gap-3 p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold overflow-hidden shrink-0">
+                                {sender?.avatar_url
+                                  ? <img src={sender.avatar_url} className="w-full h-full object-cover" alt={name} />
+                                  : name[0]?.toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{name}</p>
+                                <p className="text-xs text-muted-foreground font-mono">{sender?.user_tag}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium">{name}</p>
-                              <p className="text-xs text-muted-foreground">wants to be your friend</p>
+                            <div className="flex gap-1.5">
+                              <Button size="sm" className="h-8 text-xs px-3" onClick={() => acceptMutation.mutate(req.id)} disabled={acceptMutation.isPending}>
+                                <UserCheck className="w-3 h-3 mr-1" />Accept
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-8 text-xs px-2" onClick={() => declineMutation.mutate(req.id)} disabled={declineMutation.isPending}>
+                                <UserX className="w-3 h-3" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex gap-1.5">
-                            <Button size="sm" className="h-8 text-xs px-3" onClick={() => acceptMutation.mutate(req.id)} disabled={acceptMutation.isPending}>
-                              <UserCheck className="w-3 h-3 mr-1" />Accept
-                            </Button>
-                            <Button size="sm" variant="outline" className="h-8 text-xs px-2" onClick={() => declineMutation.mutate(req.id)} disabled={declineMutation.isPending}>
-                              <UserX className="w-3 h-3" />
-                            </Button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Sent requests */}
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" />Sent Requests
+                    {sent.length > 0 && <span className="bg-secondary text-secondary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{sent.length}</span>}
+                  </p>
+                  {sent.length === 0 ? (
+                    <div className="rounded-xl border border-border bg-card p-6 text-center">
+                      <p className="text-sm text-muted-foreground">No pending sent requests.</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                      {sent.map(req => {
+                        const recipient = sentProfiles.find(p => p.id === req.to_id);
+                        const name = recipient?.display_name || recipient?.full_name || req.to_id;
+                        return (
+                          <div key={req.id} className="flex items-center justify-between gap-3 p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-muted-foreground text-sm font-bold overflow-hidden shrink-0">
+                                {recipient?.avatar_url
+                                  ? <img src={recipient.avatar_url} className="w-full h-full object-cover" alt={name} />
+                                  : name[0]?.toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{name}</p>
+                                <p className="text-xs text-muted-foreground font-mono">{recipient?.user_tag}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="w-3 h-3" />Pending</span>
+                              <Button size="sm" variant="outline" className="h-8 text-xs px-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30" onClick={() => cancelRequestMutation.mutate(req.id)} disabled={cancelRequestMutation.isPending}>
+                                <X className="w-3 h-3 mr-1" />Cancel
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
