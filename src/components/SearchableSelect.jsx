@@ -79,7 +79,7 @@ export default function SearchableSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full min-w-[220px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full min-w-[220px] rounded-md border border-border bg-popover shadow-lg">
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
@@ -93,14 +93,14 @@ export default function SearchableSelect({
             </div>
           </div>
 
-          <div className="max-h-64 overflow-y-auto overscroll-contain">
+          <div className="max-h-64 overflow-y-auto overscroll-contain rounded-b-md">
             {totalResults === 0 && (
               <p className="px-4 py-3 text-xs text-muted-foreground text-center">No results found</p>
             )}
 
             {filteredGroups && filteredGroups.map(group => (
               <div key={group.label}>
-                <div className="px-3 py-1.5 text-xs font-semibold text-primary bg-muted/40 sticky top-0">{group.label}</div>
+                <div className="px-3 py-1.5 text-xs font-semibold text-primary bg-muted/60 border-b border-border/40">{group.label}</div>
                 {group.items.map(item => (
                   <button
                     key={item}

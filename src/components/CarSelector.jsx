@@ -56,17 +56,16 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
           </label>
 
           {classNames.length > 0 && (
-            <Select value={activeClass} onValueChange={(v) => { setActiveClass(v); setCar(""); }}>
-              <SelectTrigger className="bg-secondary border-border h-8 text-xs">
-                <SelectValue placeholder="All Classes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Classes</SelectItem>
-                {classNames.map(cls => (
-                  <SelectItem key={cls} value={cls}>{cls}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={activeClass}
+              onChange={e => { setActiveClass(e.target.value); setCar(""); }}
+              className="w-full h-8 rounded-md border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+            >
+              <option value="All">All Classes</option>
+              {classNames.map(cls => (
+                <option key={cls} value={cls}>{cls}</option>
+              ))}
+            </select>
           )}
 
           <SearchableSelect
