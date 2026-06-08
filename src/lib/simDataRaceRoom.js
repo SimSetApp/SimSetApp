@@ -19,59 +19,59 @@ export const RACEROOM_CARS = {
     "Opel Astra V8 Coupé"
   ],
   "DTM 2003": [
-    "AMG-Mercedes CLK DTM",
+    "AMG-Mercedes CLK DTM 2003",
     "Audi TT-R",
-    "Opel Vectra GTS V8"
+    "Opel Vectra GTS V8 2003"
   ],
   "DTM 2005": [
-    "AMG-Mercedes C-Klasse DTM",
+    "AMG-Mercedes C-Klasse DTM 2005",
     "Audi A4 DTM",
-    "Opel Vectra GTS V8"
+    "Opel Vectra GTS V8 2005"
   ],
   "DTM 2013": [
-    "BMW M3 DTM",
-    "Audi RS5 DTM",
-    "Mercedes C-Coupé DTM"
+    "BMW M3 DTM 2013",
+    "Audi RS5 DTM 2013",
+    "Mercedes C-Coupé DTM 2013"
   ],
   "DTM 2014": [
-    "BMW M4 DTM",
-    "Audi RS5 DTM",
-    "Mercedes C-Coupé DTM"
+    "BMW M4 DTM 2014",
+    "Audi RS5 DTM 2014",
+    "Mercedes C-Coupé DTM 2014"
   ],
   "DTM 2015": [
-    "BMW M4 DTM",
-    "Audi RS5 DTM",
-    "Mercedes C63 AMG DTM"
+    "BMW M4 DTM 2015",
+    "Audi RS5 DTM 2015",
+    "Mercedes C63 AMG DTM 2015"
   ],
   "DTM 2016": [
-    "BMW M4 DTM",
-    "Audi RS5 DTM",
-    "Mercedes-AMG C63 DTM"
+    "BMW M4 DTM 2016",
+    "Audi RS5 DTM 2016",
+    "Mercedes-AMG C63 DTM 2016"
   ],
   "DTM 2020": [
     "Audi RS5 Turbo DTM",
     "BMW M4 Turbo DTM"
   ],
   "DTM 2021": [
-    "Audi R8 LMS GT3 EVO DTM",
-    "BMW M6 GT3 DTM",
-    "Mercedes-AMG GT3 DTM",
-    "Ferrari 488 GT3 Evo DTM"
+    "Audi R8 LMS GT3 EVO DTM 2012",
+    "BMW M6 GT3 DTM 2021",
+    "Mercedes-AMG GT3 DTM 2021",
+    "Ferrari 488 GT3 Evo DTM 2021"
   ],
   "DTM 2023": [
-    "Audi R8 LMS GT3 EVO II DTM",
-    "BMW M4 GT3 DTM",
-    "Ferrari 296 GT3 DTM",
-    "Lamborghini Huracán GT3 EVO2 DTM",
-    "Mercedes-AMG GT3 EVO DTM",
-    "Porsche 911 GT3 R (992) DTM"
+    "Audi R8 LMS GT3 EVO II DTM 2023",
+    "BMW M4 GT3 DTM 2023",
+    "Ferrari 296 GT3 DTM 2023",
+    "Lamborghini Huracán GT3 EVO2 DTM 2023",
+    "Mercedes-AMG GT3 EVO DTM 2023",
+    "Porsche 911 GT3 R (992) DTM 2023"
   ],
   "DTM 2024" : [
-    "Audi R8 LMS GT3 EVO II DTM",
-"BMW M4 GT3 DTM",
-"Mercedes-AMG GT3 DTM",
-"Porsche 911 GT3 R (992) DTM",
-"Ferrari 296 GT3 DTM"
+    "Audi R8 LMS GT3 EVO II DTM 2024",
+"BMW M4 GT3 DTM 2024",
+"Mercedes-AMG GT3 DTM 2024",
+"Porsche 911 GT3 R (992) DTM 2024",
+"Ferrari 296 GT3 DTM 2024"
   ],
   "GTR1" : [
 "Aston Martin DBR9",
@@ -164,19 +164,19 @@ export const RACEROOM_CARS = {
 "Citroen C-Elysee"
 ],
 "WTCC 2015":[
-  "Citroen C-Elysee",
-  "Honda Civic WTCC",
-  "Lada Vesta WTCC",
-  "Chevrolet RML Cruze"
+  "Citroen C-Elysee 2015",
+  "Honda Civic WTCC 2015",
+  "Lada Vesta WTCC 2015",
+  "Chevrolet RML Cruze 2015"
 ],
 "WTCC 2016":[
-  "Honda Civic TC1",
-  "Volvo S60 Polestar TC1",
-  "Lada Vesta TC1"
+  "Honda Civic TC1 2016",
+  "Volvo S60 Polestar TC1 2016",
+  "Lada Vesta TC1 2016"
 ],
 "WTCC 2017":[
-  "Honda Civic WTCC",
-  "Volvo S60 Polestar TC1"
+  "Honda Civic WTCC 2017",
+  "Volvo S60 Polestar TC1 2017"
 ],
   "WTCR / TCR" : [
     "Audi RS 3 LMS",
