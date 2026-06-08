@@ -1,3 +1,5 @@
+import { RACEROOM_CARS, RACEROOM_TRACKS, RACEROOM_SETUP_PARAMS } from './simDataRaceRoom.js';
+
 export const SIM_TITLES = [
   "iRacing",
   "Assetto Corsa Competizione",
@@ -409,6 +411,8 @@ export const CAR_LISTS = {
     ]
   },
 
+  "RaceRoom": RACEROOM_CARS,
+
   "Gran Turismo 7": {
     "Gr.1 Prototype": [
       "Toyota GR010 HYBRID Race Car '21",
@@ -704,6 +708,92 @@ export const TRACK_LISTS = {
     "Spa-Francorchamps",
     "Autodromo Internacional de Curitiba"
   ],
+  "RaceRoom": [
+    "Alemannenring",
+    "Anderstorp Raceway – Grand Prix",
+    "Anderstorp Raceway – South Circuit",
+    "Autodrom Most – Grand Prix",
+    "AVUS – 1992",
+    "AVUS – 1937",
+    "Bathurst Circuit – Mount Panorama",
+    "Bilster Berg – Gesamtstrecke",
+    "Bilster Berg – Ostschleife",
+    "Bilster Berg – Westschleife",
+    "Bilster Berg – Club",
+    "Brands Hatch – Grand Prix",
+    "Brands Hatch – Indy",
+    "Brno Circuit – Grand Prix",
+    "Chang International Circuit – Grand Prix",
+    "Circuit de Charade – GP",
+    "Circuit de Charade – Short",
+    "Circuit de Pau-Ville",
+    "Circuit Zandvoort – Modern GP",
+    "Circuit Zandvoort – Historic GP",
+    "Circuit Zolder",
+    "Daytona International Speedway – Road Course",
+    "Daytona International Speedway – Motorcycle Course",
+    "Daytona International Speedway – Tri-Oval",
+    "DEKRA Lausitzring – Grand Prix",
+    "DEKRA Lausitzring – Short",
+    "DEKRA Lausitzring – DTM",
+    "DEKRA Lausitzring – Club",
+    "DEKRA Lausitzring – Oval",
+    "Donington Park – Grand Prix",
+    "Donington Park – National",
+    "Dubai Autodrome – Grand Prix",
+    "Dubai Autodrome – International",
+    "Dubai Autodrome – National",
+    "EuroSpeedway Lausitz",
+    "Fuji Speedway",
+    "Hockenheimring – Grand Prix",
+    "Hockenheimring – Short",
+    "Hockenheimring – National",
+    "Hockenheimring – Motodrom",
+    "Hungaroring",
+    "Imola",
+    "Indianapolis Motor Speedway – Oval",
+    "Indianapolis Motor Speedway – Road Course",
+    "Jyllandsringen – Grand Prix",
+    "Jyllandsringen – Touring",
+    "Jyllandsringen – Club",
+    "Lausitzring – Grand Prix",
+    "Macau Circuit",
+    "Motorsport Arena Oschersleben – Grand Prix",
+    "Motorsport Arena Oschersleben – Short",
+    "Motorsport Arena Oschersleben – Club",
+    "Nürburgring – Grand Prix",
+    "Nürburgring – Sprint",
+    "Nürburgring Nordschleife",
+    "Paul Ricard Circuit – Grand Prix",
+    "Paul Ricard Circuit – Test Oval",
+    "Paul Ricard Circuit – Mistral Short",
+    "Paul Ricard Circuit – Mistral Long",
+    "Paul Ricard Circuit – Club",
+    "Red Bull Ring – Grand Prix",
+    "Red Bull Ring – National",
+    "Road America",
+    "Sachsenring – Grand Prix",
+    "Sachsenring – Short",
+    "Salzburgring",
+    "Sepang International Circuit – Grand Prix",
+    "Silverstone – Grand Prix",
+    "Silverstone – International",
+    "Silverstone – National",
+    "Sonoma Raceway – Grand Prix",
+    "Sonoma Raceway – Short",
+    "Spa-Francorchamps",
+    "Suzuka Circuit – Grand Prix",
+    "Suzuka Circuit – East",
+    "TT Circuit Assen",
+    "Watkins Glen International",
+    "Watkins Glen International – Short",
+    "Watkins Glen International – Boot",
+    "Wachauring",
+    "Zaandvoort – National",
+    "Zhuhai International Circuit"
+  ],
+  "RaceRoom": RACEROOM_TRACKS,
+
   "Gran Turismo 7": [
     "Alsace Village",
     "Autopolis International Racing Course",
@@ -1519,6 +1609,9 @@ export const SIM_SETUP_PARAMS = {
     }
   ],
 
+  // ── RACEROOM ──────────────────────────────────────────────────────────────
+  "RaceRoom": RACEROOM_SETUP_PARAMS,
+
   // ── GRAN TURISMO 7 ────────────────────────────────────────────────────────
   // GT7 setup screen uses kPa for pressures. Springs in kgf/mm. ARB 1–7 integer.
   // Dampers: Extension (rebound) and Compression (bump) on 1–10 scale.
@@ -1619,7 +1712,8 @@ export const SIM_TYRE_CLASSES = {
   "Assetto Corsa Evo": ["GT3", "GT4", "GTE", "Cup Car", "Touring / TCR", "Road Car (Sport)"],
   "Le Mans Ultimate": ["Hypercar (LMH/LMDh)", "LMP / Prototype", "GT3", "GTE"],
   "Automobilista 2": ["GT3", "GT4", "GTE", "LMP / Prototype", "Cup Car", "Touring / TCR", "Open Wheel", "Stock Car / NASCAR", "Historic"],
-  "Gran Turismo 7": ["GT3", "GT4", "Touring / TCR", "Road Car (Sport)", "Historic"]
+  "Gran Turismo 7": ["GT3", "GT4", "Touring / TCR", "Road Car (Sport)", "Historic"],
+  "RaceRoom": ["GT3", "GT4", "DTM", "Touring / TCR", "Formula", "Group C / Prototype", "NASCAR"]
 };
 
 // ─────────────────────────────────────────────
@@ -1637,7 +1731,8 @@ export const TYRE_PRESSURE_BASES = {
   "Cup Car": { acc: 28.5, iracing: 29.5, ams2: 28.0, ac: 28.0, ace: 28.5, lmu_kpa: 196, gt7_kpa: 235 },
   "Stock Car / NASCAR": { acc: 30.0, iracing: 34.0, ams2: 30.0, ac: 30.0, ace: 30.0, lmu_kpa: 210, gt7_kpa: 250 },
   "Road Car (Sport)": { acc: 30.0, iracing: 32.0, ams2: 30.0, ac: 30.0, ace: 30.0, lmu_kpa: 210, gt7_kpa: 245 },
-  "Historic": { acc: 26.0, iracing: 28.0, ams2: 26.0, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 215 }
+  "Historic": { acc: 26.0, iracing: 28.0, ams2: 26.0, ac: 26.0, ace: 26.0, lmu_kpa: 185, gt7_kpa: 215 },
+  "DTM": { acc: 28.0, iracing: 29.0, ams2: 28.0, ac: 28.0, ace: 28.0, lmu_kpa: 194, gt7_kpa: 235, raceroom: 28.0 }
 };
 
 // ─────────────────────────────────────────────
