@@ -145,29 +145,13 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Car *</label>
               {classNames.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-1">
-                  <button
-                    type="button"
-                    onClick={() => { setActiveClass(""); setCar(""); }}
-                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
-                      activeClass === ""
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-muted-foreground hover:text-foreground"
-                    }`}
-                  >All</button>
-                  {classNames.map(cls => (
-                    <button
-                      key={cls}
-                      type="button"
-                      onClick={() => { setActiveClass(cls); setCar(""); }}
-                      className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
-                        activeClass === cls
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-muted-foreground hover:text-foreground"
-                      }`}
-                    >{cls}</button>
-                  ))}
-                </div>
+                <Select value={activeClass || "All"} onValueChange={(v) => { setActiveClass(v === "All" ? "" : v); setCar(""); }}>
+                  <SelectTrigger className="h-8 text-xs mb-1"><SelectValue placeholder="All Classes" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Classes</SelectItem>
+                    {classNames.map(cls => <SelectItem key={cls} value={cls}>{cls}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               )}
               <Select
                 value={customCar ? "__custom__" : (car || "")}
