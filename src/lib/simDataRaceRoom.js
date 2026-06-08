@@ -80,67 +80,198 @@ export const RACEROOM_CARS = {
 "Porsche 911 GT3 R (992) DTM",
 "Ferrari 296 GT3 DTM"
   ],
+  "GTR1" : [
+"Aston Martin DBR9",
+"Chevrolet Corvette C6.R GT1",
+"Lamborghini Murcielago R-GT",
+"Nissan GT-R GT1",
+"Saleen S7-R",
+"RUF CTR3"
+  ],
+  "GT2/GTR2" : [ 
+"Audi R8 LMS GT2",
+"KTM X-Bow GT2",
+"Porsche GT2 RS Clubsport",
+"Chevrolet Corvette C6.R GT2",
+"Marcos Mantara LM600 EVO",
+"Mosler MT900R",
+"RUF RT12R"
+  ],
   "GT3" : [
     "Audi R8 LMS GT3",
     "Audi R8 LMS GT3 EVO",
     "Audi R8 LMS GT3 EVO II",
+    "Audi R8 LMS Ultra",
     "BMW M6 GT3",
     "BMW M4 GT3",
-    "Callaway Corvette GT3-R",
+    "BMW Z4 GT3",
+    "Bentley Continental GT3",
+    "Bentley Continental GT3 EVO",
+    "Callaway Corvette C7 GT3-R",
+    "Chevrolet Camaro GT3",
+    "Chevrolet Corvette Z06.R GT3",
     "Ferrari 488 GT3",
     "Ferrari 488 GT3 Evo",
     "Ferrari 296 GT3",
+    "Ford GT GT3",
     "Ford Mustang GT3",
-    "Honda NSX GT3",
     "Lamborghini Huracán GT3 EVO",
     "Lamborghini Huracán GT3 EVO2",
+    "McLaren MP4-12C GT3",
+    "McLaren 650s GT3",
     "McLaren 720S GT3",
     "McLaren 720S GT3 EVO",
+    "Mercedes-Benz SLS AMG GT3",
     "Mercedes-AMG GT3",
     "Mercedes-AMG GT3 EVO",
+    "Nissan GT-R GT3",
+    "P4-5 Competizione GT3",
     "Porsche 911 GT3 R (991)",
-    "Porsche 911 GT3 R (992)"
-  ],
+    "Porsche 911 GT3 R (992)",
+    "RUF CTR3 GT3",
+    "RUF RT12R GTR3"
+    ],
   "GT4": [
-    "Aston Martin Vantage GT4",
+    "Alpine A110 GT4",
     "Audi R8 LMS GT4",
     "BMW M4 GT4",
-    "Ford Mustang GT4",
-    "Ginetta G55 GT4",
+    "Chevrolet Camaro GT4.R",
     "KTM X-Bow GT4",
+    "Lotus Evora GT4",
     "Maserati GranTurismo MC GT4",
     "McLaren 570S GT4",
     "Mercedes-AMG GT4",
-    "Porsche 718 Cayman GT4 MR",
-    "Toyota GR Supra GT4"
+    "Porsche 718 Cayman GT4 MR"
   ],
-  "ADAC GT Masters": [
-    "Audi R8 LMS GT3 EVO",
-    "BMW M6 GT3",
-    "Ferrari 488 GT3",
-    "Lamborghini Huracán GT3 EVO",
-    "McLaren 720S GT3",
-    "Mercedes-AMG GT3 EVO",
-    "Porsche 911 GT3 R (992)"
+  "GTE":[
+"Porsche 911 RSR 2019"
   ],
-  "Touring Car (WTCR / TCR)": [
+"Hypercars":[
+  "BMW M Hybrid V8",
+  "Porsche 963"
+],
+
+"P1":[
+"Audi R18",
+"DMD P20",
+"Mistral M530"
+],
+"P2":[
+  "DMD P21",
+  "Mistral M531",
+  "Radical SR9 AER",
+  "Radical SR9 Judd"
+],
+"WTCC 2013/2014":[
+"BMW 320 TC",
+"Chevrolet Cruze",
+"Honda Civic",
+"Lada Granta",
+"SEAT Leon WTCC",
+"Citroen C-Elysee"
+],
+"WTCC 2015":[
+  "Citroen C-Elysee",
+  "Honda Civic WTCC",
+  "Lada Vesta WTCC",
+  "Chevrolet RML Cruze"
+],
+"WTCC 2016":[
+  "Honda Civic TC1",
+  "Volvo S60 Polestar TC1",
+  "Lada Vesta TC1"
+],
+"WTCC 2017":[
+  "Honda Civic WTCC",
+  "Volvo S60 Polestar TC1"
+],
+  "WTCR / TCR" : [
     "Audi RS 3 LMS",
-    "Cupra Leon Competicion",
+    "Alfa Romeo Giulietta TCR",
     "Honda Civic Type R TCR",
+    "Honda Civic FK7 TCR",
     "Hyundai Elantra N TCR",
     "Hyundai i30 N TCR",
     "LYNK & CO 03+ TCR",
+    "Peugeot 308 TCR",
+"Renault Mégane RS TCR",
     "Volkswagen Golf GTI TCR"
+
   ],
-  "Touring Car (Historic)": [
-    "BMW M3 E30 DTM",
-    "Ford Sierra RS500 Cosworth",
-    "Volvo 850 BTCC",
-    "Alfa Romeo 155 V6 Ti",
-    "Opel Vectra",
-    "Peugeot 406 BTCC",
-    "Volvo S40 BTCC"
-  ],
+"Super Touring":[
+ "Alfa Romeo 156",
+"Audi A4",
+"BMW 320i",
+"Honda Accord",
+"Opel Vectra",
+"Peugeot 406",
+"Renault Laguna",
+"Volvo 850",
+"Volvo S40"
+],
+"Touring Classics":[
+"BMW 635 CSi",
+"BMW 320 Turbo",
+"Ford Capri",
+"Nissan Skyline RS",
+"Volvo 240 Turbo"
+],
+"Group 2":[
+"BMW 2002 Turbo",
+"Ford Escort RS1600",
+"Opel Kadett C GT/E",
+"Volkswagen Scirocco Gr.2"
+],
+"Group 4":[
+"BMW M1 Group 4",
+"Porsche 934 Turbo RSR"
+],
+"Group 5":[
+"BMW 320 Turbo Group 5",
+"Capri Turbo Group 5",
+"Zakspeed Capri"
+],
+"GTO Classics":[
+ "Audi 90 Quattro",
+"Nissan Skyline GTR R32",
+"Toyota Supra Mk IV Turbo"
+],
+"Group C": [
+    "Porsche 962",
+    "Sauber-Mercedes C9",
+    "Nissan R90CK",
+    "Mazda 787B"
+],
+"One-Make Cups":[
+"Porsche 911 GT3 Cup",
+"Porsche Carrera Cup Classic",
+"Porsche 944 Turbo Cup",
+"BMW M235i Racing Cup",
+"BMW M2 CS Racing Cup",
+"KTM X-Bow RR Cup",
+"Aquila CR1 Cup",
+"Audi TT Cup",
+"Audi TT RS Cup",
+"Alpine A110 Cup",
+"Cayman GT4 Trophy by Manthey Racing",
+"Praga R1",
+"NSU TTS Cup",
+"Tatuus F4 Cup"
+],
+"Hillclimb":[
+"134 Judd V8",
+"Carlsson SLK 340 Judd",
+"BMW E36 Judd Hillclimb"
+],
+"Silhouette Series":[
+  "Canhard R51",
+  "Canhard R52",
+  "Cougar C14-1",
+  "Cougar C14-2"
+],
+"Truck Racing":[
+  "RaceRoom Truck"
+],
   "Formula": [
     "Formula RaceRoom 4",
     "Formula RaceRoom 3",
@@ -149,25 +280,7 @@ export const RACEROOM_CARS = {
     "Dallara F3 2019",
     "Dallara F4"
   ],
-  "GT Sport / Endurance": [
-    "Audi R8 LMS GT2",
-    "BMW M3 GT2 (E92)",
-    "Callaway Corvette Z06.R GT3",
-    "KTM X-Bow GT2",
-    "Porsche 911 GT2 RS CS Evo",
-    "Radical RXC Turbo 500"
-  ],
-  "NASCAR": [
-    "Chevrolet SS NASCAR Cup",
-    "Ford Fusion NASCAR Cup",
-    "Toyota Camry NASCAR Cup"
-  ],
-  "Group C / Prototype": [
-    "Porsche 962 Group C",
-    "Mercedes-Benz C11 Group C",
-    "Jaguar XJR-9 Group C",
-    "Sauber-Mercedes C9 Group C"
-  ]
+  
 };
 
 export const RACEROOM_TRACKS = [
