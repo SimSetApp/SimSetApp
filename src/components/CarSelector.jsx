@@ -116,7 +116,7 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
                     <span className="text-muted-foreground font-normal">({cars.length})</span>
                   </SelectLabel>
                   {cars.map(c => (
-                    <SelectItem key={c} value={c}>
+                    <SelectItem key={`${category}__${c}`} value={c}>
                       {c}
                     </SelectItem>
                   ))}
