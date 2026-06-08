@@ -71,33 +71,18 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
             Car {totalCars > 0 && <span className="text-primary">({totalCars} available)</span>}
           </label>
 
-          {/* Class filter chips */}
           {classNames.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => { setActiveClass("All"); setCar(""); }}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                  activeClass === "All"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                All
-              </button>
-              {classNames.map(cls => (
-                <button
-                  key={cls}
-                  onClick={() => { setActiveClass(cls); setCar(""); }}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                    activeClass === cls
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {cls}
-                </button>
-              ))}
-            </div>
+            <Select value={activeClass} onValueChange={(v) => { setActiveClass(v); setCar(""); }}>
+              <SelectTrigger className="bg-secondary border-border h-8 text-xs">
+                <SelectValue placeholder="All Classes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Classes</SelectItem>
+                {classNames.map(cls => (
+                  <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
 
           <Select value={car} onValueChange={setCar} disabled={!sim}>
