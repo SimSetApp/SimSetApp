@@ -516,18 +516,24 @@ export const CAR_LISTS = {
       "Volkswagen GTI VGT (Gr.3)" 
     ],
     
-    "Gr.4 GT Car": [
-      "Alpine A110 GT4 '18",
-      "BMW M4 GT4 '18",
-      "Chevrolet Camaro ZL1 1LE (Gr.4)",
-      "Honda Civic Type R (FK8) Gr.4",
-      "Mazda RX-Vision GT3 Concept (Gr.4)",
-      "Mitsubishi Lancer Evo Final Gr.4",
-      "Porsche 718 Cayman GT4 Clubsport",
-      "Renault Mégane RS Trophy R (Gr.4)",
-      "Subaru BRZ (Gr.4)",
-      "Toyota GR86 (Gr.4)",
-      "Toyota Supra (A90) Gr.4"
+    "Gr.4": [
+      "Alfa Romeo 4C Gr.4",
+      "Alfa Romeo 155 2.5 V6 TI '93",
+      "AMG SLS AMG Gr.4",
+      "Aston Martin V8 Vantage Gr.4",
+      "Audi TT Cup '16",
+      "BMW M4 Gr.4",
+      "Bugatti Veyron Gr.4",
+      "Chevrolet Corvette C7 Gr.4",
+      "Citroen GT by Citroen Gr.4",
+      "Dodge Viper Gr.4",
+      "Ferrari 458 Italia Gr.4",
+      "Ford Mustang Gr.4",
+      "Genesis G70 Gr.4",
+      "Honda NSX Gr.4",
+      "Hyundai Genesis Gr.4",
+      "Hyundai ELANTRA N TC '24",
+      
     ],
     "Gr.B Rally Car": [
       "Audi Sport Quattro S1 Evo 2 Rally Car",
