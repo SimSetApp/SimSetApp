@@ -527,14 +527,82 @@ export const RACEROOM_SETUP_PARAMS = [
       { key: "bump_front", label: "Bump F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
       { key: "bump_rear", label: "Bump R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
       { key: "rebound_front", label: "Rebound F (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
-      { key: "rebound_rear", label: "Rebound R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 }
+      { key: "rebound_rear", label: "Rebound R (1–10)", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_front", label: "Fast Bump F", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_rear", label: "Fast Bump R", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_front", label: "Fast Rebound F", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_rear", label: "Fast Rebound R", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_bump_front", label: "Slow Bump F", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_bump_rear", label: "Slow Bump R", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_front", label: "Slow Rebound F", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_rear", label: "Slow Rebound R", unit: "", min: 1, max: 10, step: 1, default: 5 }
+    ]
+  },
+  {
+    group: "Corner Dampers",
+    params: [
+      { key: "slow_bump_lf", label: "Slow Bump LF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_bump_rf", label: "Slow Bump RF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_bump_lr", label: "Slow Bump LR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_bump_rr", label: "Slow Bump RR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_lf", label: "Slow Rebound LF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_rf", label: "Slow Rebound RF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_lr", label: "Slow Rebound LR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "slow_rebound_rr", label: "Slow Rebound RR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_lf", label: "Fast Bump LF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_rf", label: "Fast Bump RF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_lr", label: "Fast Bump LR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_bump_rr", label: "Fast Bump RR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_lf", label: "Fast Rebound LF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_rf", label: "Fast Rebound RF", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_lr", label: "Fast Rebound LR", unit: "", min: 1, max: 10, step: 1, default: 5 },
+      { key: "fast_rebound_rr", label: "Fast Rebound RR", unit: "", min: 1, max: 10, step: 1, default: 5 }
     ]
   },
   {
     group: "Aerodynamics",
     params: [
       { key: "front_wing", label: "Front Wing (1–10)", unit: "", min: 1, max: 10, step: 1, default: 4 },
-      { key: "rear_wing", label: "Rear Wing (1–10)", unit: "", min: 1, max: 10, step: 1, default: 6 }
+      { key: "front_splitter", label: "Front Splitter", unit: "", min: 0, max: 10, step: 1, default: 3 },
+      { key: "front_downforce", label: "Front Downforce", unit: "", min: 0, max: 10, step: 1, default: 4 },
+      { key: "rear_wing", label: "Rear Wing (1–10)", unit: "", min: 1, max: 10, step: 1, default: 6 },
+      { key: "rear_wing_angle", label: "Rear Wing Angle", unit: "°", min: 0, max: 30, step: 0.5, default: 10.0 },
+      { key: "rear_flap", label: "Rear Flap", unit: "", min: 0, max: 10, step: 1, default: 5 },
+      { key: "rear_downforce", label: "Rear Downforce", unit: "", min: 0, max: 10, step: 1, default: 6 },
+      { key: "gurney_flap", label: "Gurney Flap", unit: "", min: 0, max: 5, step: 1, default: 1 },
+      { key: "rear_spoiler", label: "Rear Spoiler", unit: "", min: 0, max: 10, step: 1, default: 5 },
+      { key: "aero_balance", label: "Aero Balance", unit: "%", min: 0, max: 100, step: 1, default: 50 }
+    ]
+  },
+  {
+    group: "Electronics",
+    params: [
+      { key: "tc", label: "Traction Control", unit: "", min: 0, max: 10, step: 1, default: 3 },
+      { key: "tc_slip", label: "TC Slip", unit: "", min: 0, max: 10, step: 1, default: 3 },
+      { key: "tc_cut", label: "TC Cut", unit: "", min: 0, max: 10, step: 1, default: 3 },
+      { key: "engine_map", label: "Engine Map", unit: "", min: 1, max: 6, step: 1, default: 1 },
+      { key: "fuel_map", label: "Fuel Map", unit: "", min: 1, max: 6, step: 1, default: 1 },
+      { key: "abs", label: "ABS Level", unit: "", min: 0, max: 10, step: 1, default: 3 }
+    ]
+  },
+  {
+    group: "Cooling",
+    params: [
+      { key: "radiator_opening", label: "Radiator Opening", unit: "", min: 0, max: 6, step: 1, default: 2 },
+      { key: "engine_cooling", label: "Engine Cooling", unit: "", min: 0, max: 6, step: 1, default: 2 },
+      { key: "oil_cooling", label: "Oil Cooling", unit: "", min: 0, max: 6, step: 1, default: 2 }
+    ]
+  },
+  {
+    group: "Weight & Ballast",
+    params: [
+      { key: "ballast_weight", label: "Ballast Weight", unit: " kg", min: 0, max: 50, step: 1, default: 0 },
+      { key: "ballast_position", label: "Ballast Position", unit: "", min: -10, max: 10, step: 1, default: 0 },
+      { key: "cross_weight", label: "Cross Weight", unit: "%", min: 48.0, max: 52.0, step: 0.1, default: 50.0 },
+      { key: "corner_weight_lf", label: "Corner Weight LF", unit: " kg", min: 0, max: 400, step: 1, default: 0 },
+      { key: "corner_weight_rf", label: "Corner Weight RF", unit: " kg", min: 0, max: 400, step: 1, default: 0 },
+      { key: "corner_weight_lr", label: "Corner Weight LR", unit: " kg", min: 0, max: 400, step: 1, default: 0 },
+      { key: "corner_weight_rr", label: "Corner Weight RR", unit: " kg", min: 0, max: 400, step: 1, default: 0 }
     ]
   },
   {
@@ -542,6 +610,25 @@ export const RACEROOM_SETUP_PARAMS = [
     params: [
       { key: "fuel_load", label: "Fuel Load", unit: " L", min: 1, max: 120, step: 1, default: 60 },
       { key: "tyre_compound", label: "Tyre Compound (1=Dry / 2=Wet)", unit: "", min: 1, max: 2, step: 1, default: 1 }
+    ]
+  },
+  {
+    group: "Class-Specific",
+    params: [
+      { key: "packer_gap", label: "Packer Gap", unit: " mm", min: 0, max: 50, step: 1, default: 10 },
+      { key: "bump_stop_range", label: "Bump Stop Range", unit: " mm", min: 0, max: 50, step: 1, default: 10 },
+      { key: "bump_stop_rate", label: "Bump Stop Rate", unit: " N/mm", min: 0, max: 500, step: 10, default: 100 },
+      { key: "third_spring_rate", label: "Third Spring Rate", unit: " N/mm", min: 0, max: 500, step: 5, default: 100 },
+      { key: "third_spring_preload", label: "Third Spring Preload", unit: " mm", min: 0, max: 50, step: 1, default: 5 },
+      { key: "heave_spring", label: "Heave Spring", unit: " N/mm", min: 0, max: 500, step: 5, default: 100 },
+      { key: "heave_damper", label: "Heave Damper", unit: "", min: 0, max: 10, step: 1, default: 5 },
+      { key: "rear_suspension_link", label: "Rear Suspension Link Position", unit: "", min: 0, max: 10, step: 1, default: 5 },
+      { key: "pushrod_length", label: "Pushrod Length", unit: " mm", min: -10, max: 10, step: 0.5, default: 0 },
+      { key: "wheel_rate", label: "Wheel Rate", unit: " N/mm", min: 0, max: 300, step: 5, default: 80 },
+      { key: "ackermann", label: "Ackermann", unit: "%", min: 0, max: 100, step: 1, default: 50 },
+      { key: "toe_link_position", label: "Toe Link Position", unit: "", min: 0, max: 10, step: 1, default: 5 },
+      { key: "suspension_travel_limiter_f", label: "Suspension Travel Limiter F", unit: " mm", min: 0, max: 50, step: 1, default: 20 },
+      { key: "suspension_travel_limiter_r", label: "Suspension Travel Limiter R", unit: " mm", min: 0, max: 50, step: 1, default: 20 }
     ]
   }
 ];
