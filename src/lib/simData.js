@@ -8,7 +8,7 @@ export const SIM_TITLES = [
   "Le Mans Ultimate",
   "Automobilista 2",
   "Gran Turismo 7",
-  "R Factor 2",
+  "R Factor 2 - Coming Soon",
   "RaceRoom"
 ];
 
