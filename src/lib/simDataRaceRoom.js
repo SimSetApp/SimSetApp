@@ -73,13 +73,6 @@ export const RACEROOM_CARS = {
 "Porsche 911 GT3 R (992) DTM",
 "Ferrari 296 GT3 DTM"
   ],
-  "DTM 2025" : [
-    "Audi R8 LMS GT3 EVO II DTM",
-"BMW M4 GT3 DTM",
-"Mercedes-AMG GT3 DTM",
-"Porsche 911 GT3 R (992) DTM",
-"Ferrari 296 GT3 DTM"
-  ],
   "GTR1" : [
 "Aston Martin DBR9",
 "Chevrolet Corvette C6.R GT1",
