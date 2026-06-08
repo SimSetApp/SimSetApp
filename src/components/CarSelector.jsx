@@ -17,11 +17,19 @@ export default function CarSelector({ sim, setSim, car, setCar }) {
   const carGroups = useMemo(() => {
     if (!sim || !CAR_LISTS[sim]) return {};
     const result = {};
+    const seenCars = new Set();
     Object.entries(CAR_LISTS[sim]).forEach(([category, cars]) => {
       if (activeClass !== "All" && category !== activeClass) return;
-      const matches = search
+      const matches = (search
         ? cars.filter(c => c.toLowerCase().includes(search.toLowerCase()))
-        : cars;
+        : cars
+      ).filter(c => {
+        if (activeClass === "All") {
+          if (seenCars.has(c)) return false;
+          seenCars.add(c);
+        }
+        return true;
+      });
       if (matches.length > 0) result[category] = matches;
     });
     return result;
