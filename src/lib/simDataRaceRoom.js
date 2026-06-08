@@ -79,7 +79,7 @@ export const RACEROOM_CARS = {
 "Mercedes-AMG GT3 DTM",
 "Porsche 911 GT3 R (992) DTM",
 "Ferrari 296 GT3 DTM"
-  ]
+  ],
   "GT3" : [
     "Audi R8 LMS GT3",
     "Audi R8 LMS GT3 EVO",
