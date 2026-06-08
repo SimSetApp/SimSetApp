@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MobileHeader from "../components/MobileHeader";
 import { base44 } from "@/api/base44Client";
-import { SIM_TITLES, CAR_LISTS } from "../lib/simData";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
+import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import SearchableSelect from "../components/SearchableSelect";
 import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw, Headphones } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -64,7 +64,15 @@ export default function RaceEngineer() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
-  const carGroups = sim && CAR_LISTS[sim] ? CAR_LISTS[sim] : {};
+  const carGroups = useMemo(() => {
+    if (!sim || !CAR_LISTS[sim]) return [];
+    return Object.entries(CAR_LISTS[sim]).map(([label, items]) => ({ label, items }));
+  }, [sim]);
+
+  const trackItems = useMemo(() => {
+    if (!sim || !TRACK_LISTS[sim]) return [];
+    return TRACK_LISTS[sim];
+  }, [sim]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -166,26 +174,24 @@ Do not be overly verbose. Quality over quantity.`;
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground font-medium">Car <span className="text-muted-foreground/50">(optional)</span></label>
-            <Select value={car} onValueChange={setCar} disabled={!sim}>
-              <SelectTrigger className="bg-secondary text-sm h-9"><SelectValue placeholder="Any car" /></SelectTrigger>
-              <SelectContent>
-                {Object.entries(carGroups).map(([cls, cars]) => (
-                  <SelectGroup key={cls}>
-                    <SelectLabel className="text-primary text-xs">{cls}</SelectLabel>
-                    {cars.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={car}
+              onValueChange={setCar}
+              placeholder="Any car"
+              disabled={!sim}
+              groups={carGroups}
+              searchPlaceholder="Search cars…"
+            />
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground font-medium">Track <span className="text-muted-foreground/50">(optional)</span></label>
-            <input
-              type="text"
+            <SearchableSelect
               value={track}
-              onChange={e => setTrack(e.target.value)}
-              placeholder="e.g. Spa, Monza…"
-              className="w-full h-9 rounded-lg border border-input bg-secondary px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              onValueChange={setTrack}
+              placeholder="Any track"
+              disabled={!sim}
+              items={trackItems}
+              searchPlaceholder="Search tracks…"
             />
           </div>
         </div>

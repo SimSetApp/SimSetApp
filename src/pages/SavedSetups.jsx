@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { SIM_SETUP_PARAMS, SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
+import SearchableSelect from "../components/SearchableSelect";
 import SetupDetailSheet from "../components/SetupDetailSheet";
 import SetupComparison from "../components/SetupComparison";
 
@@ -263,44 +264,42 @@ export default function SavedSetups() {
           <TabsContent value="garage">
             <div className="flex flex-col gap-3 mb-4">
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-                {/* Sim filter */}
-                <select
-                  value={filterSim}
-                  onChange={e => { setFilterSim(e.target.value); setFilterCar(""); setFilterTrack(""); }}
-                  className="col-span-2 h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="">All Sims</option>
-                  {allSims.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                {/* Car filter */}
-                <select
-                  value={filterCar}
-                  onChange={e => setFilterCar(e.target.value)}
-                  disabled={!filterSim}
-                  className="h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <option value="">{filterSim ? "All Cars" : "Select sim first"}</option>
-                  {allCars.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                {/* Track filter */}
-                <select
-                  value={filterTrack}
-                  onChange={e => setFilterTrack(e.target.value)}
-                  disabled={!filterSim}
-                  className="h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <option value="">{filterSim ? "All Tracks" : "Select sim first"}</option>
-                  {allTracks.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                {(filterSim || filterCar || filterTrack) && (
-                  <button
-                    onClick={() => { setFilterSim(""); setFilterCar(""); setFilterTrack(""); }}
-                    className="h-9 px-3 rounded-lg border border-border bg-secondary text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground"
-                  >
-                    <X className="w-3 h-3" /> Clear
-                  </button>
-                )}
-              </div>
+                 {/* Sim filter */}
+                 <select
+                   value={filterSim}
+                   onChange={e => { setFilterSim(e.target.value); setFilterCar(""); setFilterTrack(""); }}
+                   className="col-span-2 h-9 rounded-lg border border-border bg-secondary text-xs px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                 >
+                   <option value="">All Sims</option>
+                   {allSims.map(s => <option key={s} value={s}>{s}</option>)}
+                 </select>
+                 {/* Car filter */}
+                 <SearchableSelect
+                   value={filterCar}
+                   onValueChange={setFilterCar}
+                   placeholder={filterSim ? "All Cars" : "Select sim first"}
+                   disabled={!filterSim}
+                   items={allCars}
+                   searchPlaceholder="Search cars…"
+                 />
+                 {/* Track filter */}
+                 <SearchableSelect
+                   value={filterTrack}
+                   onValueChange={setFilterTrack}
+                   placeholder={filterSim ? "All Tracks" : "Select sim first"}
+                   disabled={!filterSim}
+                   items={allTracks}
+                   searchPlaceholder="Search tracks…"
+                 />
+                 {(filterSim || filterCar || filterTrack) && (
+                   <button
+                     onClick={() => { setFilterSim(""); setFilterCar(""); setFilterTrack(""); }}
+                     className="h-9 px-3 rounded-lg border border-border bg-secondary text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground"
+                   >
+                     <X className="w-3 h-3" /> Clear
+                   </button>
+                 )}
+               </div>
               <Button onClick={openCreate} className="w-full sm:w-auto font-heading text-xs tracking-wider">
                 <Plus className="w-4 h-4 mr-1.5" /> New Setup
               </Button>
