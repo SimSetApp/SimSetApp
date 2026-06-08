@@ -5,7 +5,9 @@ export const SIM_TITLES = [
   "Assetto Corsa Evo",
   "Le Mans Ultimate",
   "Automobilista 2",
-  "Gran Turismo 7"
+  "Gran Turismo 7",
+  "R Factor 2",
+  "RaceRoom"
 ];
 
 // ─────────────────────────────────────────────
