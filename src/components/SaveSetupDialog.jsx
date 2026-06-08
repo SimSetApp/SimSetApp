@@ -11,6 +11,7 @@ import SetupEditorForm from "./SetupEditorForm";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, FileText, SlidersHorizontal, Upload, Download } from "lucide-react";
+import SearchableSelect from "./SearchableSelect";
 
 export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
   const queryClient = useQueryClient();
@@ -153,25 +154,19 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
                   </SelectContent>
                 </Select>
               )}
-              <Select
-                value={customCar ? "__custom__" : (car || "")}
-                onValueChange={handleCarChange}
+              <SearchableSelect
+                value={customCar ? "" : car}
+                onValueChange={(v) => { if (v === "__custom__") { setCustomCar(true); setCar(""); } else handleCarChange(v); }}
+                placeholder="Car"
                 disabled={!sim}
-              >
-                <SelectTrigger><SelectValue placeholder="Car" /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(carGroups)
+                groups={[
+                  ...Object.entries(carGroups)
                     .filter(([cls]) => !activeClass || cls === activeClass)
-                    .map(([cls, cars]) => (
-                      <SelectGroup key={cls}>
-                        <SelectLabel className="text-primary text-xs">{cls}</SelectLabel>
-                        {cars.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                      </SelectGroup>
-                    ))}
-                  {!sim && <div className="px-3 py-2 text-xs text-muted-foreground">Pick a sim first</div>}
-                  {sim && <SelectItem value="__custom__">Other / Custom car…</SelectItem>}
-                </SelectContent>
-              </Select>
+                    .map(([label, items]) => ({ label, items })),
+                  ...(sim ? [{ label: "Other", items: ["Other / Custom car…"] }] : [])
+                ]}
+                searchPlaceholder="Search cars…"
+              />
               {customCar && (
                 <Input
                   value={car}
@@ -186,23 +181,19 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
             <label className="text-xs font-medium text-muted-foreground">Track</label>
             {trackList.length > 0 ? (
               <>
-                <Select
-                  value={customTrack ? "__custom__" : (track || "__none__")}
+                <SearchableSelect
+                  value={customTrack ? "" : (track || "")}
                   onValueChange={v => {
-                    if (v === "__none__") { setTrack(""); setCustomTrack(false); }
-                    else if (v === "__custom__") { setCustomTrack(true); setTrack(""); }
+                    if (v === "— No track —") { setTrack(""); setCustomTrack(false); }
+                    else if (v === "Other / Custom…") { setCustomTrack(true); setTrack(""); }
                     else { setCustomTrack(false); setTrack(v); }
                   }}
-                >
-                  <SelectTrigger><SelectValue placeholder="Select track…" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">— No track —</SelectItem>
-                    {trackList.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    <SelectItem value="__custom__">Other / Custom…</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Select track…"
+                  items={["— No track —", ...trackList, "Other / Custom…"]}
+                  searchPlaceholder="Search tracks…"
+                />
                 {customTrack && (
-                  <Input value={track} onChange={e => setTrack(e.target.value)} placeholder="Type track name…" />
+                  <Input value={track} onChange={e => setTrack(e.target.value)} placeholder="Type track name…" className="mt-1" />
                 )}
               </>
             ) : (
