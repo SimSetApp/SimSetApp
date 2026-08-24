@@ -92,11 +92,7 @@ function mockTick(s) {
     else if (dtgt > 1.5) { intentThr = 1; intentBrk = 0; }
     else if (target > 170) { intentThr = 1; intentBrk = 0; }
     else { intentThr = 0.35; intentBrk = 0; }
-    if (s.shiftTimer > 0) {
-      s.shiftTimer -= dt;
-      if (s.shiftDir > 0) intentThr = 0.3;
-      else intentThr = Math.max(intentThr, 0.55);
-    }
+    if (s.shiftTimer > 0) s.shiftTimer -= dt;   // GT3 sequential box: no-lift upshifts, auto-blip downshifts
     const thrErr = intentThr - s.throttle;
     s.throttle += thrErr * (thrErr > 0 ? 0.2 : 0.4);
     const brkErr = intentBrk - s.brake;

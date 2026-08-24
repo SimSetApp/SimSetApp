@@ -186,11 +186,7 @@ class MockProvider:
                 intent_thr = 0.35
                 intent_brk = 0.0
             if self.shift_timer > 0:
-                self.shift_timer -= dt
-                if self.shift_dir > 0:
-                    intent_thr = 0.3   # upshift lift
-                else:
-                    intent_thr = max(intent_thr, 0.55)  # downshift blip
+                self.shift_timer -= dt   # GT3 sequential box: no-lift upshifts, auto-blip downshifts
             # asymmetric ease: throttle builds slowly / lifts fast; brake spikes fast / trails slow
             thr_err = intent_thr - self.throttle
             self.throttle += thr_err * (0.2 if thr_err > 0 else 0.4)
