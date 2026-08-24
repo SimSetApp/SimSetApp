@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import { Maximize2, Minimize2, Sliders, Pencil, Plus, X, RotateCcw } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
-import { WIDGET_DEFS, renderWidget, SEM } from "@/components/live/dashboardWidgets";
+import { WIDGET_DEFS, renderWidget } from "@/components/live/dashboardWidgets";
+import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
 import DashboardCustomizer from "@/components/live/DashboardCustomizer";
+import DashVariantGallery from "@/components/live/DashVariantGallery";
 
 const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
@@ -18,9 +20,12 @@ export default function DDU3Dashboard({ data, demo }) {
   const [colorPick, setColorPick] = useState(null);
   const [scale, setScale] = useState(0.76);
   const [now, setNow] = useState(new Date());
-  const { config, update, updateWidget, addWidget, removeWidget, resetLayout, reset } = useDashboardConfig();
+  const { config, activeId, loadVariant, update, updateWidget, addWidget, removeWidget, resetLayout, reset } = useDashboardConfig();
   const op = useRef(null);
   const onMoveRef = useRef(null);
+
+  const variant = getVariant(activeId);
+  const theme = variant.theme;
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -103,57 +108,60 @@ export default function DDU3Dashboard({ data, demo }) {
 
   return (
     <div className="space-y-3">
+      {!fs && (
+        <DashVariantGallery variants={DASH_VARIANTS} activeId={activeId} onSelect={loadVariant} />
+      )}
       {customize && !fs && (
         <DashboardCustomizer config={config} update={update} reset={reset} edit={edit} onToggleEdit={() => setEdit((v) => !v)} />
       )}
       <div
         ref={bezelRef}
-        style={{ backgroundColor: "#000", color: "#fff" }}
-        className={`font-digi select-none overflow-hidden rounded-2xl border-2 border-[#2a2a2a] ${fs ? "w-screen h-screen flex flex-col justify-center max-w-none border-0 p-4" : "w-full"}`}
+        style={{ backgroundColor: theme.bg, color: theme.text }}
+        className={`font-digi select-none overflow-hidden rounded-2xl border-2 ${fs ? "w-screen h-screen flex flex-col justify-center max-w-none border-0 p-4" : "w-full"}`}
       >
-        <div className={`flex gap-1.5 p-1.5 rounded-xl ${fs ? "max-w-5xl mx-auto w-full" : ""}`} style={{ background: "#000", border: "1px solid #2a2a2a" }}>
+        <div className={`flex gap-1.5 p-1.5 rounded-xl ${fs ? "max-w-5xl mx-auto w-full" : ""}`} style={{ background: theme.bg, border: `1px solid ${theme.border}` }}>
           <div className="flex flex-col items-center justify-center gap-2 py-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="w-2 h-2 rounded-full" style={{ background: SEM.green, boxShadow: `0 0 6px ${SEM.green}`, opacity: i === 0 ? 1 : 0.45 }} />
+              <div key={i} className="w-2 h-2 rounded-full" style={{ background: theme.ledGreen, boxShadow: `0 0 6px ${theme.ledGreen}`, opacity: i === 0 ? 1 : 0.45 }} />
             ))}
           </div>
           <div className="flex-1 min-w-0">
             {/* Header */}
-            <div className="flex items-center justify-between px-1.5 py-1 text-[10px] border-b" style={{ borderColor: SEM.border }}>
+            <div className="flex items-center justify-between px-1.5 py-1 text-[10px] border-b" style={{ borderColor: theme.border }}>
               <div className="flex items-center gap-2">
-                <span className="tabular-nums text-white">{clock}</span>
-                <span style={{ color: SEM.label }}>AIR <span className="text-white">{data.air_temp != null ? data.air_temp.toFixed(1) : "0.0"}°</span></span>
-                <span style={{ color: SEM.label }}>TRK <span className="text-white">{data.track_temp != null ? data.track_temp.toFixed(1) : "0.0"}°</span></span>
+                <span className="tabular-nums" style={{ color: theme.text }}>{clock}</span>
+                <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "0.0"}°</span></span>
+                <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }}>{data.track_temp != null ? data.track_temp.toFixed(1) : "0.0"}°</span></span>
               </div>
               <div className="flex items-center gap-3">
-                <span><span style={{ color: SEM.label }}>RPM </span><span className="tabular-nums font-bold" style={{ color: shift ? SEM.red : accent }}>{data.rpm || 0}</span></span>
-                <span><span style={{ color: SEM.label }}>SPD </span><span className="tabular-nums font-bold text-white">{Math.round(data.speed_kmh || 0)}</span></span>
+                <span><span style={{ color: theme.label }}>RPM </span><span className="tabular-nums font-bold" style={{ color: shift ? theme.shiftColor : accent }}>{data.rpm || 0}</span></span>
+                <span><span style={{ color: theme.label }}>SPD </span><span className="tabular-nums font-bold" style={{ color: theme.text }}>{Math.round(data.speed_kmh || 0)}</span></span>
               </div>
               <div className="flex items-center gap-2">
-                <span style={{ color: SEM.label }}>AIR/TRK <span className="text-white">{data.air_temp != null && data.track_temp != null ? `${data.air_temp.toFixed(1)}/${data.track_temp.toFixed(1)}°C` : "0.0/0.0°C"}</span></span>
-                {demo && <span style={{ color: SEM.amber }}>DEMO</span>}
+                <span style={{ color: theme.label }}>AIR/TRK <span style={{ color: theme.text }}>{data.air_temp != null && data.track_temp != null ? `${data.air_temp.toFixed(1)}/${data.track_temp.toFixed(1)}°C` : "0.0/0.0°C"}</span></span>
+                {demo && <span style={{ color: theme.amber }}>DEMO</span>}
                 <div className="relative" style={{ display: edit ? "" : "none" }}>
-                  <button onClick={() => setAddOpen((v) => !v)} className="p-0.5 rounded text-[#777] hover:text-white hover:bg-white/10 transition-colors" aria-label="Add widget">
+                  <button onClick={() => setAddOpen((v) => !v)} className="p-0.5 rounded hover:bg-white/10 transition-colors" style={{ color: theme.label }} aria-label="Add widget">
                     <Plus className="w-3 h-3" />
                   </button>
                   {addOpen && (
-                    <div className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-[#333] bg-black p-1 grid grid-cols-1 gap-0.5" style={{ minWidth: 140 }}>
+                    <div className="absolute right-0 top-full mt-1 z-50 rounded-lg border p-1 grid grid-cols-1 gap-0.5" style={{ minWidth: 140, background: theme.panel, borderColor: theme.border }}>
                       {WIDGET_DEFS.map((d) => (
-                        <button key={d.type} onClick={() => { addWidget(d.type); setAddOpen(false); }} className="text-left text-[10px] px-2 py-1 rounded hover:bg-white/10 text-white">{d.label}</button>
+                        <button key={d.type} onClick={() => { addWidget(d.type); setAddOpen(false); }} className="text-left text-[10px] px-2 py-1 rounded hover:bg-white/10" style={{ color: theme.text }}>{d.label}</button>
                       ))}
                     </div>
                   )}
                 </div>
-                <button onClick={() => { if (edit) resetLayout(); }} className="p-0.5 rounded text-[#777] hover:text-white hover:bg-white/10 transition-colors" aria-label="Reset layout" style={{ display: edit ? "" : "none" }}>
+                <button onClick={() => { if (edit) resetLayout(); }} className="p-0.5 rounded transition-colors" style={{ color: theme.label, display: edit ? "" : "none" }} aria-label="Reset layout">
                   <RotateCcw className="w-3 h-3" />
                 </button>
-                <button onClick={() => setEdit((v) => !v)} className="p-0.5 rounded transition-colors" style={{ color: edit ? accent : "#777" }} aria-label="Toggle edit mode">
+                <button onClick={() => setEdit((v) => !v)} className="p-0.5 rounded transition-colors" style={{ color: edit ? accent : theme.label }} aria-label="Toggle edit mode">
                   <Pencil className="w-3 h-3" />
                 </button>
-                <button onClick={() => setCustomize((c) => !c)} className="p-0.5 rounded text-[#777] hover:text-white hover:bg-white/10 transition-colors" aria-label="Settings">
+                <button onClick={() => setCustomize((c) => !c)} className="p-0.5 rounded transition-colors" style={{ color: theme.label }} aria-label="Settings">
                   <Sliders className="w-3 h-3" />
                 </button>
-                <button onClick={toggleFs} className="p-0.5 rounded text-[#777] hover:text-white hover:bg-white/10 transition-colors" aria-label="Fullscreen">
+                <button onClick={toggleFs} className="p-0.5 rounded transition-colors" style={{ color: theme.label }} aria-label="Fullscreen">
                   {fs ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
                 </button>
               </div>
@@ -161,7 +169,7 @@ export default function DDU3Dashboard({ data, demo }) {
 
             {/* Canvas */}
             <div ref={wrapRef} className="w-full" style={{ height: CH * effScale }}>
-              <div className="relative" style={{ width: CW, height: CH, transform: `scale(${effScale})`, transformOrigin: "top left", background: "#000" }}>
+              <div className="relative" style={{ width: CW, height: CH, transform: `scale(${effScale})`, transformOrigin: "top left", background: theme.bg }}>
                 {config.widgets.map((w) => {
                   const color = w.color || accent;
                   return (
@@ -171,8 +179,8 @@ export default function DDU3Dashboard({ data, demo }) {
                       style={{
                         left: w.x, top: w.y, width: w.w, height: w.h,
                         fontSize: `${Math.max(7, w.h * 0.052)}px`,
-                        border: edit ? `1px dashed ${color}` : `1px solid ${SEM.border}`,
-                        background: SEM.panel,
+                        border: edit ? `1px dashed ${color}` : `1px solid ${theme.border}`,
+                        background: theme.panel,
                         boxShadow: edit ? `0 0 0 1px ${color}33` : "none",
                         cursor: edit ? "move" : "default",
                         touchAction: "none",
@@ -217,7 +225,7 @@ export default function DDU3Dashboard({ data, demo }) {
                         </>
                       )}
                       <div className="w-full h-full" style={{ pointerEvents: edit ? "none" : "auto" }}>
-                        {renderWidget(w.type, { data, color, w: w.w, h: w.h })}
+                        {renderWidget(w.type, { data, color, w: w.w, h: w.h, theme, shape: variant.shape })}
                       </div>
                     </div>
                   );
@@ -227,7 +235,7 @@ export default function DDU3Dashboard({ data, demo }) {
           </div>
           <div className="flex flex-col items-center justify-center gap-2 py-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="w-2 h-2 rounded-full" style={{ background: SEM.green, boxShadow: `0 0 6px ${SEM.green}`, opacity: i === 0 ? 1 : 0.45 }} />
+              <div key={i} className="w-2 h-2 rounded-full" style={{ background: theme.ledGreen, boxShadow: `0 0 6px ${theme.ledGreen}`, opacity: i === 0 ? 1 : 0.45 }} />
             ))}
           </div>
         </div>
