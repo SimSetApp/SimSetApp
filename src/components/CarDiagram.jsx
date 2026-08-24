@@ -14,8 +14,8 @@ const PARAM_CATEGORIES = [
 
 // Hotspots placed on real car parts (viewBox 120 x 200, front = top)
 const HOTSPOTS = [
-  { id: "aero", cx: 60, cy: 8, label: "Front Wing", r: 9 },
-  { id: "aero", cx: 60, cy: 190, label: "Rear Wing", r: 9 },
+  { id: "aero", cx: 60, cy: 8, label: "Front Splitter", r: 9 },
+  { id: "aero", cx: 60, cy: 188, label: "Rear Wing", r: 9 },
   { id: "suspension", cx: 86, cy: 64, label: "Suspension", r: 7 },
   { id: "arb", cx: 34, cy: 64, label: "Anti-Roll Bars", r: 7 },
   { id: "geometry", cx: 82, cy: 28, label: "Front Alignment", r: 7 },
@@ -27,6 +27,12 @@ const HOTSPOTS = [
   { id: "tyres", cx: 82, cy: 20, label: "Front Tyres", r: 6 },
   { id: "tyres", cx: 82, cy: 94, label: "Rear Tyres", r: 6 },
 ];
+
+const BODY = "hsl(var(--foreground))";
+const VOID = "hsl(var(--background))";
+const GLASS = "rgba(56,189,248,0.20)";
+const TYRE = "hsl(var(--background))";
+const STROKE = "hsl(var(--border))";
 
 export default function CarDiagram({ onSelect, activeCategory }) {
   const [hovered, setHovered] = useState(null);
@@ -40,92 +46,97 @@ export default function CarDiagram({ onSelect, activeCategory }) {
       </div>
       <p className="text-xs text-muted-foreground mb-4">Tap any part of the car to jump to that parameter group.</p>
 
-      <div className="relative w-full max-w-[220px] mx-auto">
+      <div className="relative w-full max-w-[230px] mx-auto">
         <svg viewBox="0 0 120 200" className="w-full h-auto" style={{ overflow: "visible" }}>
-          <defs>
-            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(var(--secondary))" />
-              <stop offset="100%" stopColor="hsl(var(--muted))" />
-            </linearGradient>
-            <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(56,189,248,0.35)" />
-              <stop offset="100%" stopColor="rgba(56,189,248,0.12)" />
-            </linearGradient>
-          </defs>
 
-          {/* Rear wing */}
-          <rect x="12" y="184" width="96" height="9" rx="3" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <rect x="14" y="186" width="92" height="2.5" rx="1" fill="hsl(var(--primary))" opacity="0.5" />
+          {/* ── Rear wing (behind body) ── */}
+          <rect x="22" y="176" width="76" height="8" rx="2.5" fill={BODY} stroke={STROKE} strokeWidth="0.6" />
+          <rect x="22" y="174" width="4" height="12" rx="1" fill={BODY} stroke={STROKE} strokeWidth="0.5" />
+          <rect x="94" y="174" width="4" height="12" rx="1" fill={BODY} stroke={STROKE} strokeWidth="0.5" />
+          <rect x="24" y="179" width="72" height="2" rx="1" fill="hsl(var(--primary))" opacity="0.45" />
+          {/* Wing supports */}
+          <rect x="50" y="167" width="3" height="11" fill={BODY} stroke={STROKE} strokeWidth="0.4" />
+          <rect x="67" y="167" width="3" height="11" fill={BODY} stroke={STROKE} strokeWidth="0.4" />
 
-          {/* Front wing / splitter */}
-          <rect x="18" y="3" width="84" height="7" rx="3" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <rect x="20" y="5" width="80" height="2.5" rx="1" fill="hsl(var(--primary))" opacity="0.5" />
+          {/* ── Wheels / tyres (behind body, peek out at fenders) ── */}
+          <rect x="70" y="22" width="7" height="16" rx="2.5" fill={TYRE} stroke={STROKE} strokeWidth="0.5" strokeOpacity="0.6" />
+          <rect x="43" y="22" width="7" height="16" rx="2.5" fill={TYRE} stroke={STROKE} strokeWidth="0.5" strokeOpacity="0.6" />
+          <rect x="80" y="88" width="8" height="20" rx="2.5" fill={TYRE} stroke={STROKE} strokeWidth="0.5" strokeOpacity="0.6" />
+          <rect x="32" y="88" width="8" height="20" rx="2.5" fill={TYRE} stroke={STROKE} strokeWidth="0.5" strokeOpacity="0.6" />
 
-          {/* Wheels (drawn behind body, sticking out at sides) */}
-          <rect x="78" y="16" width="9" height="18" rx="2.5" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <rect x="33" y="16" width="9" height="18" rx="2.5" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <rect x="79" y="90" width="9" height="18" rx="2.5" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <rect x="32" y="90" width="9" height="18" rx="2.5" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="0.6" />
-
-          {/* Main body — top-down GT silhouette */}
+          {/* ── Body silhouette (GT3 top-down, narrow nose / wide hips) ── */}
           <path
-            d="M 60 9
-               Q 70 11 74 14
-               Q 82 18 82 24
-               Q 80 30 76 34
-               L 74 48
-               Q 73 55 77 62
-               Q 79 70 75 78
-               Q 80 86 84 94
-               Q 86 100 83 108
-               L 78 140
-               Q 75 165 70 180
-               L 60 184
-               L 50 180
-               Q 45 165 42 140
-               L 37 108
-               Q 34 100 36 94
-               Q 40 86 45 78
-               Q 41 70 43 62
-               Q 47 55 46 48
-               L 44 34
-               Q 40 30 38 24
-               Q 38 18 46 14
-               Q 50 11 60 9 Z"
-            fill="url(#bodyGrad)"
-            stroke="hsl(var(--border))"
-            strokeWidth="0.7"
+            d="M 60 7
+               Q 64 7.5 66 12 Q 67 15 67 18 Q 67 21 66 22
+               Q 69 23 72 28 Q 73 31 72 34 Q 71 37 69 40
+               L 67 46 L 66 50
+               Q 68 52 69 55 L 70 62 L 71 70
+               Q 72 74 73 78 Q 76 82 78 86
+               Q 82 91 82 96 Q 83 101 83 106
+               Q 83 112 82 118 Q 81 124 80 130
+               Q 78 136 77 142 Q 75 148 74 152
+               Q 72 158 70 162 L 60 168
+               L 50 162 Q 48 158 46 152 Q 45 148 43 142
+               Q 42 136 40 130 Q 39 124 38 118
+               Q 37 112 37 106 Q 37 101 38 96
+               Q 38 91 42 86 Q 44 82 47 78
+               Q 48 74 49 70 L 50 62 L 51 55
+               Q 52 52 54 50 L 53 46 L 51 40
+               Q 49 37 48 34 Q 47 31 48 28
+               Q 51 23 54 22 Q 53 21 53 18
+               Q 53 15 54 12 Q 56 7.5 60 7 Z"
+            fill={BODY}
+            stroke={STROKE}
+            strokeWidth="0.6"
+            strokeOpacity="0.5"
           />
 
-          {/* Hood vent lines */}
-          <line x1="52" y1="40" x2="52" y2="44" stroke="hsl(var(--border))" strokeWidth="0.6" />
-          <line x1="68" y1="40" x2="68" y2="44" stroke="hsl(var(--border))" strokeWidth="0.6" />
+          {/* ── Headlights (round voids) ── */}
+          <circle cx="54" cy="24" r="3" fill={VOID} />
+          <circle cx="66" cy="24" r="3" fill={VOID} />
+          <circle cx="54" cy="24" r="3.6" fill="none" stroke={STROKE} strokeWidth="0.4" strokeOpacity="0.5" />
+          <circle cx="66" cy="24" r="3.6" fill="none" stroke={STROKE} strokeWidth="0.4" strokeOpacity="0.5" />
 
-          {/* Cockpit canopy */}
+          {/* ── Hood vent (central intake) ── */}
+          <rect x="55" y="33" width="10" height="6" rx="2" fill={VOID} />
+          <rect x="55" y="33" width="10" height="6" rx="2" fill="none" stroke={STROKE} strokeWidth="0.4" strokeOpacity="0.5" />
+          <line x1="57" y1="34.5" x2="57" y2="37.5" stroke={STROKE} strokeWidth="0.3" strokeOpacity="0.5" />
+          <line x1="60" y1="34.5" x2="60" y2="37.5" stroke={STROKE} strokeWidth="0.3" strokeOpacity="0.5" />
+          <line x1="63" y1="34.5" x2="63" y2="37.5" stroke={STROKE} strokeWidth="0.3" strokeOpacity="0.5" />
+
+          {/* ── Greenhouse glass ── */}
           <path
-            d="M 60 48 Q 50 50 49 60 Q 49 72 60 78 Q 71 72 71 60 Q 70 50 60 48 Z"
-            fill="url(#glassGrad)"
-            stroke="hsl(var(--border))"
-            strokeWidth="0.5"
+            d="M 54 50 L 66 50 Q 68.5 53 67.5 57 L 66 82 Q 65 84 62 84 L 58 84 Q 55 84 54 82 L 52.5 57 Q 51.5 53 54 50 Z"
+            fill={GLASS}
+            stroke={STROKE}
+            strokeWidth="0.4"
+            strokeOpacity="0.6"
           />
-          {/* Cockpit spine */}
-          <line x1="60" y1="50" x2="60" y2="76" stroke="hsl(var(--border))" strokeWidth="0.4" opacity="0.6" />
+          {/* Roof panel (body color, splits side windows) */}
+          <rect x="57.5" y="58" width="5" height="17" rx="1" fill={BODY} />
+          {/* A-pillar / window divider lines */}
+          <line x1="57.5" y1="58" x2="57.5" y2="75" stroke={STROKE} strokeWidth="0.3" strokeOpacity="0.5" />
+          <line x1="62.5" y1="58" x2="62.5" y2="75" stroke={STROKE} strokeWidth="0.3" strokeOpacity="0.5" />
 
-          {/* Side mirrors */}
-          <rect x="46" y="50" width="4" height="3" rx="1" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="0.3" />
-          <rect x="70" y="50" width="4" height="3" rx="1" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="0.3" />
+          {/* ── Side mirrors (extend out from doors) ── */}
+          <ellipse cx="46" cy="56" rx="3" ry="2" fill={BODY} stroke={STROKE} strokeWidth="0.4" />
+          <ellipse cx="74" cy="56" rx="3" ry="2" fill={BODY} stroke={STROKE} strokeWidth="0.4" />
 
-          {/* Diffuser fins at rear */}
-          <line x1="48" y1="176" x2="48" y2="182" stroke="hsl(var(--border))" strokeWidth="0.5" />
-          <line x1="54" y1="176" x2="54" y2="182" stroke="hsl(var(--border))" strokeWidth="0.5" />
-          <line x1="60" y1="176" x2="60" y2="182" stroke="hsl(var(--border))" strokeWidth="0.5" />
-          <line x1="66" y1="176" x2="66" y2="182" stroke="hsl(var(--border))" strokeWidth="0.5" />
-          <line x1="72" y1="176" x2="72" y2="182" stroke="hsl(var(--border))" strokeWidth="0.5" />
+          {/* ── Panel gaps (door line) ── */}
+          <path d="M 51 56 Q 50 64 49 70" fill="none" stroke={VOID} strokeWidth="0.5" strokeOpacity="0.55" />
+          <path d="M 69 56 Q 70 64 71 70" fill="none" stroke={VOID} strokeWidth="0.5" strokeOpacity="0.55" />
 
-          {/* Roof scoop */}
-          <rect x="57" y="82" width="6" height="8" rx="1.5" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="0.4" />
+          {/* ── Front splitter accent ── */}
+          <rect x="50" y="6.5" width="20" height="1.6" rx="0.8" fill="hsl(var(--primary))" opacity="0.5" />
 
-          {/* Hotspots */}
+          {/* ── Rear diffuser fins ── */}
+          <rect x="48" y="160" width="24" height="7" rx="1.5" fill={VOID} />
+          <rect x="48" y="160" width="24" height="7" rx="1.5" fill="none" stroke={STROKE} strokeWidth="0.4" strokeOpacity="0.5" />
+          {[52, 55, 58, 61, 64, 67, 70].map(x => (
+            <line key={x} x1={x} y1="161" x2={x} y2="166" stroke={STROKE} strokeWidth="0.35" strokeOpacity="0.55" />
+          ))}
+
+          {/* ── Hotspots ── */}
           {HOTSPOTS.map((h, i) => {
             const cat = PARAM_CATEGORIES.find(c => c.id === h.id);
             const isActive = activeId === h.id;
@@ -139,8 +150,8 @@ export default function CarDiagram({ onSelect, activeCategory }) {
                   className={cat.color}
                   fillOpacity={isActive ? 0.35 : 0}
                   stroke="currentColor"
-                  strokeWidth="0.7"
-                  strokeOpacity={isActive ? 1 : 0.55}
+                  strokeWidth="0.8"
+                  strokeOpacity={isActive ? 1 : 0.6}
                   style={{ cursor: "pointer", transition: "all 0.18s ease" }}
                   onMouseEnter={() => setHovered(h.id)}
                   onMouseLeave={() => setHovered(null)}
