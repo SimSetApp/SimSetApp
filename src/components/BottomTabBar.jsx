@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, FolderOpen, Bot, BookOpen, Heart } from "lucide-react";
+import { Home, FolderOpen, Bot, BookOpen, Heart, Wrench } from "lucide-react";
 
 const TABS = [
   { path: "/", label: "Home", icon: Home },
-  { path: "/setup-guide", label: "Setup Guide", icon: BookOpen },
+  { path: "/setup-guide", label: "Guide", icon: BookOpen },
+  { path: "/setup-wizard", label: "Wizard", icon: Wrench },
   { path: "/race-engineer", label: "Engineer", icon: Bot },
-  { path: "/saved-setups", label: "My Garage", icon: FolderOpen },
+  { path: "/saved-setups", label: "Garage", icon: FolderOpen },
   { path: "/support", label: "Support", icon: Heart },
 ];
 

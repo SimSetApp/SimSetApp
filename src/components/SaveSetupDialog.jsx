@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SIM_TITLES, CAR_LISTS, TRACK_LISTS, SIM_SETUP_PARAMS } from "../lib/simData";
 import { CLASS_SETUP_DEFAULTS, getCarClass } from "../lib/classSetupDefaults";
 import SetupEditorForm from "./SetupEditorForm";
+import SetupValidator from "./SetupValidator";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, FileText, SlidersHorizontal, Upload, Download } from "lucide-react";
@@ -213,8 +214,11 @@ export default function SaveSetupDialog({ open, onOpenChange, editSetup }) {
                 Notes
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="params" className="mt-4">
+            <TabsContent value="params" className="mt-4 space-y-4">
               <SetupEditorForm sim={sim} parameters={parameters} onChange={setParameters} />
+              {sim && Object.keys(parameters).length > 0 && (
+                <SetupValidator sim={sim} parameters={parameters} carClass={getCarClass(sim, car)} />
+              )}
             </TabsContent>
             <TabsContent value="notes" className="mt-4">
               <Textarea
