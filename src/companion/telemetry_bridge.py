@@ -63,7 +63,7 @@ class MockProvider:
         (0.70, 84), (0.76, 162), (0.82, 212), (0.88, 128),
         (0.95, 256), (1.00, 268),
     ]
-    GEAR_MAX = [0, 92, 138, 184, 226, 262, 292]  # km/h at redline per gear
+    GEAR_MAX = [0, 92, 138, 184, 226, 262, 274]  # km/h at redline per gear (6th reaches the limiter at top speed)
     AMBIENT = 25.0
     COLD_PRESSURE = 26.0
     TOTAL_LAPS = 18
@@ -154,7 +154,7 @@ class MockProvider:
             if brake_demand > 5:
                 self.speed -= max(6 * dt, brake_demand * 0.14 * (0.2 + 0.8 * self.brake))
             elif diff > 0:
-                self.speed += max(6 * dt, diff * 0.14 * (0.2 + 0.8 * self.throttle))
+                self.speed += max(6 * dt, diff * 0.2 * (0.1 + 0.9 * self.throttle))
             elif diff < 0:
                 self.speed += min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * self.brake))
             self.speed = max(0, min(300, self.speed))
@@ -213,6 +213,9 @@ class MockProvider:
 
         rpm = (self.speed / self.GEAR_MAX[self.gear]) * 8000 if self.GEAR_MAX[self.gear] else 0
         rpm = max(800, min(8000, int(rpm)))
+        # rev limiter bounce at redline (~200 rpm cut/refire)
+        if rpm >= 7800:
+            rpm = int(7800 - 100 - 100 * math.sin(self.t * 30))
 
         last_lap_time = None
         if lap_time >= self.LAP_LENGTH:

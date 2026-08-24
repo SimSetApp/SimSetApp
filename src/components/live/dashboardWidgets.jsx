@@ -66,15 +66,17 @@ function Title({ children }) {
 
 function ShiftLights({ data }) {
   const maxRpm = data.max_rpm || 8000;
-  const shiftRpm = 0.93 * maxRpm;   // last LED lights at the shift point
+  const shiftRpm = 0.925 * maxRpm;   // last LED lights at the shift point
   const lit = Math.max(0, Math.min(15, Math.round(((data.rpm || 0) - 2000) / (shiftRpm - 2000) * 15)));
+  const atRedline = (data.rpm || 0) >= shiftRpm;
+  const flashOn = atRedline && (Math.floor(Date.now() / 100) % 2 === 0);
   return (
     <div className="w-full h-full flex items-center justify-between px-1">
       {Array.from({ length: 15 }).map((_, i) => {
-        const on = i < lit;
+        const on = i < lit && (!atRedline || flashOn);
         const col = i < 5 ? SEM.green : i < 10 ? SEM.yellow : SEM.red;
         return (
-          <div key={i} className="rounded-full aspect-square" style={{ height: "100%", background: on ? col : "rgba(255,255,255,0.07)", boxShadow: on ? `0 0 10px ${col}, inset 0 0 4px rgba(255,255,255,0.4)` : "none", opacity: on ? 1 : 0.55 }} />
+          <div key={i} className="rounded-full aspect-square" style={{ height: "100%", background: on ? col : "rgba(255,255,255,0.07)", boxShadow: on ? `0 0 12px ${col}, inset 0 0 4px rgba(255,255,255,0.5)` : "none", opacity: on ? 1 : 0.55 }} />
         );
       })}
     </div>

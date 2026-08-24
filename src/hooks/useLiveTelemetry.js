@@ -14,7 +14,7 @@ const MOCK_WAYPOINTS = [
   [0.70, 84], [0.76, 162], [0.82, 212], [0.88, 128],
   [0.95, 256], [1.00, 268],
 ];
-const MOCK_GEAR_MAX = [0, 92, 138, 184, 226, 262, 292];
+const MOCK_GEAR_MAX = [0, 92, 138, 184, 226, 262, 274];
 const MOCK_AMBIENT = 25, MOCK_COLD_PRESSURE = 26, MOCK_TOTAL_LAPS = 18, MOCK_PIT_LAP = 9, MOCK_FUEL_START = 100, MOCK_FUEL_PER_LAP = 3.2, MOCK_LAP_LENGTH = 95;
 const MOCK_TYRE_TARGET = { fl: 88, fr: 84, rl: 82, rr: 81 };
 const MOCK_TYRE_WEAR = { fl: 1.15, fr: 1.0, rl: 0.95, rr: 1.05 };
@@ -74,7 +74,7 @@ function mockTick(s) {
     const brakeDemand = Math.max(0, s.speed - tMinAhead);
     const diff = target - s.speed;
     if (brakeDemand > 5) s.speed -= Math.max(6 * dt, brakeDemand * 0.14 * (0.2 + 0.8 * s.brake));
-    else if (diff > 0) s.speed += Math.max(6 * dt, diff * 0.14 * (0.2 + 0.8 * s.throttle));
+    else if (diff > 0) s.speed += Math.max(6 * dt, diff * 0.2 * (0.1 + 0.9 * s.throttle));
     else if (diff < 0) s.speed += Math.min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * s.brake));
     s.speed = Math.max(0, Math.min(300, s.speed));
 
@@ -112,7 +112,8 @@ function mockTick(s) {
     }
   }
 
-  const rpm = Math.max(800, Math.min(8000, Math.round(MOCK_GEAR_MAX[s.gear] ? (s.speed / MOCK_GEAR_MAX[s.gear]) * 8000 : 0)));
+  let rpm = Math.max(800, Math.min(8000, Math.round(MOCK_GEAR_MAX[s.gear] ? (s.speed / MOCK_GEAR_MAX[s.gear]) * 8000 : 0)));
+  if (rpm >= 7800) rpm = Math.round(7800 - 100 - 100 * Math.sin(s.t * 30));
 
   if (lapTime >= MOCK_LAP_LENGTH) {
     const deg = (s.tyres.fl.wear_pct + s.tyres.fr.wear_pct + s.tyres.rl.wear_pct + s.tyres.rr.wear_pct) / 4 * 0.04;
