@@ -307,7 +307,7 @@ export default function Profile() {
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Paste a channel webhook URL to share your setups to your Discord server in one click.{" "}
-                    <a href="https://support.discord.com/hc/en-us/articles/228384668-Intro-to-Webhooks" target="_blank" rel="noopener noreferrer" className="text-primary underline">How to create one</a>.
+                    <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks" target="_blank" rel="noopener noreferrer" className="text-primary underline">How to create one</a>.
                   </p>
                   <Input
                     id="discord_webhook"
