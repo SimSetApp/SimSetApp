@@ -7,15 +7,18 @@ const STORAGE_KEY = "simsetapp-telemetry-url";
  * Client-side mock telemetry generator — mirrors the Python bridge's mock mode
  * so the dashboard works instantly with no install.
  */
-const MOCK_WAYPOINTS = [
-  [0.00, 268], [0.09, 268], [0.13, 118], [0.18, 152],
-  [0.24, 232], [0.28, 92], [0.33, 138], [0.40, 246],
-  [0.50, 246], [0.54, 108], [0.60, 172], [0.66, 172],
-  [0.70, 84], [0.76, 162], [0.82, 212], [0.88, 128],
-  [0.95, 256], [1.00, 268],
+const MOCK_WAYPOINTS = [ // Silverstone GP — GT3 corner-by-corner speed profile (km/h)
+  [0.00, 250], [0.045, 258], [0.065, 228], [0.085, 252],
+  [0.115, 252], [0.135, 78], [0.165, 88], [0.195, 172],
+  [0.245, 260], [0.295, 260], [0.315, 102], [0.355, 122],
+  [0.395, 200], [0.415, 218], [0.455, 268], [0.475, 248],
+  [0.505, 272], [0.530, 238], [0.555, 224], [0.585, 250],
+  [0.615, 262], [0.705, 286], [0.755, 286], [0.775, 148],
+  [0.810, 170], [0.840, 122], [0.880, 205], [0.945, 282],
+  [1.00, 250],
 ];
-const MOCK_GEAR_MAX = [0, 92, 138, 184, 226, 262, 274];
-const MOCK_AMBIENT = 25, MOCK_COLD_PRESSURE = 26, MOCK_TOTAL_LAPS = 18, MOCK_PIT_LAP = 9, MOCK_FUEL_START = 100, MOCK_FUEL_PER_LAP = 3.2, MOCK_LAP_LENGTH = 95;
+const MOCK_GEAR_MAX = [0, 90, 130, 175, 215, 250, 288];
+const MOCK_AMBIENT = 25, MOCK_COLD_PRESSURE = 26, MOCK_TOTAL_LAPS = 18, MOCK_PIT_LAP = 9, MOCK_FUEL_START = 100, MOCK_FUEL_PER_LAP = 3.2, MOCK_LAP_LENGTH = 118;
 const MOCK_TYRE_TARGET = { fl: 88, fr: 84, rl: 82, rr: 81 };
 const MOCK_TYRE_WEAR = { fl: 1.15, fr: 1.0, rl: 0.95, rr: 1.05 };
 
@@ -68,20 +71,21 @@ function mockTick(s) {
       for (const k in s.tyres) s.tyres[k].wear_pct = 0;
     }
   } else {
-    const target = _mockTargetSpeed(phase);
+    const targetInstant = _mockTargetSpeed(phase);
     let tMinAhead = Infinity;
-    for (let k = 1; k <= 4; k++) tMinAhead = Math.min(tMinAhead, _mockTargetSpeed((phase + k * 0.01) % 1));
+    for (let k = 1; k <= 2; k++) tMinAhead = Math.min(tMinAhead, _mockTargetSpeed((phase + k * 0.01) % 1));
+    const target = Math.min(targetInstant, tMinAhead);
     const brakeDemand = Math.max(0, s.speed - tMinAhead);
     const diff = target - s.speed;
-    if (brakeDemand > 5) s.speed -= Math.max(6 * dt, brakeDemand * 0.14 * (0.2 + 0.8 * s.brake));
-    else if (diff > 0) s.speed += Math.max(6 * dt, diff * 0.2 * (0.1 + 0.9 * s.throttle));
-    else if (diff < 0) s.speed += Math.min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * s.brake));
+    if (brakeDemand > 5) s.speed -= Math.min(75 * (0.2 + 0.8 * s.brake) * dt, brakeDemand);
+    else if (diff > 0) s.speed += Math.min(45 * (0.1 + 0.9 * s.throttle) * dt, diff);
+    else if (diff < 0) s.speed -= Math.min(30 * (0.2 + 0.8 * s.brake) * dt, -diff);
     s.speed = Math.max(0, Math.min(300, s.speed));
 
     const cur = s.gear;
     const rpmNow = MOCK_GEAR_MAX[cur] ? (s.speed / MOCK_GEAR_MAX[cur]) * 8000 : 0;
     if (rpmNow > 7400 && cur < 6 && s.shiftTimer <= 0) { s.gear = cur + 1; s.shiftTimer = 0.18; s.shiftDir = 1; }
-    else if (rpmNow < 3600 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
+    else if (rpmNow < 5000 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
 
     const tNext = _mockTargetSpeed((phase + 0.02) % 1);
     const dtgt = tNext - target;
@@ -160,8 +164,8 @@ function mockTick(s) {
     sim: "Demo Sim",
     connected: true,
     session_type: "Race",
-    track: "Silverstone GP (Demo)",
-    car: "GT3 Demo Car",
+    track: "Silverstone GP",
+    car: "Mercedes-AMG GT3",
     lap: s.lap,
     total_laps: MOCK_TOTAL_LAPS,
     position: s.position,

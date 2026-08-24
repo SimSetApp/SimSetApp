@@ -56,21 +56,24 @@ class MockProvider:
     tyres/fuel, and a position change — then loops.
     """
 
-    WAYPOINTS = [
-        (0.00, 268), (0.09, 268), (0.13, 118), (0.18, 152),
-        (0.24, 232), (0.28, 92), (0.33, 138), (0.40, 246),
-        (0.50, 246), (0.54, 108), (0.60, 172), (0.66, 172),
-        (0.70, 84), (0.76, 162), (0.82, 212), (0.88, 128),
-        (0.95, 256), (1.00, 268),
+    WAYPOINTS = [  # Silverstone GP — GT3 corner-by-corner speed profile (km/h)
+        (0.00, 250), (0.045, 258), (0.065, 228), (0.085, 252),
+        (0.115, 252), (0.135, 78), (0.165, 88), (0.195, 172),
+        (0.245, 260), (0.295, 260), (0.315, 102), (0.355, 122),
+        (0.395, 200), (0.415, 218), (0.455, 268), (0.475, 248),
+        (0.505, 272), (0.530, 238), (0.555, 224), (0.585, 250),
+        (0.615, 262), (0.705, 286), (0.755, 286), (0.775, 148),
+        (0.810, 170), (0.840, 122), (0.880, 205), (0.945, 282),
+        (1.00, 250),
     ]
-    GEAR_MAX = [0, 92, 138, 184, 226, 262, 274]  # km/h at redline per gear (6th reaches the limiter at top speed)
+    GEAR_MAX = [0, 90, 130, 175, 215, 250, 288]  # km/h at redline per gear (6th reaches the limiter at top speed)
     AMBIENT = 25.0
     COLD_PRESSURE = 26.0
     TOTAL_LAPS = 18
     PIT_LAP = 9
     FUEL_START = 100.0
     FUEL_PER_LAP = 3.2
-    LAP_LENGTH = 95.0  # seconds per lap
+    LAP_LENGTH = 118.0  # seconds per lap (Silverstone GP GT3 ~1:58)
 
     def __init__(self):
         self.t = 0.0
@@ -146,17 +149,22 @@ class MockProvider:
         else:
             target = self._target_speed(phase)
             # look ahead to the next corner's minimum speed (for braking)
-            target_min_ahead = min(self._target_speed((phase + k * 0.01) % 1.0) for k in range(1, 5))
+            target_min_ahead = min(self._target_speed((phase + k * 0.01) % 1.0) for k in range(1, 3))
+            target = min(target, target_min_ahead)  # can't exceed the upcoming corner's minimum
             brake_demand = max(0.0, self.speed - target_min_ahead)
             diff = target - self.speed
-            # pedals drive the speed: full throttle = harder accel (faster RPM climb);
-            # under braking, shed speed hard toward the corner minimum (fast RPM drop)
+            # pedals drive the speed with realistic g-forces:
+            # hard braking toward the corner minimum (~2g at full pedal),
+            # acceleration ~1.2g at full throttle, gentle coast otherwise
             if brake_demand > 5:
-                self.speed -= max(6 * dt, brake_demand * 0.14 * (0.2 + 0.8 * self.brake))
+                decel = 75.0 * (0.2 + 0.8 * self.brake)
+                self.speed -= min(decel * dt, brake_demand)
             elif diff > 0:
-                self.speed += max(6 * dt, diff * 0.2 * (0.1 + 0.9 * self.throttle))
-            elif diff < 0:
-                self.speed += min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * self.brake))
+                accel = 45.0 * (0.1 + 0.9 * self.throttle)
+                self.speed += min(accel * dt, diff)
+            else:
+                decel = 30.0 * (0.2 + 0.8 * self.brake)
+                self.speed -= min(decel * dt, -diff)
             self.speed = max(0, min(300, self.speed))
 
             cur = self.gear
@@ -165,7 +173,7 @@ class MockProvider:
                 self.gear = cur + 1
                 self.shift_timer = 0.18
                 self.shift_dir = 1
-            elif rpm_now < 3600 and cur > 1 and self.shift_timer <= 0:
+            elif rpm_now < 5000 and cur > 1 and self.shift_timer <= 0:
                 self.gear = cur - 1
                 self.shift_timer = 0.16
                 self.shift_dir = -1
@@ -269,8 +277,8 @@ class MockProvider:
 
         return {
             "type": "telemetry", "ts": time.time(), "sim": self.sim_name(),
-            "connected": True, "session_type": "Race", "track": "Silverstone GP (Mock)",
-            "car": "GT3 Demo Car", "lap": self.lap, "total_laps": self.TOTAL_LAPS,
+            "connected": True, "session_type": "Race", "track": "Silverstone GP",
+            "car": "Mercedes-AMG GT3", "lap": self.lap, "total_laps": self.TOTAL_LAPS,
             "position": self.position, "incidents": self.incidents,
             "current_lap_time": round(lap_time, 3), "last_lap_time": last_lap_time,
             "best_lap_time": round(self.best, 3) if self.best else None,
