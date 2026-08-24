@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Camera, Save, User, Loader2, Settings, MessageCircle, UserCheck, UserX, Users, Search, Copy, UserPlus, Clock, X } from "lucide-react";
+import { Camera, Save, User, Loader2, Settings, MessageCircle, MessageSquare, UserCheck, UserX, Users, Search, Copy, UserPlus, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,6 +41,7 @@ export default function Profile() {
       display_name: user.display_name || user.full_name || "",
       bio: user.bio || "",
       avatar_url: user.avatar_url || "",
+      discord_webhook_url: user.discord_webhook_url || "",
     });
     const updates = {};
     if (!user.user_tag) {
@@ -66,7 +67,7 @@ export default function Profile() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const tag = await ensureUserTag(user);
-      await base44.auth.updateMe({ display_name: form.display_name, bio: form.bio, avatar_url: form.avatar_url, user_tag: tag });
+      await base44.auth.updateMe({ display_name: form.display_name, bio: form.bio, avatar_url: form.avatar_url, discord_webhook_url: form.discord_webhook_url, user_tag: tag });
       const mySetups = await base44.entities.CommunitySetup.filter({ author_id: user.id });
       if (mySetups.length > 0 && form.display_name) {
         await Promise.all(mySetups.map(s => base44.entities.CommunitySetup.update(s.id, { author_name: form.display_name })));
@@ -296,6 +297,25 @@ export default function Profile() {
                     maxLength={300}
                   />
                   <p className="text-xs text-muted-foreground text-right">{(form.bio || "").length}/300</p>
+                </div>
+
+                {/* Discord webhook */}
+                <div className="space-y-2 rounded-xl border border-border bg-secondary/40 p-4">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    <Label htmlFor="discord_webhook" className="text-sm font-semibold m-0">Discord Webhook URL</Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Paste a channel webhook URL to share your setups to your Discord server in one click.{" "}
+                    <a href="https://support.discord.com/hc/en-us/articles/228384668-Intro-to-Webhooks" target="_blank" rel="noopener noreferrer" className="text-primary underline">How to create one</a>.
+                  </p>
+                  <Input
+                    id="discord_webhook"
+                    value={form.discord_webhook_url}
+                    onChange={e => setForm(f => ({ ...f, discord_webhook_url: e.target.value }))}
+                    placeholder="https://discord.com/api/webhooks/…"
+                    className="font-mono text-xs"
+                  />
                 </div>
 
                 <Button

@@ -15,7 +15,7 @@ import TyreWearPredictor from "../components/TyreWearPredictor";
 import QRShareDialog from "../components/QRShareDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight, QrCode, Activity, Gauge, GitBranch } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight, QrCode, Activity, Gauge, GitBranch, Send } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import ReplayUploader from "../components/ReplayUploader";
 
@@ -196,6 +196,25 @@ export default function SavedSetups() {
   );
 
   const [copiedId, setCopiedId] = useState(null);
+  const [discordSharingId, setDiscordSharingId] = useState(null);
+
+  const shareToDiscordMutation = useMutation({
+    mutationFn: async (setup) => {
+      const data = { title: setup.title, sim_title: setup.sim_title, car: setup.car, track: setup.track, notes: setup.notes, parameters: setup.parameters };
+      const encoded = btoa(JSON.stringify(data));
+      const share_url = `${window.location.origin}/share?s=${encoded}`;
+      return await base44.functions.invoke('share-to-discord', { setup_id: setup.id, share_url });
+    },
+    onSuccess: () => {
+      toast.success("Shared to Discord!");
+      setDiscordSharingId(null);
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.error || err?.message || "Failed to share to Discord";
+      toast.error(msg);
+      setDiscordSharingId(null);
+    },
+  });
 
   const shareSetup = (setup) => {
     const data = { title: setup.title, sim_title: setup.sim_title, car: setup.car, track: setup.track, notes: setup.notes, parameters: setup.parameters };
@@ -450,6 +469,9 @@ export default function SavedSetups() {
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="QR Code share" onClick={(e) => { e.stopPropagation(); setQrSetup(setup); }}>
                         <QrCode className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Share to Discord" onClick={(e) => { e.stopPropagation(); setDiscordSharingId(setup.id); shareToDiscordMutation.mutate(setup); }} disabled={discordSharingId === setup.id || shareToDiscordMutation.isPending}>
+                        {discordSharingId === setup.id && shareToDiscordMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={(e) => { e.stopPropagation(); setDeleteId(setup.id); }}>
                         <Trash2 className="w-3.5 h-3.5" />
