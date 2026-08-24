@@ -25,6 +25,7 @@ import PitBoard from './pages/PitBoard';
 import Dashboard from './pages/Dashboard';
 import LearningPath from './pages/LearningPath';
 import Telemetry from './pages/Telemetry';
+import LiveTelemetry from './pages/LiveTelemetry';
 import Profile from './pages/Profile.jsx';
 import Messages from './pages/Messages.jsx';
 import Login from './pages/Login';
@@ -87,6 +88,7 @@ const AuthenticatedApp = () => {
           <Route path="/pit-board" element={<PitBoard />} />
           <Route path="/learning-path" element={<LearningPath />} />
           <Route path="/telemetry" element={<Telemetry />} />
+          <Route path="/live-telemetry" element={<LiveTelemetry />} />
           <Route path="/support" element={<Support />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/profile" element={<Profile />} />

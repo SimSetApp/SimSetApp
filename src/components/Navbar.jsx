@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Instagram, Sparkles, Flag, Activity, GraduationCap, Sun, Moon } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Instagram, Sparkles, Flag, Activity, GraduationCap, Sun, Moon, Radio } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -23,6 +23,7 @@ const toolsNav = [
   { path: "/tuning-guide", label: "Tuning Guide", icon: BookOpen, desc: "Deep-dive tuning articles" },
   { path: "/methodology", label: "Methodology", icon: FlaskConical, desc: "Step-by-step setup process" },
   { path: "/telemetry", label: "Telemetry Import", icon: Activity, desc: "Upload & analyze lap data" },
+  { path: "/live-telemetry", label: "Live Telemetry", icon: Radio, desc: "Real-time dashboard from your sim" },
   { path: "/pit-board", label: "Pit Board", icon: Flag, desc: "Live race dashboard" },
   { path: "/learning-path", label: "Learning Path", icon: GraduationCap, desc: "Beginner to advanced guide" },
 ];
