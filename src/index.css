@@ -11,11 +11,11 @@
     --font-body: 'Outfit', sans-serif;
     --font-display: 'Outfit', sans-serif;
     --font-mono: 'Outfit', sans-serif;
-    --chart-1: 35 100% 55%;
-    --chart-2: 200 70% 50%;
-    --chart-3: 150 60% 45%;
-    --chart-4: 280 60% 55%;
-    --chart-5: 10 80% 55%;
+    --chart-1: 234 72% 62%;
+    --chart-2: 186 56% 46%;
+    --chart-3: 36 80% 56%;
+    --chart-4: 268 54% 62%;
+    --chart-5: 348 60% 60%;
     --sidebar-background: 220 14% 4%;
     --sidebar-foreground: 220 10% 90%;
     --sidebar-primary: 128 84% 52%;
@@ -31,19 +31,19 @@
     --card-foreground: 222 34% 12%;
     --popover: 220 40% 99%;
     --popover-foreground: 222 34% 12%;
-    --primary: 211 100% 50%;
+    --primary: 234 70% 58%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 20% 90%;
     --secondary-foreground: 222 30% 16%;
     --muted: 220 20% 92%;
     --muted-foreground: 220 14% 42%;
-    --accent: 211 100% 50%;
+    --accent: 234 70% 58%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 20% 86%;
     --input: 220 20% 86%;
-    --ring: 211 100% 50%;
+    --ring: 234 70% 58%;
   }
 
 /* ── LIQUID GLASS (default — frosted translucent, iOS-style) ─────────── */
@@ -57,19 +57,19 @@
   --card-foreground: 222 34% 12%;
   --popover: 220 40% 99%;
   --popover-foreground: 222 34% 12%;
-  --primary: 211 100% 50%;
+  --primary: 234 70% 58%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 90%;
   --secondary-foreground: 222 30% 16%;
   --muted: 220 20% 92%;
   --muted-foreground: 220 14% 42%;
-  --accent: 211 100% 50%;
+  --accent: 234 70% 58%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 55%;
   --destructive-foreground: 0 0% 100%;
   --border: 220 20% 86%;
   --input: 220 20% 86%;
-  --ring: 211 100% 50%;
+  --ring: 234 70% 58%;
 }
 .theme-liquid.mode-dark {
   --background: 222 32% 7%;
@@ -78,19 +78,24 @@
   --card-foreground: 220 20% 96%;
   --popover: 222 28% 13%;
   --popover-foreground: 220 20% 96%;
-  --primary: 211 100% 60%;
+  --primary: 234 74% 68%;
   --primary-foreground: 0 0% 100%;
   --secondary: 222 22% 19%;
   --secondary-foreground: 220 18% 92%;
   --muted: 222 22% 17%;
   --muted-foreground: 220 12% 66%;
-  --accent: 211 100% 60%;
+  --accent: 234 74% 68%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 55%;
   --destructive-foreground: 0 0% 100%;
   --border: 220 18% 22%;
   --input: 220 18% 22%;
-  --ring: 211 100% 60%;
+  --ring: 234 74% 68%;
+  --chart-1: 234 76% 72%;
+  --chart-2: 186 58% 54%;
+  --chart-3: 38 82% 64%;
+  --chart-4: 268 56% 70%;
+  --chart-5: 348 62% 68%;
 }
 
 .theme-liquid.mode-light body {
