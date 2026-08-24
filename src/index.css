@@ -445,16 +445,33 @@
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  /* Obvious hover highlight for interactive glass surfaces */
-  a.glass:hover,
-  button.glass:hover,
-  [role="button"].glass:hover,
-  a.glass-strong:hover,
-  button.glass-strong:hover {
-    border-color: hsl(var(--primary) / 0.45) !important;
-    box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.4), 0 18px 48px -14px hsl(var(--primary) / 0.28), 0 0 0 1px hsl(var(--primary) / 0.2) !important;
+  /* Subtle entrance + fluid hover for liquid glass panels */
+  @keyframes glass-enter {
+    from { opacity: 0; transform: translateY(10px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .glass,
+  .glass-strong,
+  .bg-card {
+    animation: glass-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+  .theme-liquid.mode-light .bg-card:hover,
+  .theme-liquid.mode-light .glass:hover,
+  .theme-liquid.mode-light .glass-strong:hover {
     transform: translateY(-2px);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    border-color: hsl(0 0% 100% / 0.7) !important;
+    box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.95), inset 1px 0 0 0 hsl(0 0% 100% / 0.4), 0 26px 60px -18px hsl(220 50% 35% / 0.36), 0 0 0 1px hsl(var(--primary) / 0.18) !important;
+  }
+  .theme-liquid.mode-dark .bg-card:hover,
+  .theme-liquid.mode-dark .glass:hover,
+  .theme-liquid.mode-dark .glass-strong:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.4) !important;
+    box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.5), 0 22px 56px -16px hsl(0 0% 0% / 0.5), 0 0 0 1px hsl(var(--primary) / 0.2) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glass, .glass-strong, .bg-card { animation: none; }
   }
 }
 
