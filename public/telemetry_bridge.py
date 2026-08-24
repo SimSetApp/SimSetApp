@@ -145,10 +145,15 @@ class MockProvider:
                     self.tyres[k]["wear_pct"] = 0.0
         else:
             target = self._target_speed(phase)
+            # look ahead to the next corner's minimum speed (for braking)
+            target_min_ahead = min(self._target_speed((phase + k * 0.01) % 1.0) for k in range(1, 5))
+            brake_demand = max(0.0, self.speed - target_min_ahead)
             diff = target - self.speed
-            # throttle/brake-modulated: full pedal = harder accel (faster RPM climb),
-            # partial = gentler — the pedals drive the speed, not the other way around
-            if diff > 0:
+            # pedals drive the speed: full throttle = harder accel (faster RPM climb);
+            # under braking, shed speed hard toward the corner minimum (fast RPM drop)
+            if brake_demand > 5:
+                self.speed -= max(6 * dt, brake_demand * 0.14 * (0.2 + 0.8 * self.brake))
+            elif diff > 0:
                 self.speed += max(6 * dt, diff * 0.14 * (0.2 + 0.8 * self.throttle))
             elif diff < 0:
                 self.speed += min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * self.brake))
@@ -171,9 +176,7 @@ class MockProvider:
             # holds at 100% on the straight (not dropping when speed matches).
             t_next = self._target_speed((phase + 0.02) % 1.0)
             dtgt = t_next - target
-            if dtgt < -1.5:            # braking zone — hard initial input, tapers as speed sheds
-                target_min_ahead = min(self._target_speed((phase + k * 0.01) % 1.0) for k in range(1, 9))
-                brake_demand = max(0.0, self.speed - target_min_ahead)
+            if brake_demand > 5:        # braking for a corner ahead — hard initial, tapers as speed sheds
                 intent_thr = 0.0
                 intent_brk = min(1.0, brake_demand / 50.0)
             elif dtgt > 1.5:           # acceleration zone (target rising)
@@ -182,7 +185,7 @@ class MockProvider:
             elif target > 170:         # fast/straight section — hold throttle
                 intent_thr = 1.0
                 intent_brk = 0.0
-            else:                      # corner — maintenance throttle, brake trailing
+            else:                      # corner — maintenance throttle
                 intent_thr = 0.35
                 intent_brk = 0.0
             if self.shift_timer > 0:

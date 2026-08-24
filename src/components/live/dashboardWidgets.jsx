@@ -66,8 +66,8 @@ function Title({ children }) {
 
 function ShiftLights({ data }) {
   const maxRpm = data.max_rpm || 8000;
-  const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
-  const lit = Math.round(rpmPct * 15);
+  const shiftRpm = 0.93 * maxRpm;   // last LED lights at the shift point
+  const lit = Math.max(0, Math.min(15, Math.round(((data.rpm || 0) - 2000) / (shiftRpm - 2000) * 15)));
   return (
     <div className="w-full h-full flex items-center justify-between px-1">
       {Array.from({ length: 15 }).map((_, i) => {
