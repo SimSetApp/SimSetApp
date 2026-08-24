@@ -10,6 +10,7 @@ import { Plus, Loader2, SlidersHorizontal, Clock, Car, MapPin, GitBranch } from 
 import SessionForm from "./SessionForm";
 import SessionCard from "./SessionCard";
 import SetupVersionHistory from "./SetupVersionHistory";
+import SetupPerformanceChart from "./SetupPerformanceChart";
 
 function SetupParamsReadOnly({ sim, parameters }) {
   const groups = sim && SIM_SETUP_PARAMS[sim];
@@ -114,6 +115,12 @@ export default function SetupDetailSheet({ setup, open, onOpenChange }) {
                     <Plus className="w-3.5 h-3.5 mr-1.5" /> Log Session
                   </Button>
                 </div>
+
+                {!isLoading && sessions.length > 1 && (
+                  <div className="mb-4">
+                    <SetupPerformanceChart sessions={sessions} />
+                  </div>
+                )}
 
                 {isLoading && (
                   <div className="flex justify-center py-12">

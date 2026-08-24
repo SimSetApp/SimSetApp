@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Star, Download, TrendingUp, Clock, Globe, Users, BadgeCheck, MessageSquare } from "lucide-react";
+import { Star, Download, TrendingUp, Clock, Globe, Users, BadgeCheck, MessageSquare, GitCompare } from "lucide-react";
 import ReplayViewer from "../components/ReplayViewer";
 import SmartSetupMatch from "../components/SmartSetupMatch";
 import SetupComments from "../components/SetupComments";
@@ -19,6 +19,7 @@ import TopCreators from "../components/TopCreators";
 import UserProfileSheet from "../components/UserProfileSheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
+import CompareSetupDialog from "../components/CompareSetupDialog";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -54,7 +55,7 @@ function StarRating({ rating, onRate, interactive = false }) {
   );
 }
 
-function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsClick }) {
+function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsClick, onCompare }) {
   const queryClient = useQueryClient();
   const [showRating, setShowRating] = useState(false);
   const [pendingRating, setPendingRating] = useState(0);
@@ -196,7 +197,7 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsCli
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 sm:flex gap-2">
           <Button
             size="sm"
             variant="outline"
@@ -225,6 +226,15 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsCli
             <MessageSquare className="w-3 h-3 mr-1" />
             Discuss
           </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="flex-1 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => onCompare?.(setup)}
+          >
+            <GitCompare className="w-3 h-3 mr-1" />
+            Compare
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -239,6 +249,7 @@ export default function CommunityLibrary() {
   const [styleFilter, setStyleFilter] = useState("all");
   const [profileSheet, setProfileSheet] = useState(null); // { id, name }
   const [commentSetup, setCommentSetup] = useState(null);
+  const [compareSetup, setCompareSetup] = useState(null);
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -361,7 +372,7 @@ export default function CommunityLibrary() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map(setup => (
-          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} authorProfile={authorProfileMap[setup.author_id]} onCommentsClick={setCommentSetup} />
+          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} authorProfile={authorProfileMap[setup.author_id]} onCommentsClick={setCommentSetup} onCompare={setCompareSetup} />
         ))}
       </div>
     );
@@ -508,6 +519,10 @@ export default function CommunityLibrary() {
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {compareSetup && (
+        <CompareSetupDialog setup={compareSetup} open={!!compareSetup} onOpenChange={(o) => { if (!o) setCompareSetup(null); }} />
       )}
     </div>
   );
