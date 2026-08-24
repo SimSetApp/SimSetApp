@@ -15,7 +15,7 @@ import TyreWearPredictor from "../components/TyreWearPredictor";
 import QRShareDialog from "../components/QRShareDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight, QrCode, Activity, Gauge } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight, QrCode, Activity, Gauge, GitBranch } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import ReplayUploader from "../components/ReplayUploader";
 
@@ -26,6 +26,7 @@ import { SIM_SETUP_PARAMS, SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/sim
 import SearchableSelect from "../components/SearchableSelect";
 import SetupDetailSheet from "../components/SetupDetailSheet";
 import SetupComparison from "../components/SetupComparison";
+import ForkSourceCompareDialog from "../components/ForkSourceCompareDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 
@@ -110,6 +111,7 @@ export default function SavedSetups() {
   const [sharingId, setSharingId] = useState(null);
   const [sharedSetupData, setSharedSetupData] = useState(null); // { id, replay_urls } for replay upload modal
   const [qrSetup, setQrSetup] = useState(null);
+  const [forkCompareSetup, setForkCompareSetup] = useState(null);
 
   const shareToCommunityMutation = useMutation({
     mutationFn: async (setup) => {
@@ -385,6 +387,12 @@ export default function SavedSetups() {
                             </>
                           )}
                         </div>
+                        {setup.source_setup_id && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-2.5 py-1 text-[10px] text-primary">
+                            <GitBranch className="w-3 h-3" />
+                            Forked from {setup.source_title || "community"}
+                          </div>
+                        )}
                         <SetupParamsSummary sim={setup.sim_title} parameters={setup.parameters} />
                         {setup.notes && (
                           <div className="mt-2 flex items-start gap-2">
@@ -394,7 +402,18 @@ export default function SavedSetups() {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                      <Button
+                        {setup.source_setup_id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            title="Compare to original community setup"
+                            onClick={(e) => { e.stopPropagation(); setForkCompareSetup(setup); }}
+                          >
+                            <GitBranch className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
+                        <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-primary"
@@ -484,6 +503,12 @@ export default function SavedSetups() {
         setup={detailSetup}
         open={!!detailSetup}
         onOpenChange={(o) => { if (!o) setDetailSetup(null); }}
+      />
+
+      <ForkSourceCompareDialog
+        setup={forkCompareSetup}
+        open={!!forkCompareSetup}
+        onOpenChange={(o) => { if (!o) setForkCompareSetup(null); }}
       />
 
       {dialogOpen && (

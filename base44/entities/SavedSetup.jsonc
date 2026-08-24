@@ -35,6 +35,14 @@
       "type": "object",
       "title": "Setup Parameters",
       "additionalProperties": true
+    },
+    "source_setup_id": {
+      "type": "string",
+      "title": "Forked From (Community Setup ID)"
+    },
+    "source_title": {
+      "type": "string",
+      "title": "Forked From (Title)"
     }
   },
   "required": [

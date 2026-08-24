@@ -66,13 +66,22 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsCli
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await base44.entities.SavedSetup.create({
+      const created = await base44.entities.SavedSetup.create({
         title: setup.title,
         sim_title: setup.sim_title,
         car: setup.car,
         track: setup.track || "",
         parameters: setup.parameters || {},
-        notes: `Imported from Community Library (by ${setup.author_name || "Community"})`
+        notes: `Imported from Community Library (by ${setup.author_name || "Community"})`,
+        source_setup_id: setup.id,
+        source_title: setup.title,
+      });
+      await base44.entities.SetupVersion.create({
+        setup_id: created.id,
+        version_name: "Forked from community",
+        parameters: setup.parameters || {},
+        notes: "Baseline snapshot of the community setup you forked from.",
+        version_number: 1,
       });
       await base44.entities.CommunitySetup.update(setup.id, {
         download_count: (setup.download_count || 0) + 1,
@@ -84,7 +93,8 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsCli
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communitySetups"] });
-      toast.success("Setup saved to your garage!");
+      queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
+      toast.success("Forked to your garage with version history!");
     },
     onError: () => {
       setSaved(false);
