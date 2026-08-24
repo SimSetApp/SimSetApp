@@ -122,15 +122,15 @@ export default function DDU3Dashboard({ data, demo }) {
             <div className="flex items-center justify-between px-1.5 py-1 text-[10px] border-b" style={{ borderColor: SEM.border }}>
               <div className="flex items-center gap-2">
                 <span className="tabular-nums text-white">{clock}</span>
-                <span style={{ color: SEM.label }}>AIR <span className="text-white">0.0°</span></span>
-                <span style={{ color: SEM.label }}>TRK <span className="text-white">0.0°</span></span>
+                <span style={{ color: SEM.label }}>AIR <span className="text-white">{data.air_temp != null ? data.air_temp.toFixed(1) : "0.0"}°</span></span>
+                <span style={{ color: SEM.label }}>TRK <span className="text-white">{data.track_temp != null ? data.track_temp.toFixed(1) : "0.0"}°</span></span>
               </div>
               <div className="flex items-center gap-3">
                 <span><span style={{ color: SEM.label }}>RPM </span><span className="tabular-nums font-bold" style={{ color: shift ? SEM.red : accent }}>{data.rpm || 0}</span></span>
                 <span><span style={{ color: SEM.label }}>SPD </span><span className="tabular-nums font-bold text-white">{Math.round(data.speed_kmh || 0)}</span></span>
               </div>
               <div className="flex items-center gap-2">
-                <span style={{ color: SEM.label }}>AIR/TRK <span className="text-white">0.0/0.0°C</span></span>
+                <span style={{ color: SEM.label }}>AIR/TRK <span className="text-white">{data.air_temp != null && data.track_temp != null ? `${data.air_temp.toFixed(1)}/${data.track_temp.toFixed(1)}°C` : "0.0/0.0°C"}</span></span>
                 {demo && <span style={{ color: SEM.amber }}>DEMO</span>}
                 <div className="relative" style={{ display: edit ? "" : "none" }}>
                   <button onClick={() => setAddOpen((v) => !v)} className="p-0.5 rounded text-[#777] hover:text-white hover:bg-white/10 transition-colors" aria-label="Add widget">

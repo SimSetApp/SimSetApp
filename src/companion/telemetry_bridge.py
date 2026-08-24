@@ -100,6 +100,14 @@ class MockProvider:
         }
         self._tyre_target = {"fl": 88, "fr": 84, "rl": 82, "rr": 81}
         self._tyre_wear_rate = {"fl": 1.15, "fr": 1.0, "rl": 0.95, "rr": 1.05}
+        self._lap_times = []
+        self._race_elapsed = 0.0
+        self._ahead_gap = -1.4
+        self._behind_gap = 0.9
+        self._ahead_timer = 0.0
+        self._behind_timer = 0.0
+        self.air_temp = 24.0
+        self.track_temp = 31.0
 
     def sim_name(self):
         return "Mock Sim"
@@ -155,20 +163,21 @@ class MockProvider:
                 self.shift_timer = 0.16
                 self.shift_dir = -1
 
+            # smooth, proportional throttle/brake traces (eased, not stepped)
+            if diff >= 0:
+                base_thr = min(1.0, 0.35 + diff * 0.025)
+                base_brk = 0.0
+            else:
+                base_thr = 0.0
+                base_brk = min(1.0, -diff * 0.02)
             if self.shift_timer > 0:
                 self.shift_timer -= dt
-                self.throttle = 0.35 if self.shift_dir > 0 else 0.5
-            elif diff > 2:
-                self.throttle = 1.0 if target > 200 else 0.7
-            elif diff > -2:
-                self.throttle = 0.55 if target > 150 else 0.3
-            else:
-                self.throttle = 0.0
-
-            self.brake = 0.0
-            if diff < -2:
-                self.brake = min(1.0, (-diff) / 90)
-                self.throttle = 0.0
+                if self.shift_dir > 0:
+                    base_thr = 0.25  # upshift lift
+                else:
+                    base_thr = max(base_thr, 0.5)  # downshift blip
+            self.throttle += (base_thr - self.throttle) * 0.3
+            self.brake += (base_brk - self.brake) * 0.3
 
             corner = max(0.0, (200 - target) / 130)
             in_corner = corner > 0.15
@@ -192,6 +201,7 @@ class MockProvider:
         if lap_time >= self.LAP_LENGTH:
             degradation = sum(t["wear_pct"] for t in self.tyres.values()) / 4 * 0.04
             last_lap_time = round(self.LAP_LENGTH + random.uniform(-0.25, 0.35) + degradation, 3)
+            self._lap_times.append(last_lap_time)
             if self.best is None or last_lap_time < self.best:
                 self.best = last_lap_time
             self.lap_delta = round(last_lap_time - self.best, 3)
@@ -210,10 +220,24 @@ class MockProvider:
                 self.fuel = self.FUEL_START
                 self.best = None
                 self.position = 4
+                self._lap_times = []
+                self._race_elapsed = 0.0
                 for k in self.tyres:
                     self.tyres[k]["wear_pct"] = 0.0
                     self.tyres[k]["temp_c"] = self.AMBIENT + 5
             lap_time = 0.0
+
+        # derived display values
+        self._race_elapsed += dt
+        avg_lap = round(sum(self._lap_times) / len(self._lap_times), 3) if self._lap_times else None
+        laps_remaining = max(0, self.TOTAL_LAPS - self.lap + 1)
+        fuel_required = round(self.FUEL_PER_LAP * laps_remaining, 1)
+        time_remaining = max(0.0, self.TOTAL_LAPS * self.LAP_LENGTH - self._race_elapsed)
+        boost = round(0.8 + self.throttle * 0.6, 2)
+        self._ahead_timer += dt
+        self._behind_timer += dt
+        self._ahead_gap = -1.4 + math.sin(self._ahead_timer * 0.15) * 0.6
+        self._behind_gap = 0.9 + math.sin(self._behind_timer * 0.11) * 0.5
 
         tyres = {}
         for k, ty in self.tyres.items():
@@ -235,6 +259,11 @@ class MockProvider:
             "gear": self.gear, "throttle": round(self.throttle, 2),
             "brake": round(self.brake, 2), "steer": round(self.steer, 2),
             "fuel_litres": round(self.fuel, 1), "fuel_per_lap": self.FUEL_PER_LAP,
+            "fuel_required": fuel_required, "avg_lap_time": avg_lap,
+            "time_remaining": round(time_remaining, 1),
+            "air_temp": round(self.air_temp, 1), "track_temp": round(self.track_temp, 1),
+            "boost": boost, "brake_bias": 56.0, "tc1": 5, "tc2": 3, "abs": 2, "map": 3,
+            "car_ahead_gap": round(self._ahead_gap, 2), "car_behind_gap": round(self._behind_gap, 2),
             "tyres": tyres,
         }
 

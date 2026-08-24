@@ -37,6 +37,7 @@ function makeMockState() {
     throttle: 0, brake: 0, steer: 0, shiftTimer: 0, shiftDir: 0,
     fuel: MOCK_FUEL_START, best: null, lapDelta: null, position: 4, incidents: 0,
     cornerDir: 1, lastCorner: false, inPit: false, pitTimer: 0,
+    lapTimes: [], raceElapsed: 0, aheadGap: -1.4, behindGap: 0.9, aheadTimer: 0, behindTimer: 0,
     tyres: {
       fl: { temp_c: MOCK_AMBIENT + 5, wear_pct: 0 },
       fr: { temp_c: MOCK_AMBIENT + 4, wear_pct: 0 },
@@ -78,18 +79,16 @@ function mockTick(s) {
     if (rpmNow > 7400 && cur < 6 && s.shiftTimer <= 0) { s.gear = cur + 1; s.shiftTimer = 0.18; s.shiftDir = 1; }
     else if (rpmNow < 3600 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
 
+    let baseThr, baseBrk;
+    if (diff >= 0) { baseThr = Math.min(1, 0.35 + diff * 0.025); baseBrk = 0; }
+    else { baseThr = 0; baseBrk = Math.min(1, -diff * 0.02); }
     if (s.shiftTimer > 0) {
       s.shiftTimer -= dt;
-      s.throttle = s.shiftDir > 0 ? 0.35 : 0.5;
-    } else if (diff > 2) {
-      s.throttle = target > 200 ? 1.0 : 0.7;
-    } else if (diff > -2) {
-      s.throttle = target > 150 ? 0.55 : 0.3;
-    } else {
-      s.throttle = 0;
+      if (s.shiftDir > 0) baseThr = 0.25;
+      else baseThr = Math.max(baseThr, 0.5);
     }
-    s.brake = 0;
-    if (diff < -2) { s.brake = Math.min(1, -diff / 90); s.throttle = 0; }
+    s.throttle += (baseThr - s.throttle) * 0.3;
+    s.brake += (baseBrk - s.brake) * 0.3;
 
     const corner = Math.max(0, (200 - target) / 130);
     const inCorner = corner > 0.15;
@@ -112,6 +111,7 @@ function mockTick(s) {
   if (lapTime >= MOCK_LAP_LENGTH) {
     const deg = (s.tyres.fl.wear_pct + s.tyres.fr.wear_pct + s.tyres.rl.wear_pct + s.tyres.rr.wear_pct) / 4 * 0.04;
     lastLapTime = +(MOCK_LAP_LENGTH + (Math.random() - 0.5) * 0.6 + deg).toFixed(3);
+    s.lapTimes.push(lastLapTime);
     if (s.best == null || lastLapTime < s.best) s.best = lastLapTime;
     s.lapDelta = +(lastLapTime - s.best).toFixed(3);
     s.lapStart = s.t;
@@ -122,10 +122,21 @@ function mockTick(s) {
     if (s.lap === MOCK_PIT_LAP + 1) { s.inPit = true; s.pitTimer = 3.5; }
     if (s.lap > MOCK_TOTAL_LAPS) {
       s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
+      s.lapTimes = []; s.raceElapsed = 0;
       for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; }
     }
     lapTime = 0;
   }
+
+  s.raceElapsed += dt;
+  const avgLap = s.lapTimes.length ? +(s.lapTimes.reduce((a, b) => a + b, 0) / s.lapTimes.length).toFixed(3) : null;
+  const lapsRemaining = Math.max(0, MOCK_TOTAL_LAPS - s.lap + 1);
+  const fuelRequired = +(MOCK_FUEL_PER_LAP * lapsRemaining).toFixed(1);
+  const timeRemaining = Math.max(0, MOCK_TOTAL_LAPS * MOCK_LAP_LENGTH - s.raceElapsed);
+  const boost = +(0.8 + s.throttle * 0.6).toFixed(2);
+  s.aheadTimer += dt; s.behindTimer += dt;
+  s.aheadGap = -1.4 + Math.sin(s.aheadTimer * 0.15) * 0.6;
+  s.behindGap = 0.9 + Math.sin(s.behindTimer * 0.11) * 0.5;
 
   const tyres = {};
   for (const k in s.tyres) {
@@ -161,6 +172,16 @@ function mockTick(s) {
     steer: +s.steer.toFixed(2),
     fuel_litres: +s.fuel.toFixed(1),
     fuel_per_lap: MOCK_FUEL_PER_LAP,
+    fuel_required: fuelRequired,
+    avg_lap_time: avgLap,
+    time_remaining: +timeRemaining.toFixed(1),
+    air_temp: 24.0,
+    track_temp: 31.0,
+    boost,
+    brake_bias: 56.0,
+    tc1: 5, tc2: 3, abs: 2, map: 3,
+    car_ahead_gap: +s.aheadGap.toFixed(2),
+    car_behind_gap: +s.behindGap.toFixed(2),
     tyres,
   };
 }

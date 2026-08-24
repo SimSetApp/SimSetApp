@@ -105,8 +105,8 @@ function Fuel({ data }) {
     <div className="w-full h-full p-1.5 flex flex-col gap-0.5">
       <Title>FUEL / TEMP</Title>
       <Row label="REMAINING" value={`${(data.fuel_litres ?? 0).toFixed(1)}L`} />
-      <Row label="FUEL REQ" value="--" />
-      <Row label="AVG LAP" value="--" />
+      <Row label="FUEL REQ" value={data.fuel_required != null ? `${data.fuel_required.toFixed(1)}L` : "--"} />
+      <Row label="AVG LAP" value={fmt(data.avg_lap_time)} />
       <Row label="LAST LAP" value={fmt(data.last_lap_time)} />
       <Row label="LAPS LEFT" value={lapsLeft != null ? lapsLeft.toFixed(1) : "--"} />
       <Bar label="THR" value={data.throttle} color={SEM.green} />
@@ -149,20 +149,24 @@ function Laps({ data, color }) {
   return (
     <div className="w-full h-full p-1.5 flex flex-col gap-0.5 justify-center">
       <Row label="LAPS" value={`${data.lap || 0}/${data.total_laps || 0}`} />
-      <Row label="TIME REM" value="00:00:00" />
+      <Row label="TIME REM" value={data.time_remaining != null ? `${Math.floor(data.time_remaining / 60)}:${String(Math.floor(data.time_remaining % 60)).padStart(2, "0")}` : "--:--"} />
       <Row label="CURRENT" value={fmt(data.current_lap_time)} vcolor={color} />
     </div>
   );
 }
 
-function Cars() {
+function Cars({ data }) {
+  const gap = (g) => (g == null ? "--.---" : `${g > 0 ? "+" : ""}${g.toFixed(3)}`);
   return (
-    <div className="w-full h-full p-1.5 flex flex-col gap-0.5">
-      <Title>CAR AHEAD</Title>
-      <Row label="+0.00" value="00:00.000" lcolor={SEM.green} />
-      <div className="mt-1" />
-      <Title>CAR BEHIND</Title>
-      <Row label="+0.00" value="00:00.000" lcolor={SEM.red} />
+    <div className="w-full h-full p-1.5 flex flex-col gap-1.5 justify-center">
+      <div>
+        <Title>CAR AHEAD</Title>
+        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: SEM.green }}>{gap(data.car_ahead_gap)}</div>
+      </div>
+      <div>
+        <Title>CAR BEHIND</Title>
+        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: SEM.red }}>{gap(data.car_behind_gap)}</div>
+      </div>
     </div>
   );
 }
@@ -187,13 +191,13 @@ function Status({ data, color }) {
   const items = [
     ["POS", `P${data.position || 0}`, null],
     ["THROTT", `${Math.round((data.throttle || 0) * 100)}`, SEM.green],
-    ["BOOST", "--", null],
+    ["BOOST", data.boost != null ? data.boost.toFixed(1) : "--", null],
     ["INC", `${data.incidents || 0}`, SEM.yellow],
-    ["BBIAS", "0.0", SEM.red],
-    ["TC1", "0", color],
-    ["TC2", "--", null],
-    ["ABS", "0", SEM.blue],
-    ["MAP", "0", SEM.green],
+    ["BBIAS", data.brake_bias != null ? data.brake_bias.toFixed(1) : "--", SEM.red],
+    ["TC1", data.tc1 != null ? data.tc1 : "--", color],
+    ["TC2", data.tc2 != null ? data.tc2 : "--", null],
+    ["ABS", data.abs != null ? data.abs : "--", SEM.blue],
+    ["MAP", data.map != null ? data.map : "--", SEM.green],
   ];
   return (
     <div className="w-full h-full flex gap-1 p-1">
@@ -216,7 +220,7 @@ export function renderWidget(type, ctx) {
     case "gear": return <Gear data={data} h={h} />;
     case "delta": return <Delta data={data} />;
     case "laps": return <Laps data={data} color={color} />;
-    case "cars": return <Cars />;
+    case "cars": return <Cars data={data} />;
     case "inputs": return <Inputs data={data} color={color} />;
     case "status": return <Status data={data} color={color} />;
     default: return null;
