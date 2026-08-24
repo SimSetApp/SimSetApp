@@ -1,0 +1,43 @@
+{
+  "name": "ChatSession",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "sim": {
+      "type": "string",
+      "title": "Sim"
+    },
+    "car": {
+      "type": "string",
+      "title": "Car"
+    },
+    "track": {
+      "type": "string",
+      "title": "Track"
+    },
+    "messages_json": {
+      "type": "string",
+      "title": "Messages (JSON)"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

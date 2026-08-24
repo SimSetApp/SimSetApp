@@ -17,6 +17,8 @@ import usePullToRefresh from "../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../components/PullToRefreshIndicator";
 import TopCreators from "../components/TopCreators";
 import UserProfileSheet from "../components/UserProfileSheet";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "../components/EmptyState";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -234,6 +236,7 @@ export default function CommunityLibrary() {
   const [simFilter, setSimFilter] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
   const [replayFilter, setReplayFilter] = useState(false);
+  const [styleFilter, setStyleFilter] = useState("all");
   const [profileSheet, setProfileSheet] = useState(null); // { id, name }
   const [commentSetup, setCommentSetup] = useState(null);
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
@@ -285,7 +288,8 @@ export default function CommunityLibrary() {
                          (setup.track && setup.track.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesSim = simFilter === "all" || setup.sim_title === simFilter;
     const matchesReplay = !replayFilter || (setup.replay_urls?.length > 0);
-    return matchesSearch && matchesSim && matchesReplay;
+    const matchesStyle = styleFilter === "all" || setup.driving_style === styleFilter;
+    return matchesSearch && matchesSim && matchesReplay && matchesStyle;
   });
 
   const sortedSetups = [...filteredSetups].sort((a, b) => {
@@ -340,14 +344,19 @@ export default function CommunityLibrary() {
 
   function SetupGrid({ list }) {
     if (isLoading) return (
-      <div className="text-center py-12">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-border bg-card p-4 space-y-3">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+        ))}
       </div>
     );
     if (list.length === 0) return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground text-sm">No setups found.</p>
-      </div>
+      <EmptyState icon={Globe} title="No setups found" message="Try a different sim, search, or filter — or share one of your own setups to the library." />
     );
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -416,6 +425,20 @@ export default function CommunityLibrary() {
                   { value: "rating", label: "Top Rated" },
                   { value: "downloads", label: "Most Downloaded" },
                   { value: "recent", label: "Most Recent" },
+                ]}
+              />
+              <MobileSelect
+                value={styleFilter}
+                onValueChange={setStyleFilter}
+                placeholder="Any Style"
+                triggerClassName="w-40"
+                options={[
+                  { value: "all", label: "Any Style" },
+                  { value: "Smooth & Consistent", label: "Smooth & Consistent" },
+                  { value: "Aggressive & Attack", label: "Aggressive & Attack" },
+                  { value: "Trail-Braker", label: "Trail-Braker" },
+                  { value: "Late Apex Rotator", label: "Late Apex Rotator" },
+                  { value: "High-Speed Specialist", label: "High-Speed Specialist" },
                 ]}
               />
               <button

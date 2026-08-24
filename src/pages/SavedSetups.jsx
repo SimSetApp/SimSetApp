@@ -26,6 +26,8 @@ import { SIM_SETUP_PARAMS, SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/sim
 import SearchableSelect from "../components/SearchableSelect";
 import SetupDetailSheet from "../components/SetupDetailSheet";
 import SetupComparison from "../components/SetupComparison";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "../components/EmptyState";
 
 function SetupParamsSummary({ sim, parameters }) {
   const groups = sim && SIM_SETUP_PARAMS[sim];
@@ -312,22 +314,26 @@ export default function SavedSetups() {
             </div>
 
             {isLoading && (
-              <div className="flex justify-center py-20">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-3 w-2/3" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                ))}
               </div>
             )}
 
             {!isLoading && setups.length === 0 && (
-              <div className="text-center py-20">
-                <SlidersHorizontal className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
-                <h3 className="font-heading text-lg font-semibold tracking-wide">Your garage is empty</h3>
-                <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
-                  Save your first setup with full parameter values — never start from scratch again.
-                </p>
-                <Button onClick={openCreate} className="mt-6 font-heading text-xs tracking-wider">
-                  <Plus className="w-4 h-4 mr-1.5" /> Save First Setup
-                </Button>
-              </div>
+              <EmptyState
+                icon={SlidersHorizontal}
+                title="Your garage is empty"
+                message="Save your first setup with full parameter values — never start from scratch again."
+                actionLabel="Save First Setup"
+                actionIcon={Plus}
+                onAction={openCreate}
+              />
             )}
 
             {/* Mobile-only Community CTA */}

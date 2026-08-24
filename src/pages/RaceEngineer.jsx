@@ -7,8 +7,11 @@ import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "../components/SearchableSelect";
-import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw, Headphones } from "lucide-react";
+import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw, History, Save, Wrench } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useAuth } from "@/lib/AuthContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const QUICK_QUESTIONS = [
   "My car understeers badly in slow corners — what should I change?",
@@ -55,12 +58,17 @@ function MessageBubble({ message }) {
 }
 
 export default function RaceEngineer() {
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [sim, setSim] = useState("");
   const [car, setCar] = useState("");
   const [track, setTrack] = useState("");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [sessionsOpen, setSessionsOpen] = useState(false);
+  const [savingAdvice, setSavingAdvice] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -73,6 +81,23 @@ export default function RaceEngineer() {
     if (!sim || !TRACK_LISTS[sim]) return [];
     return TRACK_LISTS[sim];
   }, [sim]);
+
+  const { data: sessions = [] } = useQuery({
+    queryKey: ["chat-sessions"],
+    queryFn: () => base44.entities.ChatSession.list("-updated_date", 20),
+    enabled: !!isAuthenticated,
+  });
+
+  const { data: currentSetup } = useQuery({
+    queryKey: ["engineer-current-setup", sim, car, track],
+    queryFn: async () => {
+      const all = await base44.entities.SavedSetup.filter({ sim_title: sim, car });
+      if (!all || all.length === 0) return null;
+      const tm = all.find(s => s.track && track && s.track === track);
+      return tm || all[0];
+    },
+    enabled: !!isAuthenticated && !!sim && !!car,
+  });
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -89,6 +114,23 @@ export default function RaceEngineer() {
   const buildHistory = () =>
     messages.map(m => `${m.role === "user" ? "Driver" : "Engineer"}: ${m.content}`).join("\n\n");
 
+  const persistSession = async (msgs) => {
+    if (!isAuthenticated) return;
+    const title = (msgs[0]?.content || "New session").slice(0, 50);
+    const payload = { title, sim, car, track, messages_json: JSON.stringify(msgs) };
+    try {
+      if (currentSessionId) {
+        await base44.entities.ChatSession.update(currentSessionId, payload);
+      } else {
+        const created = await base44.entities.ChatSession.create(payload);
+        setCurrentSessionId(created.id);
+      }
+      queryClient.invalidateQueries({ queryKey: ["chat-sessions"] });
+    } catch (e) {
+      /* persistence is best-effort */
+    }
+  };
+
   const sendMessage = async (text) => {
     const userMessage = text || input.trim();
     if (!userMessage) return;
@@ -99,13 +141,17 @@ export default function RaceEngineer() {
 
     const context = buildSystemContext();
     const history = buildHistory();
+    const setupBlock = currentSetup
+      ? `\nDRIVER'S CURRENT SETUP — base your advice as specific deltas against these current values:\n${JSON.stringify(currentSetup.parameters)}\n`
+      : "";
 
     const prompt = `You are an expert sim racing race engineer and setup specialist. You have deep knowledge of all major racing simulators including iRacing, Assetto Corsa Competizione, Assetto Corsa, Assetto Corsa Evo, Le Mans Ultimate, Automobilista 2, and Gran Turismo 7.
 
-${context ? `Current context: ${context}\n` : ""}${history ? `Conversation so far:\n${history}\n\n` : ""}Driver question: ${userMessage}
+${context ? `Current context: ${context}\n` : ""}${setupBlock}${history ? `Conversation so far:\n${history}\n\n` : ""}Driver question: ${userMessage}
 
 Respond as a professional race engineer. Be specific and practical:
 - Give concrete parameter adjustments with numbers/directions where possible
+- If a current setup is provided, phrase changes as deltas from those values
 - Explain WHY a change will help (brief physics reasoning)
 - Prioritize the most impactful changes first
 - Keep it focused and actionable — drivers want to get back on track
@@ -116,7 +162,9 @@ Do not be overly verbose. Quality over quantity.`;
 
     try {
       const response = await base44.integrations.Core.InvokeLLM({ prompt });
-      setMessages([...newMessages, { role: "assistant", content: response }]);
+      const finalMessages = [...newMessages, { role: "assistant", content: response }];
+      setMessages(finalMessages);
+      persistSession(finalMessages);
     } finally {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -136,6 +184,43 @@ Do not be overly verbose. Quality over quantity.`;
     setCar("");
     setTrack("");
     setInput("");
+    setCurrentSessionId(null);
+    setSessionsOpen(false);
+  };
+
+  const loadSession = (s) => {
+    try { setMessages(JSON.parse(s.messages_json || "[]")); } catch { setMessages([]); }
+    setSim(s.sim || "");
+    setCar(s.car || "");
+    setTrack(s.track || "");
+    setCurrentSessionId(s.id);
+    setSessionsOpen(false);
+  };
+
+  const saveAdviceToGarage = async () => {
+    if (!isAuthenticated) {
+      toast.error("Sign in to save advice to your garage");
+      return;
+    }
+    const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+    if (!lastAssistant) return;
+    setSavingAdvice(true);
+    try {
+      await base44.entities.SavedSetup.create({
+        title: `AI Advice — ${car || "Car"} @ ${track || "General"}`,
+        sim_title: sim,
+        car: car || "Unknown",
+        track: track || "",
+        parameters: currentSetup?.parameters || {},
+        notes: `Advice from AI Race Engineer${currentSetup ? " (based on your current setup)" : ""}.\n\n${lastAssistant.content}`,
+      });
+      toast.success("Advice saved to your garage!");
+      queryClient.invalidateQueries({ queryKey: ["saved-setups"] });
+    } catch {
+      toast.error("Failed to save advice");
+    } finally {
+      setSavingAdvice(false);
+    }
   };
 
   return (
@@ -145,20 +230,50 @@ Do not be overly verbose. Quality over quantity.`;
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 pb-24 gap-4">
 
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
             <h1 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2">
               <Bot className="w-6 h-6 text-primary" />
               AI Race Engineer
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">Describe your handling problem — get specific setup advice</p>
           </div>
-          {messages.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground">
-              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-              New Session
-            </Button>
-          )}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isAuthenticated && sessions.length > 0 && (
+              <div className="relative">
+                <Button variant="ghost" size="sm" onClick={() => setSessionsOpen(o => !o)} className="text-muted-foreground">
+                  <History className="w-3.5 h-3.5 mr-1.5" /> Past
+                </Button>
+                {sessionsOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setSessionsOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-2xl z-50 max-h-72 overflow-y-auto">
+                      {sessions.map(s => (
+                        <button
+                          key={s.id}
+                          onClick={() => loadSession(s)}
+                          className={`w-full text-left px-3 py-2.5 border-b border-border last:border-0 hover:bg-muted transition-colors ${s.id === currentSessionId ? "bg-primary/10" : ""}`}
+                        >
+                          <div className="text-xs font-medium truncate">{s.title}</div>
+                          <div className="text-[10px] text-muted-foreground truncate">{[s.sim, s.car, s.track].filter(Boolean).join(" · ") || "No context"}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            {messages.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={saveAdviceToGarage} disabled={savingAdvice} className="text-muted-foreground">
+                {savingAdvice ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />} Save
+              </Button>
+            )}
+            {messages.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground">
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> New
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Context strip */}
@@ -195,6 +310,14 @@ Do not be overly verbose. Quality over quantity.`;
             />
           </div>
         </div>
+
+        {/* Current setup indicator */}
+        {currentSetup && (
+          <div className="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
+            <Wrench className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Using your setup: <span className="font-medium">{currentSetup.title}</span></span>
+          </div>
+        )}
 
         {/* Chat area */}
         <div className="flex-1 flex flex-col min-h-0">
