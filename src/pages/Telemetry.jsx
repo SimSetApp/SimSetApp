@@ -10,6 +10,9 @@ import { Upload, FileText, Loader2, TrendingUp, Clock, Gauge, Trash2, X, GitComp
 import { toast } from "sonner";
 import { useAuth } from "@/lib/AuthContext";
 import { SIM_TITLES } from "../lib/simData";
+import { motion } from "framer-motion";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from "recharts";
+import StatCard from "../components/StatCard";
 
 export default function Telemetry() {
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
@@ -176,45 +179,49 @@ export default function Telemetry() {
             </div>
 
             {/* Stats grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard icon={Gauge} label="Best Lap" value={parsedData.bestLap.toFixed(3)} unit="s" color="text-primary" />
-              <StatCard icon={Clock} label="Average" value={parsedData.avgLap.toFixed(3)} unit="s" />
-              <StatCard icon={TrendingUp} label="Consistency" value={`±${parsedData.consistency.toFixed(3)}`} unit="s" color={parsedData.consistency < 0.5 ? "text-green-400" : parsedData.consistency < 1.0 ? "text-amber-400" : "text-red-400"} />
-              <StatCard icon={Activity} label="Total Laps" value={parsedData.totalLaps} unit="" />
-            </div>
+            <motion.div
+              variants={{ animate: { transition: { staggerChildren: 0.06 } } }}
+              initial="initial"
+              animate="animate"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+            >
+              {[
+                { icon: Gauge, label: "Best Lap", value: parsedData.bestLap.toFixed(3), unit: "s", tone: "text-primary" },
+                { icon: Clock, label: "Average", value: parsedData.avgLap.toFixed(3), unit: "s" },
+                { icon: TrendingUp, label: "Consistency", value: `±${parsedData.consistency.toFixed(3)}`, unit: "s", tone: parsedData.consistency < 0.5 ? "text-green-400" : parsedData.consistency < 1.0 ? "text-amber-400" : "text-red-400" },
+                { icon: Activity, label: "Total Laps", value: parsedData.totalLaps, unit: "" },
+              ].map((s, i) => (
+                <motion.div key={i} variants={{ initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 } }}>
+                  <StatCard {...s} />
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* Lap time chart */}
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5">
               <h3 className="font-heading text-sm font-bold tracking-wide mb-3">Lap Time Progression</h3>
-              <div className="relative h-40 rounded-lg bg-secondary/30 border border-border overflow-hidden">
-                <svg viewBox="0 0 100 40" className="w-full h-full" preserveAspectRatio="none">
-                  {/* Best lap line */}
-                  <line x1="0" y1={40 - ((parsedData.bestLap - parsedData.bestLap) / (parsedData.avgLap * 0.1 + 0.5)) * 35} x2="100" y2={40 - ((parsedData.bestLap - parsedData.bestLap) / (parsedData.avgLap * 0.1 + 0.5)) * 35} stroke="hsl(var(--primary))" strokeWidth="0.3" strokeDasharray="2,2" opacity="0.5" />
-                  {/* Lap times */}
-                  <polyline
-                    points={parsedData.laps.map((l, i) => {
-                      const min = parsedData.bestLap;
-                      const range = parsedData.avgLap * 0.1 + 0.5;
-                      const y = 38 - ((l.time - min) / range) * 35;
-                      return `${(i / Math.max(1, parsedData.laps.length - 1)) * 100},${Math.max(2, Math.min(38, y))}`;
-                    }).join(" ")}
-                    fill="none"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="1.5"
-                  />
-                  {/* Dots */}
-                  {parsedData.laps.map((l, i) => {
-                    const min = parsedData.bestLap;
-                    const range = parsedData.avgLap * 0.1 + 0.5;
-                    const y = 38 - ((l.time - min) / range) * 35;
-                    return <circle key={i} cx={(i / Math.max(1, parsedData.laps.length - 1)) * 100} cy={Math.max(2, Math.min(38, y))} r="0.8" fill={l.time === parsedData.bestLap ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"} />;
-                  })}
-                </svg>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={parsedData.laps.map(l => ({ lap: l.lap, time: l.time }))} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="lapGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} vertical={false} />
+                    <XAxis dataKey="lap" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} domain={[(min) => min - 0.1, (max) => max + 0.1]} tickFormatter={(v) => v.toFixed(3)} width={48} />
+                    <Tooltip content={<LapTooltip bestLap={parsedData.bestLap} />} />
+                    <ReferenceLine y={parsedData.bestLap} stroke="hsl(var(--primary))" strokeDasharray="4 4" opacity={0.5} />
+                    <Area type="monotone" dataKey="time" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#lapGrad)" dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
               <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" /> Best lap</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" /> Lap time</span>
                 <span>•</span>
-                <span>Y-axis: time deviation from best</span>
+                <span>Dashed line = best lap</span>
               </div>
             </div>
 
@@ -225,7 +232,7 @@ export default function Telemetry() {
                 {parsedData.laps.map((lap, i) => (
                   <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/30 text-sm">
                     <span className="text-muted-foreground tabular-nums">Lap {lap.lap}</span>
-                    <span className={`font-mono tabular-nums ${lap.time === parsedData.bestLap ? "text-primary font-bold" : ""}`}>
+                    <span className={`font-digi tabular-nums ${lap.time === parsedData.bestLap ? "text-primary font-bold" : ""}`}>
                       {lap.time.toFixed(3)}s
                       {lap.time === parsedData.bestLap && <Badge variant="outline" className="ml-2 text-[10px] border-primary/40 text-primary">BEST</Badge>}
                     </span>
@@ -286,14 +293,19 @@ export default function Telemetry() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, unit, color = "text-foreground" }) {
+function LapTooltip({ active, payload, label, bestLap }) {
+  if (!active || !payload?.length) return null;
+  const t = payload[0].value;
+  const delta = t - bestLap;
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-        <Icon className="w-3 h-3" />
-        {label}
-      </div>
-      <div className={`text-lg font-bold tabular-nums ${color}`}>{value}<span className="text-xs text-muted-foreground ml-0.5">{unit}</span></div>
+    <div className="rounded-lg border border-border/60 bg-popover/95 backdrop-blur-md px-3 py-2 text-xs shadow-xl">
+      <div className="text-muted-foreground">Lap {label}</div>
+      <div className="font-bold tabular-nums font-digi mt-0.5">{t.toFixed(3)}s</div>
+      {delta > 0 ? (
+        <div className="text-red-400 tabular-nums font-digi">+{delta.toFixed(3)}</div>
+      ) : (
+        <div className="text-purple-400 font-bold tracking-widest">BEST</div>
+      )}
     </div>
   );
 }
