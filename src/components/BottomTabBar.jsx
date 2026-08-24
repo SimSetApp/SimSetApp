@@ -1,13 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, FolderOpen, Bot, BookOpen, LayoutDashboard, Wrench } from "lucide-react";
+import { LayoutDashboard, Sparkles, Bot, FolderOpen, Users } from "lucide-react";
 
 const TABS = [
-  { path: "/", label: "Home", icon: Home },
-  { path: "/setup-guide", label: "Guide", icon: BookOpen },
-  { path: "/setup-wizard", label: "Wizard", icon: Wrench },
+  { path: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { path: "/setup-wizard", label: "Wizard", icon: Sparkles },
   { path: "/race-engineer", label: "Engineer", icon: Bot },
   { path: "/saved-setups", label: "Garage", icon: FolderOpen },
-  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/community-library", label: "Community", icon: Users },
 ];
 
 export default function BottomTabBar() {
@@ -18,19 +17,23 @@ export default function BottomTabBar() {
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-xl border-t border-border"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="flex items-stretch">
+      <div className="flex items-stretch max-w-md mx-auto">
         {TABS.map(({ path, label, icon: Icon }) => {
           const active = location.pathname === path;
           return (
             <Link
               key={path}
               to={path}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-colors duration-100 select-none touch-manipulation active:scale-95 active:opacity-70 ${
+              className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition-colors duration-150 select-none touch-manipulation ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
-              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <Icon className={`w-6 h-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
+              <span
+                className={`absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full transition-opacity duration-150 ${
+                  active ? "bg-primary opacity-100" : "opacity-0"
+                }`}
+              />
+              <Icon className="w-5 h-5" />
               <span className="text-[10px] font-medium leading-none">{label}</span>
             </Link>
           );

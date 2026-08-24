@@ -9,8 +9,7 @@ const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3d
 
 // Top-level nav links
 const primaryNav = [
-  { path: "/", label: "Home" },
-  { path: "/dashboard", label: "Dashboard" },
+  { path: "/dashboard", label: "Home" },
   { path: "/setup-wizard", label: "Setup Wizard", icon: Sparkles },
   { path: "/race-engineer", label: "Race Engineer", icon: Bot },
   { path: "/community-library", label: "Community", icon: Users },
@@ -133,10 +132,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2">
+      <div className="max-w-6xl mx-auto px-4 h-12 flex items-center gap-2">
         {/* Logo */}
         <Link to="/" className="flex items-center flex-shrink-0 mr-2" onClick={() => setMobileOpen(false)}>
-          <img src={LOGO_URL} alt="SimSetApp" className="h-9 w-auto" />
+          <img src={LOGO_URL} alt="SimSetApp" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop primary nav */}
@@ -176,11 +175,7 @@ export default function Navbar() {
           {/* Support button with glow */}
           <Link
             to="/support"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary border border-primary/40 bg-primary/10 transition-all hover:bg-primary/20"
-            style={{
-              boxShadow: "0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.15)",
-              textShadow: "0 0 8px rgba(0, 255, 136, 0.5)"
-            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary border border-primary/30 hover:bg-primary/10 transition-colors"
           >
             <Heart className="w-3.5 h-3.5" />
             Support
