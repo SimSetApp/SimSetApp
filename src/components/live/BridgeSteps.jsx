@@ -45,6 +45,10 @@ export default function BridgeSteps() {
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-2">Double-click it, leave the window open, then tap <strong className="text-foreground">Connect to bridge</strong> below.</p>
+            <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2 mt-3">
+              <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
+              <p><strong className="text-foreground">ACC users:</strong> enable <em>Shared Memory</em> in ACC Options, and start a session — telemetry only streams inside practice/qualifying/race, not the main menu.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -79,7 +83,7 @@ export default function BridgeSteps() {
             <CopyChip text="pip install aiohttp psutil" />
             <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
               <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install aiohttp psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; ACC uses shared memory (see the script header).</p>
+              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install aiohttp psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; for <strong className="text-foreground">ACC</strong> add <code className="font-mono">pip install pyaccsharedmemory</code> and enable Shared Memory in ACC Options.</p>
             </div>
           </Step>
 
@@ -104,7 +108,7 @@ export default function BridgeSteps() {
               <p className="font-medium text-foreground">Troubleshooting</p>
               <p>• <strong className="text-foreground">"python not found"</strong> — use <code className="font-mono">py</code> (Windows) or <code className="font-mono">python3</code> (Mac/Linux).</p>
               <p>• <strong className="text-foreground">"No module named websockets"</strong> — run the <code className="font-mono">pip install</code> command again in step 3.</p>
-              <p>• <strong className="text-foreground">Stuck on "waiting for your sim"</strong> — the bridge is running but your sim isn't detected. Launch the sim and start a session; for iRacing/ACC make sure the matching library (<code className="font-mono">irsdk</code> / ACC shared-memory binding) is installed.</p>
+              <p>• <strong className="text-foreground">Stuck on "waiting for your sim"</strong> — the bridge is running but your sim isn't detected. Launch the sim and start a session; for iRacing/ACC make sure the matching library (<code className="font-mono">irsdk</code> / <code className="font-mono">pyaccsharedmemory</code>) is installed. For ACC also enable <em>Shared Memory</em> in Options and remember telemetry only streams inside a live session.</p>
               <p>• <strong className="text-foreground">"Connection error"</strong> — the bridge isn't running. Go back to the terminal from step 4 and start it.</p>
             </div>
           </li>

@@ -12,12 +12,19 @@
 
 block_cipher = None
 
+# Bundle pyaccsharedmemory so the .exe supports ACC out of the box.
+try:
+    from PyInstaller.utils.hooks import collect_submodules
+    acc_hidden = collect_submodules('pyaccsharedmemory')
+except Exception:
+    acc_hidden = []
+
 a = Analysis(
     ['telemetry_bridge.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['psutil', 'aiohttp'],  # add 'irsdk' here if you build with iRacing support
+    hiddenimports=['psutil', 'aiohttp', 'pyaccsharedmemory'] + acc_hidden,  # add 'irsdk' here if you build with iRacing support
     hookspath=[],
     runtime_hooks=[],
     excludes=[],

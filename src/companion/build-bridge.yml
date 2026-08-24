@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install build dependencies
-        run: pip install pyinstaller aiohttp psutil
+        run: pip install pyinstaller aiohttp psutil pyaccsharedmemory
 
       - name: Build the one-file exe
         shell: bash
@@ -36,7 +36,10 @@ jobs:
           mkdir -p bridge
           cp public/telemetry_bridge.py bridge/
           cd bridge
-          pyinstaller --onefile --name SimSetAppBridge --hidden-import psutil --hidden-import aiohttp telemetry_bridge.py --noconfirm
+          pyinstaller --onefile --name SimSetAppBridge \
+            --hidden-import psutil --hidden-import aiohttp \
+            --hidden-import pyaccsharedmemory --collect-all pyaccsharedmemory \
+            telemetry_bridge.py --noconfirm
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

@@ -18,7 +18,7 @@ ONE-CLICK (auto-detect — no flags needed):
 
 REAL SIM DATA (optional libraries, auto-detected when installed):
     iRacing:   pip install irsdk
-    ACC:       shared memory — see the ACC section at the bottom of this file
+    ACC:       pip install pyaccsharedmemory   (+ enable Shared Memory in ACC)
 
 OPTIONS:
     --port 3344              WebSocket port (must match the URL in the app)
@@ -26,7 +26,7 @@ OPTIONS:
     --hz 20                  Update frequency (frames per second)
 
 Frames: a flat JSON object with type:"telemetry" plus all fields while a sim
-is live, and type:"status" heartbeats (sim:null) while waiting for a sim.
+is live, and type:"status" heartbeats (sim, detected, reason) while waiting.
 """
 import argparse
 import asyncio
@@ -114,6 +114,9 @@ class MockProvider:
             "fuel_per_lap": 3.1, "tyres": tyres,
         }
 
+    def close(self):
+        pass
+
 
 class iRacingProvider:
     """Reads iRacing telemetry via the irsdk library (pip install irsdk)."""
@@ -122,7 +125,7 @@ class iRacingProvider:
         try:
             import irsdk
         except ImportError:
-            raise SystemExit("iRacing provider needs: pip install irsdk")
+            raise  # make_provider reports "library not installed"
         self.irsdk = irsdk.IRSDK()
         self.connected = False
         self._fuel_start = None
@@ -176,26 +179,37 @@ class iRacingProvider:
             "fuel_per_lap": None, "tyres": tyres,
         }
 
+    def close(self):
+        try:
+            self.irsdk.shutdown()
+        except Exception:
+            pass
+
 
 class ACCProvider:
-    """ACC reads from shared memory via pyaccsharedmemory (pip install pyaccsharedmemory)."""
+    """ACC reads from shared memory via pyaccsharedmemory (pip install pyaccsharedmemory).
+
+    ACC's shared memory is only populated inside a live session (practice,
+    qualifying, race). On the main menu — or if Shared Memory is disabled in
+    ACC Options — read_shared_memory() returns None and the bridge sends
+    'detected, no_session' status frames so the dashboard can tell the user
+    exactly what to do instead of a generic 'waiting for your sim'.
+    """
 
     def __init__(self):
         try:
             from pyaccsharedmemory import accSharedMemory
-            self.sm = accSharedMemory()
-        except Exception:
-            raise SystemExit(
-                "ACC provider needs pyaccsharedmemory. "
-                "Install with:  pip install pyaccsharedmemory"
-            )
+        except ImportError:
+            raise  # make_provider reports "library not installed"
+        self.sm = accSharedMemory()
 
     def sim_name(self):
         return "Assetto Corsa Competizione"
 
     @staticmethod
     def _ms_to_s(ms):
-        if not ms:
+        # ACC uses 0 (and occasionally huge sentinels) for "no time yet".
+        if not ms or ms <= 0 or ms > 3600000:  # > 1 hour is not a real lap time
             return None
         return round(ms / 1000.0, 3)
 
@@ -247,6 +261,12 @@ class ACCProvider:
             "tyres": tyres,
         }
 
+    def close(self):
+        try:
+            self.sm.close()
+        except Exception:
+            pass
+
 
 PROVIDERS = {"mock": MockProvider, "iracing": iRacingProvider, "acc": ACCProvider}
 
@@ -285,26 +305,42 @@ def detect_sim():
 
 
 def make_provider(key):
+    """Construct a provider. Returns (provider, error_string).
+
+    ImportError  -> error = "library not installed (...)"  (user can fix with pip)
+    other errors -> error = "init failed: ..."            (printed verbatim, not
+                  misreported as a missing library)
+    """
     cls = PROVIDERS.get(key)
     if not cls:
-        return None
+        return None, None
     try:
-        return cls()
-    except SystemExit:
-        return None
-    except Exception:
-        return None
+        return cls(), None
+    except ImportError as e:
+        return None, f"library not installed ({e})"
+    except Exception as e:
+        return None, f"init failed: {e!r}"
 
 
 # ---------------------------------------------------------------------------
 # Shared state
 # ---------------------------------------------------------------------------
 clients = set()
-state = {"provider": None, "sim": None, "manual": None, "warned_psutil": False, "warned_missing": set()}
+state = {
+    "provider": None, "sim": None, "manual": None,
+    "warned_psutil": False, "warned_missing": set(),
+    "no_data_since": None, "hinted_no_data": False, "read_error_logged": False,
+}
 
 
 def ts():
     return datetime.now().strftime("%H:%M:%S")
+
+
+def _reset_provider_state():
+    state["no_data_since"] = None
+    state["hinted_no_data"] = False
+    state["read_error_logged"] = False
 
 
 # ---------------------------------------------------------------------------
@@ -314,11 +350,15 @@ async def detect_loop():
     while True:
         if state["manual"]:
             if state["provider"] is None:
-                p = make_provider(state["manual"])
+                p, err = make_provider(state["manual"])
                 if p:
                     state["provider"] = p
                     state["sim"] = p.sim_name()
+                    _reset_provider_state()
                     print(f"[{ts()}] source: {state['sim']}")
+                elif err and state["manual"] not in state["warned_missing"]:
+                    state["warned_missing"].add(state["manual"])
+                    print(f"[{ts()}] {state['manual']}: {err}")
         else:
             if _psutil is None:
                 if not state["warned_psutil"]:
@@ -330,27 +370,29 @@ async def detect_loop():
                 if det:
                     key, prov_key = det
                     if prov_key and state["provider"] is None:
-                        p = make_provider(prov_key)
+                        p, err = make_provider(prov_key)
                         if p:
                             state["provider"] = p
                             state["sim"] = p.sim_name()
+                            _reset_provider_state()
                             print(f"[{ts()}] detected {state['sim']}")
                         elif key not in state["warned_missing"]:
                             state["warned_missing"].add(key)
-                            print(f"[{ts()}] detected {key} but its telemetry library isn't installed — see README")
+                            print(f"[{ts()}] detected {key} but {err}")
                     elif not prov_key and state["sim"] != key:
                         state["sim"] = key
                         print(f"[{ts()}] detected {key} (provider coming soon)")
                 else:
                     if state["provider"] is not None:
                         try:
-                            ir = getattr(state["provider"], "irsdk", None)
-                            if ir:
-                                ir.shutdown()
+                            close = getattr(state["provider"], "close", None)
+                            if close:
+                                close()
                         except Exception:
                             pass
                         state["provider"] = None
                         state["sim"] = None
+                        _reset_provider_state()
                         print(f"[{ts()}] sim closed — waiting…")
         await asyncio.sleep(2)
 
@@ -366,15 +408,37 @@ async def broadcast_loop(hz):
         if state["provider"]:
             try:
                 frame = state["provider"].read()
-            except Exception:
+            except Exception as e:
+                if not state["read_error_logged"]:
+                    state["read_error_logged"] = True
+                    print(f"[{ts()}] read error from {state['sim']}: {e!r}")
                 frame = None
         if frame is not None:
+            state["no_data_since"] = None
+            state["hinted_no_data"] = False
+            state["read_error_logged"] = False
             msg = json.dumps(frame)
         else:
+            # Provider present but no live session yet — track how long, and
+            # after 10s print a one-time hint (ACC Shared Memory / start a session).
+            if state["provider"] is not None:
+                if state["no_data_since"] is None:
+                    state["no_data_since"] = time.time()
+                elif not state["hinted_no_data"] and (time.time() - state["no_data_since"]) > 10:
+                    state["hinted_no_data"] = True
+                    print(f"[{ts()}] hint: {state['sim']} is running but no telemetry yet. "
+                          "For ACC, enable Shared Memory in Options → Assetto Corsa Competizione "
+                          "and start a session — telemetry only streams inside practice/qualify/race.")
             now = time.time()
             if now - last_status >= 1.0:
                 last_status = now
-                msg = json.dumps({"type": "status", "bridge": True, "sim": state["sim"], "connected": False, "ts": now})
+                detected = bool(state["sim"])
+                reason = "no_session" if detected else None
+                msg = json.dumps({
+                    "type": "status", "bridge": True, "sim": state["sim"],
+                    "detected": detected, "reason": reason,
+                    "connected": False, "ts": now,
+                })
             else:
                 msg = None
         if msg and clients:

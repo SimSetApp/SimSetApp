@@ -34,7 +34,7 @@ const STATUS_META = {
 export default function LiveTelemetry() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
-  const { url, saveUrl, status, data, lastLap, connect, disconnect, demo, startDemo } = useLiveTelemetry();
+  const { url, saveUrl, status, data, lastLap, detectedSim, detected, connect, disconnect, demo, startDemo } = useLiveTelemetry();
   const [urlInput, setUrlInput] = useState(url);
   const [autoLog, setAutoLog] = useState(false);
   const [logSetupId, setLogSetupId] = useState("");
@@ -240,14 +240,40 @@ export default function LiveTelemetry() {
             )}
           </div>
         ) : status === "searching" ? (
-          <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
-            <div className="w-14 h-14 rounded-xl bg-amber-400/15 flex items-center justify-center mx-auto mb-4">
-              <Loader2 className="w-7 h-7 text-amber-400 animate-spin" />
+          <div className="space-y-4">
+            {detected && (
+              <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <span className="font-heading text-sm font-semibold truncate">{detectedSim || "Sim"}</span>
+                  <span className="text-xs text-muted-foreground truncate">connected — waiting for session</span>
+                </div>
+                <Badge variant="outline" className="gap-1.5 text-amber-400 border-amber-400/40 shrink-0">
+                  <Loader2 className="w-3 h-3 animate-spin" /> waiting
+                </Badge>
+              </div>
+            )}
+            <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+              <div className="w-14 h-14 rounded-xl bg-amber-400/15 flex items-center justify-center mx-auto mb-4">
+                <Loader2 className="w-7 h-7 text-amber-400 animate-spin" />
+              </div>
+              <h3 className="font-heading text-lg font-semibold mb-1">
+                {detected ? `${detectedSim || "Sim"} detected` : "Waiting for your sim"}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                {detected
+                  ? "Start a session to go live — telemetry only streams inside practice, qualifying, or race, not the main menu."
+                  : "The bridge is connected. Launch your sim and start a session — the dashboard lights up automatically."}
+              </p>
+              {detected && (
+                <div className="mt-4 inline-flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2.5 text-left max-w-md">
+                  <Cpu className="w-3 h-3 text-primary mt-0.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground">
+                    For ACC, make sure <strong className="text-foreground">Shared Memory</strong> is enabled in Options → Assetto Corsa Competizione.
+                  </p>
+                </div>
+              )}
             </div>
-            <h3 className="font-heading text-lg font-semibold mb-1">Waiting for your sim</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              The bridge is connected. Launch your sim and start a session — the dashboard lights up automatically.
-            </p>
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">

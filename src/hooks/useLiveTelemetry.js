@@ -83,7 +83,10 @@ export function useLiveTelemetry() {
   const [data, setData] = useState(null);
   const [lastLap, setLastLap] = useState(null);
   const [demo, setDemo] = useState(false);
+  const [detectedSim, setDetectedSim] = useState(null);
+  const [detected, setDetected] = useState(false);
   const wsRef = useRef(null);
+  const lastDataAtRef = useRef(0);
   const prevLapRef = useRef(null);
   const reconnectRef = useRef(null);
   const manualDisconnectRef = useRef(false);
@@ -120,6 +123,8 @@ export function useLiveTelemetry() {
       stopDemo();
       const target = overrideUrl || url;
       manualDisconnectRef.current = false;
+      setDetectedSim(null);
+      setDetected(false);
       if (reconnectRef.current) clearTimeout(reconnectRef.current);
       if (wsRef.current) {
         try { wsRef.current.close(); } catch {}
@@ -141,14 +146,22 @@ export function useLiveTelemetry() {
           if (msg.type === "telemetry") {
             setData(msg);
             setStatus("connected");
+            lastDataAtRef.current = Date.now();
             const lap = msg.lap;
             if (prevLapRef.current != null && lap != null && lap > prevLapRef.current) {
               setLastLap(msg);
             }
             prevLapRef.current = lap;
           } else if (msg.type === "status") {
-            // bridge is up but no sim session yet — keep looking
-            setStatus("searching");
+            // bridge is up — capture which sim (if any) it has detected
+            setDetectedSim(msg.sim || null);
+            setDetected(!!msg.detected);
+            // grace window: only flip to "searching" if no telemetry for >3s,
+            // so a single dropped frame doesn't blank the dashboard
+            const sinceData = Date.now() - (lastDataAtRef.current || 0);
+            if (sinceData > 3000) {
+              setStatus("searching");
+            }
           }
         } catch {}
       };
@@ -176,7 +189,10 @@ export function useLiveTelemetry() {
     stopDemo();
     setStatus("idle");
     setData(null);
+    setDetectedSim(null);
+    setDetected(false);
     prevLapRef.current = null;
+    lastDataAtRef.current = 0;
   }, [stopDemo]);
 
   const saveUrl = useCallback((newUrl) => {
@@ -195,5 +211,5 @@ export function useLiveTelemetry() {
     };
   }, []);
 
-  return { url, saveUrl, status, data, lastLap, connect, disconnect, demo, startDemo };
+  return { url, saveUrl, status, data, lastLap, detectedSim, detected, connect, disconnect, demo, startDemo };
 }

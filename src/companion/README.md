@@ -115,8 +115,22 @@ in your browser — it returns `{"bridge": true, "sim": null}`.
 
 ## ACC shared memory
 
-ACC exposes telemetry via a Windows memory-mapped file. The included `ACCProvider`
-is a thin stub using `acc_shared_memory`. Install a binding (e.g.
-[`pyaccsharedmemory`](https://github.com/RiddleTime/ACCSharedMemory)) and adjust
-the field reads in `telemetry_bridge.py` to match its API — the structure is
-already wired, only the attribute names need confirming against your binding.
+ACC exposes telemetry via a Windows memory-mapped file. The bridge reads it
+with [`pyaccsharedmemory`](https://github.com/rrennoir/PyAccSharedMemory):
+
+```bash
+pip install pyaccsharedmemory
+```
+
+Two things to know:
+
+1. **Enable Shared Memory** in ACC: Options → Assetto Corsa Competizione →
+   Shared Memory = ON. Without it, `read_shared_memory()` returns nothing and
+   the dashboard stays on "ACC detected — start a session."
+2. **Telemetry only streams inside a live session** (practice, qualifying, or
+   race). On the main menu there is no data, so the bridge sends `detected:
+   true, reason: "no_session"` status frames and the dashboard tells you to
+   start a session — that's expected, not an error.
+
+The Windows `.exe` build bundles `pyaccsharedmemory`, so ACC works out of the
+box with no `pip install` — you still need to enable Shared Memory in ACC.
