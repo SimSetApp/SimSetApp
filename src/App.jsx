@@ -22,6 +22,7 @@ import Support from './pages/Support';
 import ThankYou from './pages/ThankYou';
 import SetupWizard from './pages/SetupWizard';
 import PitBoard from './pages/PitBoard';
+import Dashboard from './pages/Dashboard';
 import LearningPath from './pages/LearningPath';
 import Telemetry from './pages/Telemetry';
 import Profile from './pages/Profile.jsx';
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/setup-guide" element={<SetupGuide />} />
           <Route path="/saved-setups" element={<SavedSetups />} />
           <Route path="/problem-solver" element={<ProblemSolver />} />

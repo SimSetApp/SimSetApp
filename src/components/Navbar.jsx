@@ -10,6 +10,7 @@ const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3d
 // Top-level nav links
 const primaryNav = [
   { path: "/", label: "Home" },
+  { path: "/dashboard", label: "Dashboard" },
   { path: "/setup-wizard", label: "Setup Wizard", icon: Sparkles },
   { path: "/race-engineer", label: "Race Engineer", icon: Bot },
   { path: "/community-library", label: "Community", icon: Users },

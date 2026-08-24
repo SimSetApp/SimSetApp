@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { CAR_LISTS } from "../lib/simData";
+import { useAuth } from "@/lib/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const HERO_IMG = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/cfbbac601_generated_image.png";
 const LOGO_URL = "https://media.base44.com/images/public/6a1df20e88c57b7eaae8c3da/c3005a416_SimSetAppSimRacingLogo2.png";
@@ -94,6 +96,8 @@ const FEATURES = [
 ];
 
 export default function Home() {
+  const { isAuthenticated, isLoadingAuth } = useAuth();
+  if (!isLoadingAuth && isAuthenticated) return <Navigate to="/dashboard" replace />;
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

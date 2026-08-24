@@ -52,6 +52,7 @@ export default function PitBoard() {
   const [laps, setLaps] = useState(saved?.laps ?? []);
   const [lastLapMs, setLastLapMs] = useState(saved?.lastLapMs ?? 0);
   const [justLapped, setJustLapped] = useState(false);
+  const [pitLaneLoss, setPitLaneLoss] = useState(saved?.pitLaneLoss ?? 20);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -71,10 +72,10 @@ export default function PitBoard() {
   useEffect(() => {
     const data = {
       running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps,
-      lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs,
+      lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs, pitLaneLoss,
     };
     try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch {}
-  }, [running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps, lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs]);
+  }, [running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps, lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs, pitLaneLoss]);
 
   const toggleRun = () => {
     if (running) {
@@ -140,6 +141,8 @@ export default function PitBoard() {
 
   const fuelNeededToFinish = Math.max(0, (lapsRemaining + 0.5) * fuelPerLap - currentFuel);
   const fuelToAdd = Math.min(tankSize - currentFuel, Math.ceil(fuelNeededToFinish * 10) / 10);
+  const maxLapsPerTank = fuelPerLap > 0 ? tankSize / fuelPerLap : 0;
+  const stopsNeeded = lapsRemaining <= lapsOfFuel ? 0 : Math.max(0, Math.ceil((lapsRemaining - lapsOfFuel) / Math.max(0.01, maxLapsPerTank)));
 
   const fuelPct = tankSize > 0 ? (currentFuel / tankSize) * 100 : 0;
   const fuelTone = lapsOfFuel > lapsRemaining + 1 ? "good" : lapsOfFuel > lapsRemaining ? "warn" : lapsOfFuel > 1 ? "warn" : "bad";
@@ -334,6 +337,39 @@ export default function PitBoard() {
             <Wrench className="w-4 h-4" /> Full Service
           </button>
         </div>
+
+        {/* Pit strategy */}
+        <details className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 mb-4">
+          <summary className="cursor-pointer font-heading text-sm font-bold tracking-wide flex items-center gap-2">
+            <Wrench className="w-4 h-4 text-primary" /> Pit Strategy
+          </summary>
+          <div className="mt-4 space-y-3">
+            <SettingField label="Pit Lane Loss (s)" value={pitLaneLoss} onChange={setPitLaneLoss} step={0.5} />
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-lg bg-secondary/50 p-2">
+                <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Pit Lap</div>
+                <div className="text-lg font-bold tabular-nums font-digi text-primary">{needPit ? pitLap : "—"}</div>
+              </div>
+              <div className="rounded-lg bg-secondary/50 p-2">
+                <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Add Fuel</div>
+                <div className="text-lg font-bold tabular-nums font-digi">{fuelToAdd > 0 ? `${fuelToAdd.toFixed(1)}L` : "—"}</div>
+              </div>
+              <div className="rounded-lg bg-secondary/50 p-2">
+                <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Stops</div>
+                <div className="text-lg font-bold tabular-nums font-digi">{stopsNeeded}</div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {lapsRemaining <= 0
+                ? "Race complete."
+                : stopsNeeded === 0
+                ? "No stop needed — you can reach the finish on current fuel and tyres."
+                : stopsNeeded === 1
+                ? `Plan 1 stop around lap ${pitLap}. Add ~${fuelToAdd.toFixed(1)} L. Pit loss ≈ ${pitLaneLoss.toFixed(1)}s.`
+                : `Need ${stopsNeeded} stops — a full tank only covers ${maxLapsPerTank.toFixed(1)} laps. Split the remaining ${lapsRemaining} laps across your stops.`}
+            </p>
+          </div>
+        </details>
 
         {/* Lap log */}
         {laps.length > 0 && (
