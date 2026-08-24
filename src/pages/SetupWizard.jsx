@@ -489,18 +489,28 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                   )}
                 </div>
 
-                {/* Full parameter values */}
+                {/* Full parameter values — grouped by category */}
                 <div className="rounded-2xl border border-border bg-card p-5">
                   <h4 className="font-heading text-sm font-bold tracking-wide mb-3">Full Parameter Values</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {paramGroups.flatMap(g => g.params).map(p => {
-                      const val = result[p.key];
-                      if (val === undefined || val === null) return null;
+                  <div className="space-y-4">
+                    {paramGroups.map(group => {
+                      const filled = group.params.filter(p => result[p.key] !== undefined && result[p.key] !== null);
+                      if (filled.length === 0) return null;
                       return (
-                        <div key={p.key} className="rounded-lg border border-border bg-secondary/50 p-2">
-                          <div className="text-[10px] text-muted-foreground truncate">{p.label}</div>
-                          <div className="text-sm font-mono font-semibold tabular-nums">
-                            {typeof val === "number" && val % 1 !== 0 ? val.toFixed(2) : val}{p.unit}
+                        <div key={group.group}>
+                          <h5 className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2">{group.group}</h5>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {filled.map(p => {
+                              const val = result[p.key];
+                              return (
+                                <div key={p.key} className="rounded-lg border border-border bg-secondary/50 p-2">
+                                  <div className="text-[10px] text-muted-foreground truncate">{p.label}</div>
+                                  <div className="text-sm font-mono font-semibold tabular-nums">
+                                    {typeof val === "number" && val % 1 !== 0 ? val.toFixed(2) : val}{p.unit}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
