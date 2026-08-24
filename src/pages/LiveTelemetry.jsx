@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Radio, Wifi, WifiOff, Loader2, Gauge, Fuel, Cpu, Download, CheckCircle2, Activity } from "lucide-react";
+import { Radio, Wifi, WifiOff, Loader2, Gauge, Fuel, Cpu, Download, CheckCircle2, Activity, Play } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import CopyChip from "@/components/live/CopyChip";
 import TelemetryGauge from "@/components/live/TelemetryGauge";
@@ -35,7 +35,7 @@ const STATUS_META = {
 export default function LiveTelemetry() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
-  const { url, saveUrl, status, data, lastLap, connect, disconnect } = useLiveTelemetry();
+  const { url, saveUrl, status, data, lastLap, connect, disconnect, demo, startDemo } = useLiveTelemetry();
   const [urlInput, setUrlInput] = useState(url);
   const [autoLog, setAutoLog] = useState(false);
   const [logSetupId, setLogSetupId] = useState("");
@@ -120,58 +120,86 @@ export default function LiveTelemetry() {
           {connected && (
             <Badge variant="outline" className="gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full ${st.dot} animate-pulse`} />
-              {data?.sim || "Live"}
+              {demo ? "Demo data" : data?.sim || "Live"}
             </Badge>
           )}
         </div>
 
         {/* Connection card */}
         <div className="rounded-xl border border-border bg-card p-5 mb-4">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Cpu className="w-4 h-4 text-primary" />
-            <h3 className="font-heading text-sm font-semibold tracking-wide">Bridge Connection</h3>
+            <h3 className="font-heading text-sm font-semibold tracking-wide">Connection</h3>
             <span className={`ml-auto flex items-center gap-1.5 text-xs font-medium ${st.tone}`}>
               <st.icon className={`w-3.5 h-3.5 ${status === "connecting" || status === "closed" ? "animate-spin" : ""}`} />
               {st.label}
             </span>
           </div>
 
-          <div className="flex gap-2">
-            <input
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="ws://localhost:3344"
-              className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
-            />
-            {status === "connected" ? (
+          {connected ? (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                {demo ? "Streaming demo data" : `Connected to ${data?.sim || "bridge"}`}
+              </span>
               <Button variant="outline" onClick={disconnect} className="font-heading text-xs tracking-wider">
                 <WifiOff className="w-3.5 h-3.5 mr-1.5" /> Disconnect
               </Button>
-            ) : (
-              <Button
-                onClick={() => { saveUrl(urlInput); connect(urlInput); }}
-                className="font-heading text-xs tracking-wider"
-              >
-                <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
-              </Button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* One-click demo */}
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                    <Play className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-heading text-sm font-semibold mb-0.5">Try it instantly — no setup</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Stream realistic demo telemetry right in your browser. Nothing to download or install.</p>
+                    <Button onClick={startDemo} className="w-full font-heading text-xs tracking-wider">
+                      <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo dashboard
+                    </Button>
+                  </div>
+                </div>
+              </div>
 
-          {!connected && (
-            <div className="mt-4 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
-                  <Download className="w-3.5 h-3.5" /> Download bridge script
-                </a>
-                <span className="text-xs text-muted-foreground">then run these in a terminal:</span>
+              {/* Divider */}
+              <div className="flex items-center gap-3">
+                <div className="h-px bg-border flex-1" />
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">or connect a real sim</span>
+                <div className="h-px bg-border flex-1" />
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <CopyChip text="pip install websockets" />
-                <CopyChip text="python telemetry_bridge.py" />
+
+              {/* Bridge path */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
+                    <Download className="w-3.5 h-3.5" /> Download bridge script
+                  </a>
+                  <span className="text-xs text-muted-foreground">then run in a terminal:</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <CopyChip text="pip install websockets" />
+                  <CopyChip text="python telemetry_bridge.py" />
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Mock mode works with no sim running. iRacing: add <code className="font-mono text-foreground">--sim iracing</code> (needs <code className="font-mono text-foreground">pip install irsdk</code>). The dashboard auto-connects as soon as the bridge is up.
+                </p>
+                <details className="text-xs">
+                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">Advanced: bridge URL</summary>
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      placeholder="ws://localhost:3344"
+                      className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                    />
+                    <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider">
+                      <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
+                    </Button>
+                  </div>
+                </details>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Mock mode works with no sim running. For iRacing add <code className="font-mono text-foreground">--sim iracing</code> (needs <code className="font-mono text-foreground">pip install irsdk</code>). The dashboard auto-connects as soon as the bridge is up.
-              </p>
             </div>
           )}
         </div>
@@ -285,13 +313,16 @@ export default function LiveTelemetry() {
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
-            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
               <Radio className="w-7 h-7 text-primary" />
             </div>
-            <h3 className="font-heading text-lg font-semibold mb-1">Waiting for the bridge</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Start the local companion and the dashboard auto-connects to stream live speed, RPM, tyres, fuel and lap times here.
+            <h3 className="font-heading text-lg font-semibold mb-1">Live Telemetry</h3>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
+              See speed, RPM, tyres, fuel and lap times in real time. Try it with one click — no setup needed.
             </p>
+            <Button onClick={startDemo} className="font-heading text-xs tracking-wider">
+              <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo dashboard
+            </Button>
           </div>
         )}
       </div>
