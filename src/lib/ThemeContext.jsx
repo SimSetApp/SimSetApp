@@ -14,7 +14,12 @@ export const THEMES = [
   { id: 'magma',    label: 'Magma',    color: '#e05ce0' },
 ];
 
-const ThemeContext = createContext();
+const ThemeContext = createContext({
+  theme: 'night',
+  setTheme: () => {},
+  isDark: true,
+  toggle: () => {},
+});
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
