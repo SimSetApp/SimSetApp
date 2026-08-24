@@ -195,7 +195,7 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-5 h-5 text-primary" />
-            <h1 className="font-heading text-2xl font-bold tracking-tight">AI Setup Wizard</h1>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">AI Setup Wizard</h1>
           </div>
           <p className="text-sm text-muted-foreground">
             Tell us your car, conditions, and issues — get a complete AI-generated setup with reasoning.
@@ -229,10 +229,10 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
         {/* Step 0: Car & Track */}
         {step === 0 && (
           <div className="space-y-5">
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Car className="w-4 h-4 text-primary" />
-                <h3 className="font-heading text-sm font-bold tracking-wide">Select Your Car & Track</h3>
+                <h3 className="font-heading text-sm font-semibold tracking-wide">Select Your Car & Track</h3>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">Sim</label>
@@ -291,10 +291,10 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
         {/* Step 1: Conditions */}
         {step === 1 && (
           <div className="space-y-5">
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Cloud className="w-4 h-4 text-primary" />
-                <h3 className="font-heading text-sm font-bold tracking-wide">Weather & Track Conditions</h3>
+                <h3 className="font-heading text-sm font-semibold tracking-wide">Weather & Track Conditions</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -353,10 +353,10 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
         {/* Step 2: Driving Style */}
         {step === 2 && (
           <div className="space-y-5">
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-4 h-4 text-primary" />
-                <h3 className="font-heading text-sm font-bold tracking-wide">Your Driving Style</h3>
+                <h3 className="font-heading text-sm font-semibold tracking-wide">Your Driving Style</h3>
               </div>
               <p className="text-xs text-muted-foreground">This helps the AI tailor the setup to how you actually drive.</p>
               <DrivingStyleSelector value={drivingStyle} onChange={setDrivingStyle} />
@@ -375,10 +375,10 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
         {/* Step 3: Issues */}
         {step === 3 && (
           <div className="space-y-5">
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="w-4 h-4 text-primary" />
-                <h3 className="font-heading text-sm font-bold tracking-wide">Handling Issues (Optional)</h3>
+                <h3 className="font-heading text-sm font-semibold tracking-wide">Handling Issues (Optional)</h3>
               </div>
               <p className="text-xs text-muted-foreground">Select any issues you're experiencing. The AI will prioritize fixing these.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -429,7 +429,7 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
             {result && !generating && (
               <>
                 {/* Summary card */}
-                <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent p-5">
+                <div className="rounded-xl border border-border bg-card p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-5 h-5 text-primary" />
                     <h3 className="font-heading text-base font-bold">Your AI-Generated Setup</h3>
@@ -445,7 +445,7 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                   {/* Priority changes */}
                   {result.priorityChanges?.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="text-xs font-bold tracking-widest uppercase text-muted-foreground">Priority Changes</h4>
+                      <h4 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">Priority Changes</h4>
                       {result.priorityChanges.map((change, i) => (
                         <div key={i} className="rounded-lg border border-border bg-card p-3">
                           <div className="flex items-center gap-2 mb-1">
@@ -462,8 +462,8 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
 
                 {/* Reasoning */}
                 {result.reasoning && (
-                  <div className="rounded-2xl border border-border bg-card p-5">
-                    <h4 className="font-heading text-sm font-bold tracking-wide mb-2">Setup Reasoning</h4>
+                  <div className="rounded-xl border border-border bg-card p-5">
+                    <h4 className="font-heading text-sm font-semibold tracking-wide mb-2">Setup Reasoning</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{result.reasoning}</p>
                   </div>
                 )}
@@ -474,7 +474,7 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                     <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <Cloud className="w-4 h-4 text-sky-400" />
-                        <h4 className="text-xs font-bold tracking-wide text-sky-400">Weather Adaptation</h4>
+                        <h4 className="text-xs font-semibold tracking-wide text-sky-400">Weather Adaptation</h4>
                       </div>
                       <p className="text-xs text-muted-foreground leading-relaxed">{result.weatherNotes}</p>
                     </div>
@@ -483,7 +483,7 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                     <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <Zap className="w-4 h-4 text-violet-400" />
-                        <h4 className="text-xs font-bold tracking-wide text-violet-400">Style Adaptation</h4>
+                        <h4 className="text-xs font-semibold tracking-wide text-violet-400">Style Adaptation</h4>
                       </div>
                       <p className="text-xs text-muted-foreground leading-relaxed">{result.styleNotes}</p>
                     </div>
@@ -491,15 +491,15 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                 </div>
 
                 {/* Full parameter values — grouped by category */}
-                <div className="rounded-2xl border border-border bg-card p-5">
-                  <h4 className="font-heading text-sm font-bold tracking-wide mb-3">Full Parameter Values</h4>
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <h4 className="font-heading text-sm font-semibold tracking-wide mb-3">Full Parameter Values</h4>
                   <div className="space-y-4">
                     {paramGroups.map(group => {
                       const filled = group.params.filter(p => result[p.key] !== undefined && result[p.key] !== null);
                       if (filled.length === 0) return null;
                       return (
                         <div key={group.group}>
-                          <h5 className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2">{group.group}</h5>
+                          <h5 className="text-[11px] font-semibold tracking-widest uppercase text-muted-foreground mb-2">{group.group}</h5>
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {filled.map(p => {
                               const val = result[p.key];
@@ -520,8 +520,8 @@ Return a JSON object with all parameter keys from the schema above, plus "reason
                 </div>
 
                 {/* Validation */}
-                <div className="rounded-2xl border border-border bg-card p-5">
-                  <h4 className="font-heading text-sm font-bold tracking-wide mb-3">Setup Validation</h4>
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <h4 className="font-heading text-sm font-semibold tracking-wide mb-3">Setup Validation</h4>
                   <SetupValidator sim={sim} parameters={result} carClass="GT3" />
                 </div>
 

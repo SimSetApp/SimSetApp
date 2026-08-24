@@ -121,11 +121,11 @@ export default function Telemetry() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-24 text-center">
-          <div className="rounded-2xl border border-border bg-card p-10">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <div className="rounded-xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-5">
               <Activity className="w-7 h-7 text-primary" />
             </div>
-            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Sign in to use Telemetry</h2>
+            <h2 className="font-heading text-xl font-semibold tracking-tight mb-2">Sign in to use Telemetry</h2>
             <p className="text-sm text-muted-foreground mb-6">Upload telemetry and correlate lap times with your setups.</p>
             <Button onClick={navigateToLogin} className="w-full font-heading text-xs tracking-wider">Sign In / Register</Button>
           </div>
@@ -143,13 +143,13 @@ export default function Telemetry() {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <Activity className="w-5 h-5 text-primary" />
-            <h1 className="font-heading text-2xl font-bold tracking-tight">Telemetry Import & Analysis</h1>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">Telemetry Import & Analysis</h1>
           </div>
           <p className="text-sm text-muted-foreground">Upload MoTeC, Garage 61, or sim CSV exports. See lap consistency and correlate with your setups.</p>
         </div>
 
         {/* Upload zone */}
-        <div className="rounded-2xl border-2 border-dashed border-border bg-card p-8 mb-6 text-center">
+        <div className="rounded-xl border border-dashed border-border bg-card p-8 mb-6 text-center">
           <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFileUpload} className="hidden" />
           {parsing ? (
             <div className="flex flex-col items-center">
@@ -158,7 +158,7 @@ export default function Telemetry() {
             </div>
           ) : (
             <button onClick={() => fileRef.current?.click()} className="flex flex-col items-center w-full">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+              <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mb-3">
                 <Upload className="w-7 h-7 text-primary" />
               </div>
               <p className="text-sm font-medium mb-1">Upload Telemetry CSV</p>
@@ -201,8 +201,8 @@ export default function Telemetry() {
             </motion.div>
 
             {/* Lap time chart */}
-            <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5">
-              <h3 className="font-heading text-sm font-bold tracking-wide mb-3">Lap Time Progression</h3>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h3 className="font-heading text-sm font-semibold tracking-wide mb-3">Lap Time Progression</h3>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={parsedData.laps.map(l => ({ lap: l.lap, time: l.time }))} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -229,8 +229,8 @@ export default function Telemetry() {
             </div>
 
             {/* Lap table */}
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <h3 className="font-heading text-sm font-bold tracking-wide mb-3">Lap Breakdown</h3>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h3 className="font-heading text-sm font-semibold tracking-wide mb-3">Lap Breakdown</h3>
               <div className="space-y-1 max-h-48 overflow-y-auto">
                 {parsedData.laps.map((lap, i) => (
                   <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/30 text-sm">
@@ -247,10 +247,10 @@ export default function Telemetry() {
         )}
 
         {/* Setup correlation */}
-        <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+        <div className="mt-8 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-4">
             <GitCompare className="w-4 h-4 text-primary" />
-            <h3 className="font-heading text-sm font-bold tracking-wide">Setup vs Lap Time Correlation</h3>
+            <h3 className="font-heading text-sm font-semibold tracking-wide">Setup vs Lap Time Correlation</h3>
           </div>
           <p className="text-xs text-muted-foreground mb-4">Select a setup to see how your session times correlate with it across different conditions.</p>
 
@@ -305,13 +305,13 @@ function LapTooltip({ active, payload, label, bestLap }) {
   const t = payload[0].value;
   const delta = t - bestLap;
   return (
-    <div className="rounded-lg border border-border/60 bg-popover/95 backdrop-blur-md px-3 py-2 text-xs shadow-xl">
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs">
       <div className="text-muted-foreground">Lap {label}</div>
       <div className="font-bold tabular-nums font-digi mt-0.5">{t.toFixed(3)}s</div>
       {delta > 0 ? (
         <div className="text-red-400 tabular-nums font-digi">+{delta.toFixed(3)}</div>
       ) : (
-        <div className="text-purple-400 font-bold tracking-widest">BEST</div>
+        <div className="text-purple-400 font-semibold tracking-widest">BEST</div>
       )}
     </div>
   );

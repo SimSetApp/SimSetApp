@@ -29,7 +29,7 @@ export default function SetupGuide() {
           <button onClick={() => navigate(-1)} className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
             Setup Guide
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
@@ -38,10 +38,10 @@ export default function SetupGuide() {
         </div>
 
         {/* Car selector */}
-        <div className="rounded-2xl border border-border bg-card p-5 mb-8">
+        <div className="rounded-xl border border-border bg-card p-5 mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Car className="w-4 h-4 text-primary" />
-            <span className="font-heading text-xs font-bold tracking-widest uppercase text-muted-foreground">
+            <span className="font-heading text-xs font-medium tracking-wider uppercase text-muted-foreground">
               Your Car
             </span>
           </div>
@@ -82,12 +82,12 @@ export default function SetupGuide() {
             <SmartSetupMatch />
 
             {/* AI Wizard CTA */}
-            <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                 <Sparkles className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-heading text-sm font-bold">Want a complete setup generated for you?</h3>
+                <h3 className="font-heading text-sm font-semibold">Want a complete setup generated for you?</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">Try the AI Setup Wizard — car, track, weather & issues → full setup with reasoning.</p>
               </div>
               <button
@@ -111,7 +111,7 @@ export default function SetupGuide() {
           </TabsContent>
 
           <TabsContent value="tyre-analyzer">
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-xl border border-border bg-card p-5">
               <TyreAnalyzer />
             </div>
           </TabsContent>

@@ -44,7 +44,7 @@ export default function ShareSetup() {
         <Navbar />
         <div className="max-w-2xl mx-auto px-4 py-24 text-center">
           <AlertCircle className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
-          <h1 className="font-heading text-xl font-bold mb-2">Invalid Setup Link</h1>
+          <h1 className="font-heading text-xl font-semibold mb-2">Invalid Setup Link</h1>
           <p className="text-muted-foreground text-sm">This link appears to be broken or expired.</p>
           <Button asChild className="mt-6"><Link to="/">Go Home</Link></Button>
         </div>
@@ -63,11 +63,11 @@ export default function ShareSetup() {
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
 
         {/* Header */}
-        <div className="rounded-2xl border border-border bg-card p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <p className="text-xs text-muted-foreground font-medium tracking-wider uppercase mb-1">Shared Setup</p>
-              <h1 className="font-heading text-2xl font-bold">{setup.title}</h1>
+              <h1 className="font-heading text-2xl font-semibold tracking-tight">{setup.title}</h1>
               <div className="flex flex-wrap gap-2 mt-3">
                 {setup.sim_title && <Badge variant="secondary">{setup.sim_title}</Badge>}
                 {setup.car && <Badge variant="outline">{setup.car}</Badge>}

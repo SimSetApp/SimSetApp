@@ -38,7 +38,7 @@ function ArticleView({ article, onBack }) {
         <Badge variant="outline" className={`text-xs mb-3 ${categoryColors[article.category] || ""}`}>
           {article.category}
         </Badge>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-2">{article.title}</h1>
+        <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight mb-2">{article.title}</h1>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {article.readTime} read</span>
         </div>
@@ -47,8 +47,8 @@ function ArticleView({ article, onBack }) {
 
       <div className="space-y-6 max-w-2xl">
         {article.sections.map((section, i) => (
-          <div key={i} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-            <h2 className="font-heading text-sm font-bold tracking-wide mb-3 text-primary">{section.heading}</h2>
+          <div key={i} className="rounded-xl border border-border bg-card p-5 sm:p-6">
+            <h2 className="font-heading text-sm font-semibold tracking-wide mb-3 text-primary">{section.heading}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">{section.body}</p>
           </div>
         ))}
@@ -88,12 +88,12 @@ export default function TuningGuide() {
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-primary" />
             </div>
-            <span className="text-xs font-bold tracking-widest text-primary uppercase">Tuning Encyclopedia</span>
+            <span className="text-xs font-medium tracking-wider text-primary uppercase">Tuning Encyclopedia</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
             Deep-Dive Tuning Articles
           </h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-xl">
@@ -124,7 +124,7 @@ export default function TuningGuide() {
             <button
               key={article.id}
               onClick={() => setSelected(article)}
-              className="group rounded-2xl border border-border bg-card p-5 text-left hover:border-primary/30 transition-all duration-200"
+              className="group rounded-xl border border-border bg-card p-5 text-left hover:border-primary/30 transition-colors"
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <Badge variant="outline" className={`text-xs flex-shrink-0 ${categoryColors[article.category] || ""}`}>

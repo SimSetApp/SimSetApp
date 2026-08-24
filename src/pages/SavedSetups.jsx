@@ -222,11 +222,11 @@ export default function SavedSetups() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-24 text-center">
-          <div className="rounded-2xl border border-border bg-card p-10">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <div className="rounded-xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-5">
               <FolderOpen className="w-7 h-7 text-primary" />
             </div>
-            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Sign in to access My Garage</h2>
+            <h2 className="font-heading text-xl font-semibold tracking-tight mb-2">Sign in to access My Garage</h2>
             <p className="text-sm text-muted-foreground mb-6">
               Save setups, share to the community, and track your session history — all require a free account.
             </p>
@@ -247,7 +247,7 @@ export default function SavedSetups() {
       <div ref={containerRef} className="max-w-4xl mx-auto px-4 py-8 pb-24">
         <PullToRefreshIndicator pullY={pullY} refreshing={refreshing} />
         <div className="mb-8">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">My Garage</h1>
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">My Garage</h1>
           <p className="text-sm text-muted-foreground mt-1">Setups, tyre pressures, and fuel strategy — all in one place.</p>
         </div>
 
@@ -318,7 +318,7 @@ export default function SavedSetups() {
             {isLoading && (
               <div className="space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                  <div key={i} className="rounded-xl border border-border bg-card p-5 space-y-3">
                     <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-3 w-2/3" />
                     <Skeleton className="h-10 w-full" />
@@ -342,7 +342,7 @@ export default function SavedSetups() {
             <div className="md:hidden mt-6">
               <RouterLink
                 to="/community-library"
-                className="flex items-center justify-between rounded-2xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4"
+                className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
@@ -365,7 +365,7 @@ export default function SavedSetups() {
                 {filteredSetups.map(setup => (
                   <div
                     key={setup.id}
-                    className="rounded-2xl border border-border bg-card p-5 hover:border-primary/20 transition-colors cursor-pointer"
+                    className="rounded-xl border border-border bg-card p-5 hover:border-primary/20 transition-colors cursor-pointer"
                     onClick={() => openEdit(setup)}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -464,8 +464,8 @@ export default function SavedSetups() {
 
           {/* Tyre calculator */}
           <TabsContent value="tyres">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Tyre Pressure Calculator</h2>
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-semibold tracking-wide mb-1">Tyre Pressure Calculator</h2>
               <p className="text-xs text-muted-foreground mb-6">Calculates cold start pressures based on track and ambient temperatures.</p>
               <TyrePressureCalc />
             </div>
@@ -473,8 +473,8 @@ export default function SavedSetups() {
 
           {/* Tyre wear predictor */}
           <TabsContent value="wear">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Tyre Wear Predictor</h2>
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-semibold tracking-wide mb-1">Tyre Wear Predictor</h2>
               <p className="text-xs text-muted-foreground mb-6">Estimates degradation rate, stint life, and the wear cliff based on compound, conditions, and setup.</p>
               <TyreWearPredictor />
             </div>
@@ -482,8 +482,8 @@ export default function SavedSetups() {
 
           {/* Fuel calculator */}
           <TabsContent value="fuel">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Fuel Strategy Calculator</h2>
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-semibold tracking-wide mb-1">Fuel Strategy Calculator</h2>
               <p className="text-xs text-muted-foreground mb-6">Work out exactly how much fuel you need for any race format.</p>
               <FuelCalc />
             </div>
@@ -491,8 +491,8 @@ export default function SavedSetups() {
 
           {/* Compare tab */}
           <TabsContent value="compare">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Setup Comparison</h2>
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-semibold tracking-wide mb-1">Setup Comparison</h2>
               <p className="text-xs text-muted-foreground mb-6">Side-by-side diff of any two saved setups with deltas on every parameter.</p>
               <SetupComparison />
             </div>
@@ -518,7 +518,7 @@ export default function SavedSetups() {
       {/* Replay upload modal after sharing */}
       {sharedSetupData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-2">
               <Video className="w-5 h-5 text-primary" />
               <h3 className="font-heading text-sm font-semibold">Add Replay Videos</h3>

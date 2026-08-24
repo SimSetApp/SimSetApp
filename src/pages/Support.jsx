@@ -86,10 +86,10 @@ export default function Support() {
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-4">
             <Heart className="w-7 h-7 text-primary" />
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-3">Support SimSetApp</h1>
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight mb-3">Support SimSetApp</h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-lg mx-auto">
             Whilst donations are not imperative, they allow us to keep it on the black stuff!
           </p>
@@ -99,8 +99,8 @@ export default function Support() {
         </div>
 
         {/* Donation card */}
-        <div className="rounded-2xl border border-border bg-card p-6 mb-6">
-          <h2 className="font-heading text-sm font-bold tracking-wide mb-4 flex items-center gap-2">
+        <div className="rounded-xl border border-border bg-card p-6 mb-6">
+          <h2 className="font-heading text-sm font-semibold tracking-wide mb-4 flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" /> Make a Donation
           </h2>
 
@@ -151,7 +151,7 @@ export default function Support() {
           href="https://www.instagram.com/simsetapp"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-4 mb-6 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all group"
+          className="flex items-center justify-center gap-3 rounded-xl border border-border bg-card p-4 mb-6 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors group"
         >
           <Instagram className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
           <div>
@@ -161,8 +161,8 @@ export default function Support() {
         </a>
 
         {/* Suggestion card */}
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-heading text-sm font-bold tracking-wide mb-1 flex items-center gap-2">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="font-heading text-sm font-semibold tracking-wide mb-1 flex items-center gap-2">
             <Lightbulb className="w-4 h-4 text-primary" /> Got a Suggestion?
           </h2>
           <p className="text-xs text-muted-foreground mb-4">Tell us what you'd love to see in SimSetApp. We read every single one.</p>

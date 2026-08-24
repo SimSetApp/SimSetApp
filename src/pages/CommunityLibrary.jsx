@@ -126,7 +126,7 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsCli
   const avgRating = setup.rating_count > 0 ? (setup.rating_sum || 0) / setup.rating_count : 0;
 
   return (
-    <Card className="bg-card border-border hover:border-primary/40 transition-all duration-200">
+    <Card className="bg-card border-border hover:border-primary/30 transition-colors">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -345,11 +345,11 @@ export default function CommunityLibrary() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-24 text-center">
-          <div className="rounded-2xl border border-border bg-card p-10">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <div className="rounded-xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-5">
               <Globe className="w-7 h-7 text-primary" />
             </div>
-            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Sign in to access the Community</h2>
+            <h2 className="font-heading text-xl font-semibold tracking-tight mb-2">Sign in to access the Community</h2>
             <p className="text-sm text-muted-foreground mb-6">
               Browse, save, and rate community setups — all require a free account.
             </p>
@@ -397,7 +397,7 @@ export default function CommunityLibrary() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="font-heading text-2xl font-bold text-foreground">Community Setup Library</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Community Setup Library</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Browse and share setups from the sim racing community
           </p>

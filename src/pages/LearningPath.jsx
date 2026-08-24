@@ -35,17 +35,17 @@ export default function LearningPath() {
       <div className="max-w-3xl mx-auto px-4 py-8 pb-24">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Setup Learning Path</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Setup Learning Path</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Progress from beginner to advanced — one concept at a time. Track your progress as you go.
           </p>
         </div>
 
         {/* Progress bar */}
-        <div className="rounded-2xl border border-border bg-card p-5 mb-6">
+        <div className="rounded-xl border border-border bg-card p-5 mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-muted-foreground">Your Progress</span>
-            <span className="text-sm font-bold tabular-nums text-primary">{completed.length} / {totalModules} modules</span>
+            <span className="text-sm font-semibold tabular-nums text-primary">{completed.length} / {totalModules} modules</span>
           </div>
           <div className="h-2 rounded-full bg-muted overflow-hidden">
             <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -64,19 +64,19 @@ export default function LearningPath() {
             return (
               <div key={li}>
                 {/* Level header */}
-                <div className={`rounded-2xl border ${level.border} ${level.bg} p-4 mb-3`}>
+                <div className={`rounded-xl border ${level.border} ${level.bg} p-4 mb-3`}>
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-xl ${level.bg} flex items-center justify-center shrink-0 border ${level.border}`}>
                       <Icon className={`w-5 h-5 ${level.color}`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h2 className={`font-heading text-base font-bold ${level.color}`}>{level.level}</h2>
+                        <h2 className={`font-heading text-base font-semibold ${level.color}`}>{level.level}</h2>
                         <span className="text-xs text-muted-foreground">• {levelCompleted}/{level.modules.length} done</span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">{level.description}</p>
                     </div>
-                    <div className="text-2xl font-bold tabular-nums text-muted-foreground">{levelProgress}%</div>
+                    <div className="text-2xl font-semibold tabular-nums text-muted-foreground">{levelProgress}%</div>
                   </div>
                 </div>
 
@@ -86,7 +86,7 @@ export default function LearningPath() {
                     const moduleId = `${li}-${mi}`;
                     const isDone = completed.includes(moduleId);
                     return (
-                      <div key={moduleId} className="rounded-xl border border-border bg-card p-4 hover:border-primary/20 transition-all">
+                      <div key={moduleId} className="rounded-xl border border-border bg-card p-4 hover:border-primary/30 transition-colors">
                         <div className="flex items-start gap-3">
                           <button
                             onClick={() => toggleComplete(moduleId)}

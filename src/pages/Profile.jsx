@@ -204,7 +204,7 @@ export default function Profile() {
       <div className="max-w-5xl mx-auto px-4 py-10 pb-24">
         <div className="hidden md:flex items-center gap-3 mb-6">
           <Settings className="w-5 h-5 text-primary" />
-          <h1 className="font-heading text-2xl font-bold">My Profile</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">My Profile</h1>
         </div>
 
         {isLoading || !form ? (
@@ -257,7 +257,7 @@ export default function Profile() {
                 </div>
 
                 {/* User Tag */}
-                <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 flex items-center justify-between gap-3">
+                <div className="rounded-xl border border-border bg-secondary px-4 py-3 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Your User Tag</p>
                     <p className="text-sm font-mono font-semibold text-primary">{user.user_tag || "Save profile to generate"}</p>

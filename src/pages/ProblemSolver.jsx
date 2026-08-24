@@ -30,7 +30,7 @@ function ProblemCard({ problem }) {
   const sev = severityConfig[problem.severity] || severityConfig.medium;
 
   return (
-    <div className={`rounded-2xl border bg-card overflow-hidden transition-all duration-200 ${open ? "border-primary/30" : "border-border hover:border-border/80"}`}>
+    <div className={`rounded-xl border bg-card overflow-hidden transition-colors ${open ? "border-primary/30" : "border-border hover:border-border/80"}`}>
       <button
         className="w-full text-left p-5 flex items-start gap-4"
         onClick={() => setOpen(!open)}
@@ -58,7 +58,7 @@ function ProblemCard({ problem }) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="px-5 pb-5 border-t border-border/50 pt-4 space-y-5">
+            <div className="px-5 pb-5 border-t border-border pt-4 space-y-5">
               {/* Symptoms */}
               <div>
                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -93,7 +93,7 @@ function ProblemCard({ problem }) {
 
               {/* Not applicable note */}
               {problem.notApply && (
-                <div className="rounded-xl bg-muted/50 border border-border p-3 flex gap-2">
+                <div className="rounded-xl bg-secondary border border-border p-3 flex gap-2">
                   <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-muted-foreground leading-relaxed"><span className="font-medium text-foreground">Note: </span>{problem.notApply}</p>
                 </div>
@@ -135,9 +135,9 @@ export default function ProblemSolver() {
             <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
               <AlertTriangle className="w-4 h-4 text-orange-400" />
             </div>
-            <span className="text-xs font-bold tracking-widest text-orange-400 uppercase">Problem Solver</span>
+            <span className="text-xs font-medium tracking-wider text-orange-400 uppercase">Problem Solver</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
             Handling Issue Diagnosis
           </h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-xl">

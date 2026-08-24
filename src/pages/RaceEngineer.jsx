@@ -7,7 +7,7 @@ import { SIM_TITLES, CAR_LISTS, TRACK_LISTS } from "../lib/simData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "../components/SearchableSelect";
-import { Send, Bot, User, Loader2, Zap, ChevronRight, RotateCcw, History, Save, Wrench } from "lucide-react";
+import { Send, Bot, User, Loader2, ChevronRight, RotateCcw, History, Save, Wrench } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/lib/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -29,11 +29,11 @@ function MessageBubble({ message }) {
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
           <Bot className="w-4 h-4 text-primary" />
         </div>
       )}
-      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+      <div className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
         isUser
           ? "bg-primary text-primary-foreground rounded-tr-sm"
           : "bg-card border border-border rounded-tl-sm"
@@ -49,7 +49,7 @@ function MessageBubble({ message }) {
         )}
       </div>
       {isUser && (
-        <div className="h-8 w-8 rounded-xl bg-secondary border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
+        <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
           <User className="w-4 h-4 text-muted-foreground" />
         </div>
       )}
@@ -227,18 +227,15 @@ Do not be overly verbose. Quality over quantity.`;
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <MobileHeader title="AI Race Engineer" />
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 pb-24 gap-4">
+      <div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4 py-8 pb-24 gap-5">
 
         {/* Header */}
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="font-heading text-2xl font-bold text-foreground flex items-center gap-2">
-              <Bot className="w-6 h-6 text-primary" />
-              AI Race Engineer
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Describe your handling problem — get specific setup advice</p>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">AI Race Engineer</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Describe your handling problem — get specific setup advice.</p>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {isAuthenticated && sessions.length > 0 && (
               <div className="relative">
                 <Button variant="ghost" size="sm" onClick={() => setSessionsOpen(o => !o)} className="text-muted-foreground">
@@ -247,7 +244,7 @@ Do not be overly verbose. Quality over quantity.`;
                 {sessionsOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setSessionsOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-2xl z-50 max-h-72 overflow-y-auto">
+                    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-popover z-50 max-h-72 overflow-y-auto">
                       {sessions.map(s => (
                         <button
                           key={s.id}
@@ -278,53 +275,44 @@ Do not be overly verbose. Quality over quantity.`;
 
         {/* Context strip */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground font-medium">Sim</label>
-            <Select value={sim} onValueChange={(v) => { setSim(v); setCar(""); }}>
-              <SelectTrigger className="bg-secondary text-sm h-9"><SelectValue placeholder="Select sim…" /></SelectTrigger>
-              <SelectContent>
-                {SIM_TITLES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground font-medium">Car <span className="text-muted-foreground/50">(optional)</span></label>
-            <SearchableSelect
-              value={car}
-              onValueChange={setCar}
-              placeholder="Any car"
-              disabled={!sim}
-              groups={carGroups}
-              searchPlaceholder="Search cars…"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground font-medium">Track <span className="text-muted-foreground/50">(optional)</span></label>
-            <SearchableSelect
-              value={track}
-              onValueChange={setTrack}
-              placeholder="Any track"
-              disabled={!sim}
-              items={trackItems}
-              searchPlaceholder="Search tracks…"
-            />
-          </div>
+          <Select value={sim} onValueChange={(v) => { setSim(v); setCar(""); }}>
+            <SelectTrigger className="bg-secondary text-sm h-9"><SelectValue placeholder="Sim" /></SelectTrigger>
+            <SelectContent>
+              {SIM_TITLES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <SearchableSelect
+            value={car}
+            onValueChange={setCar}
+            placeholder="Car"
+            disabled={!sim}
+            groups={carGroups}
+            searchPlaceholder="Search cars…"
+          />
+          <SearchableSelect
+            value={track}
+            onValueChange={setTrack}
+            placeholder="Track"
+            disabled={!sim}
+            items={trackItems}
+            searchPlaceholder="Search tracks…"
+          />
         </div>
 
         {/* Current setup indicator */}
         {currentSetup && (
-          <div className="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
-            <Wrench className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Using your setup: <span className="font-medium">{currentSetup.title}</span></span>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary border border-border rounded-lg px-3 py-2">
+            <Wrench className="w-3.5 h-3.5 shrink-0 text-primary" />
+            <span className="truncate">Using your setup: <span className="text-foreground font-medium">{currentSetup.title}</span></span>
           </div>
         )}
 
         {/* Chat area */}
         <div className="flex-1 flex flex-col min-h-0">
           {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center py-8">
-              <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-                <Bot className="w-8 h-8 text-primary" />
+            <div className="flex-1 flex flex-col items-center justify-center py-10">
+              <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center mb-4">
+                <Bot className="w-6 h-6 text-primary" />
               </div>
               <h2 className="font-heading text-lg font-semibold mb-1">Ready to engineer your lap time</h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm mb-6">
@@ -335,7 +323,7 @@ Do not be overly verbose. Quality over quantity.`;
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="text-left px-3 py-2.5 rounded-xl border border-border bg-card hover:bg-secondary hover:border-primary/30 transition-all text-xs text-muted-foreground hover:text-foreground flex items-start gap-2 group"
+                    className="text-left px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/30 hover:bg-secondary/50 transition-colors text-xs text-muted-foreground hover:text-foreground flex items-start gap-2 group"
                   >
                     <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary/50 group-hover:text-primary transition-colors" />
                     {q}
@@ -350,10 +338,10 @@ Do not be overly verbose. Quality over quantity.`;
               ))}
               {loading && (
                 <div className="flex gap-3 justify-start">
-                  <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
                     <Bot className="w-4 h-4 text-primary" />
                   </div>
-                  <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+                  <div className="bg-card border border-border rounded-xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                     <span className="text-xs text-muted-foreground">Analysing your setup…</span>
                   </div>
@@ -366,17 +354,15 @@ Do not be overly verbose. Quality over quantity.`;
 
         {/* Input */}
         <div className="flex gap-2 items-end">
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Describe your handling problem… (Enter to send)"
-              rows={2}
-              className="w-full rounded-xl border border-input bg-secondary px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none leading-relaxed"
-            />
-          </div>
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Describe your handling problem… (Enter to send)"
+            rows={2}
+            className="flex-1 rounded-xl border border-input bg-secondary px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none leading-relaxed"
+          />
           <Button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
@@ -385,13 +371,6 @@ Do not be overly verbose. Quality over quantity.`;
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>
-
-        {messages.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-            <Zap className="w-3 h-3 text-primary" />
-            More context = better advice. Select your sim and car above for targeted recommendations.
-          </p>
-        )}
       </div>
       <Footer />
     </div>

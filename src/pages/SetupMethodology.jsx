@@ -165,7 +165,7 @@ function StepCard({ step, isCompleted, onToggle }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
+    <div className={`rounded-xl border overflow-hidden transition-colors ${
       isCompleted ? "border-primary/40 bg-primary/5" : open ? "border-border/80 bg-card" : "border-border bg-card"
     }`}>
       <div className="flex items-start">
@@ -201,10 +201,10 @@ function StepCard({ step, isCompleted, onToggle }) {
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
               >
-                <div className="pr-4 pb-5 space-y-4 border-t border-border/50 pt-4">
+                <div className="pr-4 pb-5 space-y-4 border-t border-border pt-4">
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.why}</p>
 
-                  <div className="rounded-xl bg-muted/40 border border-border p-4">
+                  <div className="rounded-xl bg-secondary border border-border p-4">
                     <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Target Values</h4>
                     <ul className="space-y-1">
                       {step.targets.map((t, i) => (
@@ -278,12 +278,12 @@ export default function SetupMethodology() {
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
               <ListOrdered className="w-4 h-4 text-primary" />
             </div>
-            <span className="text-xs font-bold tracking-widest text-primary uppercase">Setup Workflow</span>
+            <span className="text-xs font-medium tracking-wider text-primary uppercase">Setup Workflow</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
             8-Step Setup Methodology
           </h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-xl">
@@ -322,7 +322,7 @@ export default function SetupMethodology() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-5 text-center"
+            className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-5 text-center"
           >
             <div className="text-2xl mb-2">🏁</div>
             <p className="font-heading font-semibold text-primary">Setup complete!</p>
