@@ -76,9 +76,9 @@ export default function SetupGuide() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="parameters" className="space-y-4">
+          <TabsContent value="parameters" className="space-y-3">
             {SETUP_PARAMETERS.map((cat, idx) => (
-              <SetupCategorySection key={cat.category} category={cat} index={idx} />
+              <SetupCategorySection key={cat.category} category={cat} index={idx} defaultOpen={idx === 0} />
             ))}
           </TabsContent>
 

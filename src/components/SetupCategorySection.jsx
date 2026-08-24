@@ -18,33 +18,33 @@ const iconMap = {
   Circle, Settings2, ArrowUpDown, Minus, Wind, Cog, Disc, Zap
 };
 
-export default function SetupCategorySection({ category, index = 0 }) {
+export default function SetupCategorySection({ category, index = 0, defaultOpen = false }) {
   const color = GROUP_COLORS[index % GROUP_COLORS.length];
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const IconComp = iconMap[category.icon] || Circle;
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div className={`rounded-2xl border bg-card overflow-hidden transition-colors duration-200 ${open ? `${color.border}` : "border-border"}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full px-5 py-4 flex items-center gap-4 hover:bg-muted/50 transition-colors"
+        className="w-full px-4 py-3.5 flex items-center gap-3 hover:bg-muted/40 active:bg-muted/60 transition-colors"
       >
-        <div className={`w-10 h-10 rounded-xl ${color.bg} flex items-center justify-center shrink-0`}>
-          <IconComp className={`w-5 h-5 ${color.icon}`} />
+        <div className={`w-9 h-9 rounded-lg ${color.bg} flex items-center justify-center shrink-0`}>
+          <IconComp className={`w-4.5 h-4.5 ${color.icon}`} />
         </div>
-        <div className="flex-1 text-left">
-          <h3 className={`font-heading text-sm font-semibold tracking-wide ${color.text}`}>
+        <div className="flex-1 text-left min-w-0">
+          <h3 className={`font-heading text-sm font-semibold tracking-wide ${color.text} truncate`}>
             {category.category}
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {category.params.length} parameter{category.params.length > 1 ? "s" : ""}
+            {category.params.length} param{category.params.length > 1 ? "s" : ""}
           </p>
         </div>
-        <ChevronRight
-          className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
-            open ? "rotate-90" : ""
-          }`}
-        />
+        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${open ? `${color.bg}` : "bg-muted/60"}`}>
+          <ChevronRight
+            className={`w-4 h-4 transition-transform duration-300 ${open ? `rotate-90 ${color.text}` : "text-muted-foreground"}`}
+          />
+        </div>
       </button>
 
       <AnimatePresence>
@@ -53,10 +53,10 @@ export default function SetupCategorySection({ category, index = 0 }) {
             initial={{ height: 0 }}
             animate={{ height: "auto" }}
             exit={{ height: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-4 space-y-2">
+            <div className="px-4 pb-4 pt-1 space-y-2">
               {category.params.map(param => (
                 <SetupParameterCard key={param.name} param={param} color={color} />
               ))}
