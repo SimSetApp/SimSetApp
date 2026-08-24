@@ -95,9 +95,10 @@
 
 .theme-liquid.mode-light body {
   background-image:
-    radial-gradient(circle at 12% 8%, hsl(211 100% 70% / 0.22), transparent 42%),
-    radial-gradient(circle at 88% 16%, hsl(265 85% 72% / 0.18), transparent 42%),
-    radial-gradient(circle at 50% 96%, hsl(190 85% 68% / 0.18), transparent 48%);
+    radial-gradient(circle at 10% 6%, hsl(211 100% 72% / 0.38), transparent 40%),
+    radial-gradient(circle at 90% 14%, hsl(265 85% 74% / 0.32), transparent 42%),
+    radial-gradient(circle at 50% 98%, hsl(190 90% 70% / 0.30), transparent 46%),
+    radial-gradient(circle at 78% 88%, hsl(330 90% 78% / 0.22), transparent 44%);
   background-attachment: fixed;
 }
 .theme-liquid.mode-dark body {
@@ -439,4 +440,13 @@
   backdrop-filter: blur(30px) saturate(200%);
   -webkit-backdrop-filter: blur(30px) saturate(200%);
   box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.30), inset 1px 0 0 0 hsl(0 0% 100% / 0.10), inset 0 -1px 1px 0 hsl(0 0% 0% / 0.06), 0 14px 44px -16px hsl(0 0% 0% / 0.32);
+}
+
+/* Light mode: stronger transparency + brighter glossy reflection */
+.theme-liquid.mode-light .bg-card,
+.theme-liquid.mode-light .glass,
+.theme-liquid.mode-light .glass-strong {
+  background-color: hsl(var(--card) / 0.42) !important;
+  background-image: linear-gradient(135deg, hsl(0 0% 100% / 0.55), hsl(0 0% 100% / 0.10) 30%, transparent 52%, hsl(210 80% 90% / 0.18)) !important;
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.60), inset 1px 0 0 0 hsl(0 0% 100% / 0.20), inset 0 -1px 2px 0 hsl(220 40% 55% / 0.10), 0 16px 48px -18px hsl(220 50% 35% / 0.26) !important;
 }
