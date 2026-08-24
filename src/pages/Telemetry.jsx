@@ -13,6 +13,7 @@ import { SIM_TITLES } from "../lib/simData";
 import { motion } from "framer-motion";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from "recharts";
 import StatCard from "../components/StatCard";
+import TelemetrySetupSuggestions from "../components/TelemetrySetupSuggestions";
 
 export default function Telemetry() {
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
@@ -94,6 +95,8 @@ export default function Telemetry() {
       setParsing(false);
     }
   };
+
+  const selectedSetup = setups.find(s => s.id === selectedSetupId);
 
   // Correlation: compare lap times with session logs for the same setup
   const setupCorrelation = useMemo(() => {
@@ -287,6 +290,10 @@ export default function Telemetry() {
             </div>
           )}
         </div>
+
+        {parsedData && selectedSetup && (
+          <TelemetrySetupSuggestions telemetry={parsedData} setup={selectedSetup} />
+        )}
       </div>
       <Footer />
     </div>
