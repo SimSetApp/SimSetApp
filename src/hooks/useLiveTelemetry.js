@@ -7,68 +7,160 @@ const STORAGE_KEY = "simsetapp-telemetry-url";
  * Client-side mock telemetry generator — mirrors the Python bridge's mock mode
  * so the dashboard works instantly with no install.
  */
+const MOCK_WAYPOINTS = [
+  [0.00, 268], [0.09, 268], [0.13, 118], [0.18, 152],
+  [0.24, 232], [0.28, 92], [0.33, 138], [0.40, 246],
+  [0.50, 246], [0.54, 108], [0.60, 172], [0.66, 172],
+  [0.70, 84], [0.76, 162], [0.82, 212], [0.88, 128],
+  [0.95, 256], [1.00, 268],
+];
+const MOCK_GEAR_MAX = [0, 92, 138, 184, 226, 262, 292];
+const MOCK_AMBIENT = 25, MOCK_COLD_PRESSURE = 26, MOCK_TOTAL_LAPS = 18, MOCK_PIT_LAP = 9, MOCK_FUEL_START = 100, MOCK_FUEL_PER_LAP = 3.2, MOCK_LAP_LENGTH = 95;
+const MOCK_TYRE_TARGET = { fl: 88, fr: 84, rl: 82, rr: 81 };
+const MOCK_TYRE_WEAR = { fl: 1.15, fr: 1.0, rl: 0.95, rr: 1.05 };
+
+function _mockSmooth(a, b, x) {
+  const f = Math.max(0, Math.min(1, (x - a) / (b - a)));
+  return f * f * (3 - 2 * f);
+}
+function _mockTargetSpeed(phase) {
+  for (let i = 0; i < MOCK_WAYPOINTS.length - 1; i++) {
+    const [p0, s0] = MOCK_WAYPOINTS[i], [p1, s1] = MOCK_WAYPOINTS[i + 1];
+    if (phase <= p1) return s0 + (s1 - s0) * _mockSmooth(p0, p1, phase);
+  }
+  return MOCK_WAYPOINTS[MOCK_WAYPOINTS.length - 1][1];
+}
+
 function makeMockState() {
-  return { t: 0, lap: 1, totalLaps: 30, lapStart: 0, lapLength: 18, best: 17.4, fuel: 95, tyreWear: 0, position: 3, incidents: 0 };
+  return {
+    t: 0, lap: 1, lapStart: 0, speed: 80, gear: 2,
+    throttle: 0, brake: 0, steer: 0, shiftTimer: 0, shiftDir: 0,
+    fuel: MOCK_FUEL_START, best: null, lapDelta: null, position: 4, incidents: 0,
+    cornerDir: 1, lastCorner: false, inPit: false, pitTimer: 0,
+    tyres: {
+      fl: { temp_c: MOCK_AMBIENT + 5, wear_pct: 0 },
+      fr: { temp_c: MOCK_AMBIENT + 4, wear_pct: 0 },
+      rl: { temp_c: MOCK_AMBIENT + 3, wear_pct: 0 },
+      rr: { temp_c: MOCK_AMBIENT + 3, wear_pct: 0 },
+    },
+  };
 }
 
 function mockTick(s) {
-  s.t += 0.05;
-  const lapTime = s.t - s.lapStart;
-  const phase = (lapTime % s.lapLength) / s.lapLength;
-  const speed =
-    phase < 0.15 || (phase > 0.45 && phase < 0.55) || phase > 0.9
-      ? 245 + 25 * Math.sin(phase * 18)
-      : 125 + 55 * Math.abs(Math.sin(phase * 8));
-  const rpm = 3200 + (speed / 280) * 4800;
-  const gear = Math.max(1, Math.min(6, Math.floor(speed / 45)));
-  const throttle = phase < 0.13 || (phase > 0.47 && phase < 0.53) || phase > 0.92 ? 1.0 : 0.35;
-  const brake = (phase > 0.13 && phase < 0.18) || (phase > 0.53 && phase < 0.58) ? 0.85 : 0.0;
-  const steer = 0.35 * Math.sin(phase * 12);
-
+  const dt = 0.05;
+  s.t += dt;
+  let lapTime = s.t - s.lapStart;
+  const phase = (lapTime % MOCK_LAP_LENGTH) / MOCK_LAP_LENGTH;
   let lastLapTime = null;
-  let lapDelta = null;
-  if (lapTime >= s.lapLength) {
-    lastLapTime = +(s.lapLength + (Math.random() - 0.5) * 0.8).toFixed(3);
+
+  if (s.inPit) {
+    s.pitTimer -= dt;
+    s.speed = Math.max(0, s.speed - 40 * dt);
+    s.throttle = 0;
+    s.brake = s.speed > 5 ? 0.3 : 0;
+    s.steer = 0;
+    s.gear = s.speed > 1 ? 1 : 0;
+    for (const k in s.tyres) s.tyres[k].temp_c += (MOCK_AMBIENT + 30 - s.tyres[k].temp_c) * 0.01;
+    s.fuel = Math.min(MOCK_FUEL_START, s.fuel + 8 * dt);
+    if (s.pitTimer <= 0) {
+      s.inPit = false;
+      for (const k in s.tyres) s.tyres[k].wear_pct = 0;
+    }
+  } else {
+    const target = _mockTargetSpeed(phase);
+    const diff = target - s.speed;
+    if (diff > 0) s.speed += Math.max(48 * dt, diff * 0.12);
+    else if (diff < 0) s.speed += Math.min(-58 * dt, diff * 0.12);
+    s.speed = Math.max(0, Math.min(300, s.speed));
+
+    const cur = s.gear;
+    const rpmNow = MOCK_GEAR_MAX[cur] ? (s.speed / MOCK_GEAR_MAX[cur]) * 8000 : 0;
+    if (rpmNow > 7400 && cur < 6 && s.shiftTimer <= 0) { s.gear = cur + 1; s.shiftTimer = 0.18; s.shiftDir = 1; }
+    else if (rpmNow < 3600 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
+
+    if (s.shiftTimer > 0) {
+      s.shiftTimer -= dt;
+      s.throttle = s.shiftDir > 0 ? 0.35 : 0.5;
+    } else if (diff > 2) {
+      s.throttle = target > 200 ? 1.0 : 0.7;
+    } else if (diff > -2) {
+      s.throttle = target > 150 ? 0.55 : 0.3;
+    } else {
+      s.throttle = 0;
+    }
+    s.brake = 0;
+    if (diff < -2) { s.brake = Math.min(1, -diff / 90); s.throttle = 0; }
+
+    const corner = Math.max(0, (200 - target) / 130);
+    const inCorner = corner > 0.15;
+    if (inCorner && !s.lastCorner) s.cornerDir *= -1;
+    s.lastCorner = inCorner;
+    const targetSteer = inCorner ? s.cornerDir * corner : 0;
+    s.steer += (targetSteer - s.steer) * 0.2;
+    s.steer = Math.max(-1, Math.min(1, s.steer));
+
+    const load = corner * 8;
+    for (const k in s.tyres) {
+      const tgt = MOCK_TYRE_TARGET[k] + load + (Math.random() * 0.6 - 0.3);
+      s.tyres[k].temp_c += (tgt - s.tyres[k].temp_c) * 0.03;
+      s.tyres[k].temp_c += Math.random() * 0.3 - 0.15;
+    }
+  }
+
+  const rpm = Math.max(800, Math.min(8000, Math.round(MOCK_GEAR_MAX[s.gear] ? (s.speed / MOCK_GEAR_MAX[s.gear]) * 8000 : 0)));
+
+  if (lapTime >= MOCK_LAP_LENGTH) {
+    const deg = (s.tyres.fl.wear_pct + s.tyres.fr.wear_pct + s.tyres.rl.wear_pct + s.tyres.rr.wear_pct) / 4 * 0.04;
+    lastLapTime = +(MOCK_LAP_LENGTH + (Math.random() - 0.5) * 0.6 + deg).toFixed(3);
+    if (s.best == null || lastLapTime < s.best) s.best = lastLapTime;
+    s.lapDelta = +(lastLapTime - s.best).toFixed(3);
     s.lapStart = s.t;
     s.lap += 1;
-    s.fuel = Math.max(0, s.fuel - 3.1);
-    s.tyreWear = Math.min(100, s.tyreWear + 2.4);
-    lapDelta = +(lastLapTime - s.best).toFixed(3);
-    if (lastLapTime < s.best) s.best = lastLapTime;
+    s.fuel = Math.max(0, s.fuel - MOCK_FUEL_PER_LAP);
+    for (const k in s.tyres) s.tyres[k].wear_pct = Math.min(100, s.tyres[k].wear_pct + MOCK_TYRE_WEAR[k]);
+    if (s.lap === 6 && s.position > 1) s.position -= 1;
+    if (s.lap === MOCK_PIT_LAP + 1) { s.inPit = true; s.pitTimer = 3.5; }
+    if (s.lap > MOCK_TOTAL_LAPS) {
+      s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
+      for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; }
+    }
+    lapTime = 0;
   }
-  const tw = +s.tyreWear.toFixed(1);
-  const j = () => +(Math.random() * 6 - 3).toFixed(1);
-  const tyres = {
-    fl: { temp_c: 84 + j(), wear_pct: tw, pressure_psi: 27.8 },
-    fr: { temp_c: 86 + j(), wear_pct: tw, pressure_psi: 27.9 },
-    rl: { temp_c: 80 + j(), wear_pct: +(tw * 1.1).toFixed(1), pressure_psi: 27.6 },
-    rr: { temp_c: 81 + j(), wear_pct: +(tw * 1.1).toFixed(1), pressure_psi: 27.7 },
-  };
+
+  const tyres = {};
+  for (const k in s.tyres) {
+    tyres[k] = {
+      temp_c: +s.tyres[k].temp_c.toFixed(1),
+      wear_pct: +s.tyres[k].wear_pct.toFixed(1),
+      pressure_psi: +(MOCK_COLD_PRESSURE + (s.tyres[k].temp_c - MOCK_AMBIENT) * 0.06).toFixed(1),
+    };
+  }
+
   return {
     type: "telemetry",
     ts: Date.now() / 1000,
     sim: "Demo Sim",
     connected: true,
     session_type: "Race",
-    track: "Silverstone (Demo)",
+    track: "Silverstone GP (Demo)",
     car: "GT3 Demo Car",
     lap: s.lap,
-    total_laps: s.totalLaps,
+    total_laps: MOCK_TOTAL_LAPS,
     position: s.position,
     incidents: s.incidents,
     current_lap_time: +lapTime.toFixed(3),
     last_lap_time: lastLapTime,
-    best_lap_time: +s.best.toFixed(3),
-    lap_delta: lapDelta,
-    speed_kmh: +speed.toFixed(1),
-    rpm: Math.round(rpm),
+    best_lap_time: s.best != null ? +s.best.toFixed(3) : null,
+    lap_delta: s.lapDelta,
+    speed_kmh: +s.speed.toFixed(1),
+    rpm,
     max_rpm: 8000,
-    gear,
-    throttle: +throttle.toFixed(2),
-    brake: +brake.toFixed(2),
-    steer: +steer.toFixed(2),
+    gear: s.gear,
+    throttle: +s.throttle.toFixed(2),
+    brake: +s.brake.toFixed(2),
+    steer: +s.steer.toFixed(2),
     fuel_litres: +s.fuel.toFixed(1),
-    fuel_per_lap: 3.1,
+    fuel_per_lap: MOCK_FUEL_PER_LAP,
     tyres,
   };
 }

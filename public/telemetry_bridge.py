@@ -48,71 +48,198 @@ DEFAULT_PORT = 3344
 # Telemetry providers — each exposes .read() -> dict (or None) and .sim_name()
 # ---------------------------------------------------------------------------
 class MockProvider:
-    """Generates realistic telemetry so the dashboard works without a sim."""
+    """Realistic lap-by-lap GT3 telemetry so the dashboard works without a sim.
+
+    Models a full race: warm-up, fluid gear shifts (RPM sawtooth with lift/blip),
+    consistent tyre temps that build and stabilise, pressures that track
+    temperature, gradual wear with lap-time degradation, a pit stop for fresh
+    tyres/fuel, and a position change — then loops.
+    """
+
+    WAYPOINTS = [
+        (0.00, 268), (0.09, 268), (0.13, 118), (0.18, 152),
+        (0.24, 232), (0.28, 92), (0.33, 138), (0.40, 246),
+        (0.50, 246), (0.54, 108), (0.60, 172), (0.66, 172),
+        (0.70, 84), (0.76, 162), (0.82, 212), (0.88, 128),
+        (0.95, 256), (1.00, 268),
+    ]
+    GEAR_MAX = [0, 92, 138, 184, 226, 262, 292]  # km/h at redline per gear
+    AMBIENT = 25.0
+    COLD_PRESSURE = 26.0
+    TOTAL_LAPS = 18
+    PIT_LAP = 9
+    FUEL_START = 100.0
+    FUEL_PER_LAP = 3.2
+    LAP_LENGTH = 95.0  # seconds per lap
 
     def __init__(self):
         self.t = 0.0
         self.lap = 1
-        self.total_laps = 20
         self.lap_start = 0.0
-        self.lap_length = 82.0
-        self.best = 81.2
-        self.fuel = 95.0
-        self.tyre_wear = 0.0
-        self.position = 3
+        self.speed = 80.0
+        self.gear = 2
+        self.throttle = 0.0
+        self.brake = 0.0
+        self.steer = 0.0
+        self.shift_timer = 0.0
+        self.shift_dir = 0
+        self.fuel = self.FUEL_START
+        self.best = None
+        self.lap_delta = None
+        self.position = 4
         self.incidents = 0
+        self._corner_dir = 1
+        self._last_corner = False
+        self._in_pit = False
+        self._pit_timer = 0.0
+        self.tyres = {
+            "fl": {"temp_c": self.AMBIENT + 5, "wear_pct": 0.0},
+            "fr": {"temp_c": self.AMBIENT + 4, "wear_pct": 0.0},
+            "rl": {"temp_c": self.AMBIENT + 3, "wear_pct": 0.0},
+            "rr": {"temp_c": self.AMBIENT + 3, "wear_pct": 0.0},
+        }
+        self._tyre_target = {"fl": 88, "fr": 84, "rl": 82, "rr": 81}
+        self._tyre_wear_rate = {"fl": 1.15, "fr": 1.0, "rl": 0.95, "rr": 1.05}
 
     def sim_name(self):
         return "Mock Sim"
 
-    def _speed(self, phase):
-        if phase < 0.15 or 0.45 < phase < 0.55 or phase > 0.90:
-            return 245 + 25 * math.sin(phase * 18)
-        return 125 + 55 * abs(math.sin(phase * 8))
+    def _target_speed(self, phase):
+        wp = self.WAYPOINTS
+        for i in range(len(wp) - 1):
+            p0, s0 = wp[i]
+            p1, s1 = wp[i + 1]
+            if phase <= p1:
+                f = (phase - p0) / (p1 - p0)
+                f = f * f * (3 - 2 * f)  # smoothstep
+                return s0 + (s1 - s0) * f
+        return wp[-1][1]
 
     def read(self):
-        self.t += 0.05
+        dt = 0.05
+        self.t += dt
         lap_time = self.t - self.lap_start
-        phase = (lap_time % self.lap_length) / self.lap_length
-        speed = self._speed(phase)
-        rpm = 3200 + (speed / 280) * 4800
-        gear = max(1, min(6, int(speed / 45)))
-        throttle = 1.0 if (phase < 0.13 or 0.47 < phase < 0.53 or phase > 0.92) else 0.35
-        brake = 0.85 if (0.13 < phase < 0.18 or 0.53 < phase < 0.58) else 0.0
-        steer = 0.35 * math.sin(phase * 12)
+        phase = (lap_time % self.LAP_LENGTH) / self.LAP_LENGTH
+
+        if self._in_pit:
+            self._pit_timer -= dt
+            self.speed = max(0.0, self.speed - 40 * dt)
+            self.throttle = 0.0
+            self.brake = 0.3 if self.speed > 5 else 0.0
+            self.steer = 0.0
+            self.gear = 1 if self.speed > 1 else 0
+            for k in self.tyres:
+                self.tyres[k]["temp_c"] += (self.AMBIENT + 30 - self.tyres[k]["temp_c"]) * 0.01
+            self.fuel = min(self.FUEL_START, self.fuel + 8 * dt)
+            if self._pit_timer <= 0:
+                self._in_pit = False
+                for k in self.tyres:
+                    self.tyres[k]["wear_pct"] = 0.0
+        else:
+            target = self._target_speed(phase)
+            diff = target - self.speed
+            if diff > 0:
+                self.speed += max(48 * dt, diff * 0.12)
+            elif diff < 0:
+                self.speed += min(-58 * dt, diff * 0.12)
+            self.speed = max(0, min(300, self.speed))
+
+            cur = self.gear
+            rpm_now = (self.speed / self.GEAR_MAX[cur]) * 8000 if self.GEAR_MAX[cur] else 0
+            if rpm_now > 7400 and cur < 6 and self.shift_timer <= 0:
+                self.gear = cur + 1
+                self.shift_timer = 0.18
+                self.shift_dir = 1
+            elif rpm_now < 3600 and cur > 1 and self.shift_timer <= 0:
+                self.gear = cur - 1
+                self.shift_timer = 0.16
+                self.shift_dir = -1
+
+            if self.shift_timer > 0:
+                self.shift_timer -= dt
+                self.throttle = 0.35 if self.shift_dir > 0 else 0.5
+            elif diff > 2:
+                self.throttle = 1.0 if target > 200 else 0.7
+            elif diff > -2:
+                self.throttle = 0.55 if target > 150 else 0.3
+            else:
+                self.throttle = 0.0
+
+            self.brake = 0.0
+            if diff < -2:
+                self.brake = min(1.0, (-diff) / 90)
+                self.throttle = 0.0
+
+            corner = max(0.0, (200 - target) / 130)
+            in_corner = corner > 0.15
+            if in_corner and not self._last_corner:
+                self._corner_dir *= -1
+            self._last_corner = in_corner
+            target_steer = self._corner_dir * corner if in_corner else 0.0
+            self.steer += (target_steer - self.steer) * 0.2
+            self.steer = max(-1.0, min(1.0, self.steer))
+
+            load = corner * 8
+            for k, ty in self.tyres.items():
+                tgt = self._tyre_target[k] + load + random.uniform(-0.3, 0.3)
+                ty["temp_c"] += (tgt - ty["temp_c"]) * 0.03
+                ty["temp_c"] += random.uniform(-0.15, 0.15)
+
+        rpm = (self.speed / self.GEAR_MAX[self.gear]) * 8000 if self.GEAR_MAX[self.gear] else 0
+        rpm = max(800, min(8000, int(rpm)))
 
         last_lap_time = None
-        lap_delta = None
-        if lap_time >= self.lap_length:
-            last_lap_time = round(self.lap_length + random.uniform(-0.4, 0.4), 3)
+        if lap_time >= self.LAP_LENGTH:
+            degradation = sum(t["wear_pct"] for t in self.tyres.values()) / 4 * 0.04
+            last_lap_time = round(self.LAP_LENGTH + random.uniform(-0.25, 0.35) + degradation, 3)
+            if self.best is None or last_lap_time < self.best:
+                self.best = last_lap_time
+            self.lap_delta = round(last_lap_time - self.best, 3)
             self.lap_start = self.t
             self.lap += 1
-            self.fuel = max(0, self.fuel - 3.1)
-            self.tyre_wear = min(100, self.tyre_wear + 2.4)
-            lap_delta = round(last_lap_time - self.best, 3)
-            if last_lap_time < self.best:
-                self.best = last_lap_time
+            self.fuel = max(0, self.fuel - self.FUEL_PER_LAP)
+            for k in self.tyres:
+                self.tyres[k]["wear_pct"] = min(100, self.tyres[k]["wear_pct"] + self._tyre_wear_rate[k])
+            if self.lap == 6 and self.position > 1:
+                self.position -= 1
+            if self.lap == self.PIT_LAP + 1:
+                self._in_pit = True
+                self._pit_timer = 3.5
+            if self.lap > self.TOTAL_LAPS:
+                self.lap = 1
+                self.fuel = self.FUEL_START
+                self.best = None
+                self.position = 4
+                for k in self.tyres:
+                    self.tyres[k]["wear_pct"] = 0.0
+                    self.tyres[k]["temp_c"] = self.AMBIENT + 5
             lap_time = 0.0
 
-        tw = round(self.tyre_wear, 1)
-        tyres = {
-            "fl": {"temp_c": round(84 + random.uniform(-3, 3), 1), "wear_pct": tw, "pressure_psi": 27.8},
-            "fr": {"temp_c": round(86 + random.uniform(-3, 3), 1), "wear_pct": tw, "pressure_psi": 27.9},
-            "rl": {"temp_c": round(80 + random.uniform(-3, 3), 1), "wear_pct": round(tw * 1.1, 1), "pressure_psi": 27.6},
-            "rr": {"temp_c": round(81 + random.uniform(-3, 3), 1), "wear_pct": round(tw * 1.1, 1), "pressure_psi": 27.7},
-        }
+        tyres = {}
+        for k, ty in self.tyres.items():
+            tyres[k] = {
+                "temp_c": round(ty["temp_c"], 1),
+                "wear_pct": round(ty["wear_pct"], 1),
+                "pressure_psi": round(self.COLD_PRESSURE + (ty["temp_c"] - self.AMBIENT) * 0.06, 1),
+            }
+
         return {
             "type": "telemetry", "ts": time.time(), "sim": self.sim_name(),
-            "connected": True, "session_type": "Race", "track": "Silverstone (Mock)",
-            "car": "GT3 Demo Car", "lap": self.lap, "total_laps": self.total_laps,
+            "connected": True, "session_type": "Race", "track": "Silverstone GP (Mock)",
+            "car": "GT3 Demo Car", "lap": self.lap, "total_laps": self.TOTAL_LAPS,
             "position": self.position, "incidents": self.incidents,
             "current_lap_time": round(lap_time, 3), "last_lap_time": last_lap_time,
-            "best_lap_time": round(self.best, 3), "lap_delta": lap_delta,
-            "speed_kmh": round(speed, 1), "rpm": int(rpm), "max_rpm": 8000,
-            "gear": gear, "throttle": round(throttle, 2), "brake": round(brake, 2),
-            "steer": round(steer, 2), "fuel_litres": round(self.fuel, 1),
-            "fuel_per_lap": 3.1, "tyres": tyres,
+            "best_lap_time": round(self.best, 3) if self.best else None,
+            "lap_delta": self.lap_delta,
+            "speed_kmh": round(self.speed, 1), "rpm": rpm, "max_rpm": 8000,
+            "gear": self.gear, "throttle": round(self.throttle, 2),
+            "brake": round(self.brake, 2), "steer": round(self.steer, 2),
+            "fuel_litres": round(self.fuel, 1), "fuel_per_lap": self.FUEL_PER_LAP,
+            "tyres": tyres,
         }
+
+    def close(self):
+        pass
 
     def close(self):
         pass
