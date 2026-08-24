@@ -216,6 +216,12 @@
 }
 
 @layer components {
+  .font-digi {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
   select:hover {
     @apply border-primary/40 bg-secondary/80;
     transition: border-color 0.15s ease, background-color 0.15s ease;

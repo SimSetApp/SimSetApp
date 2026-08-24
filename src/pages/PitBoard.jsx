@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import MobileHeader from "../components/MobileHeader";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Fuel, Gauge, Flag, Play, Pause, RotateCcw, AlertTriangle, CheckCircle2, Zap, Settings, Plus, Minus, Wrench, Trophy, Clock, Timer } from "lucide-react";
+import RaceGauge from "@/components/RaceGauge";
+import { Fuel, Gauge, Flag, Play, Pause, RotateCcw, AlertTriangle, CheckCircle2, Zap, Settings, Wrench, Trophy, Clock, Timer, ArrowLeft, TrendingUp } from "lucide-react";
 
 const STORE_KEY = "pitboard-race-state-v2";
 
@@ -17,7 +17,6 @@ function loadState() {
 
 const pad = (n, w = 2) => String(n).padStart(w, "0");
 
-// mm:ss.t  — race clock
 const fmtRace = (ms) => {
   const total = Math.floor(ms / 100);
   const m = Math.floor(total / 600);
@@ -26,7 +25,6 @@ const fmtRace = (ms) => {
   return `${m}:${pad(s)}.${t}`;
 };
 
-// m:ss.ttt — lap time
 const fmtLap = (ms) => {
   const totalMs = Math.max(0, Math.round(ms));
   const m = Math.floor(totalMs / 60000);
@@ -35,7 +33,10 @@ const fmtLap = (ms) => {
   return `${m}:${pad(s)}.${pad(ms3, 3)}`;
 };
 
+const fmtDelta = (ms) => `+${(ms / 1000).toFixed(3)}`;
+
 export default function PitBoard() {
+  const navigate = useNavigate();
   const saved = loadState();
   const [running, setRunning] = useState(saved?.running ?? false);
   const [baseMs, setBaseMs] = useState(saved?.elapsedMs ?? 0);
@@ -50,15 +51,14 @@ export default function PitBoard() {
   const [tyreWearPerLap, setTyreWearPerLap] = useState(saved?.tyreWearPerLap ?? 3);
   const [laps, setLaps] = useState(saved?.laps ?? []);
   const [lastLapMs, setLastLapMs] = useState(saved?.lastLapMs ?? 0);
+  const [justLapped, setJustLapped] = useState(false);
   const intervalRef = useRef(null);
 
-  // Resume timer if it was running
   useEffect(() => {
     if (running) setStartedAt(Date.now());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Tick
   useEffect(() => {
     if (running) {
       intervalRef.current = setInterval(() => setNow(Date.now()), 100);
@@ -68,7 +68,6 @@ export default function PitBoard() {
 
   const elapsedMs = running && startedAt ? baseMs + (Date.now() - startedAt) : baseMs;
 
-  // Persist
   useEffect(() => {
     const data = {
       running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps,
@@ -96,9 +95,10 @@ export default function PitBoard() {
     setLapsCompleted(l => l + 1);
     setCurrentFuel(f => Math.max(0, +(f - fuelPerLap).toFixed(2)));
     setTyreCondition(t => Math.max(0, +(t - tyreWearPerLap).toFixed(1)));
+    setJustLapped(true);
+    setTimeout(() => setJustLapped(false), 350);
   }, [running, startedAt, baseMs, lastLapMs, fuelPerLap, tyreWearPerLap]);
 
-  // Keyboard: space = lap, p = play/pause
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
@@ -110,16 +110,20 @@ export default function PitBoard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completeLap]);
 
-  // Strategy calcs
   const lapsOfFuel = fuelPerLap > 0 ? currentFuel / fuelPerLap : 0;
   const lapsOfTyre = tyreWearPerLap > 0 ? tyreCondition / tyreWearPerLap : 0;
   const limitingFactor = Math.min(lapsOfFuel, lapsOfTyre);
   const lapsRemaining = Math.max(0, totalLaps - lapsCompleted);
   const limiter = lapsOfFuel < lapsOfTyre ? "fuel" : "tyres";
+  const needPit = limitingFactor < lapsRemaining;
+  const pitLap = Math.floor(lapsCompleted + Math.max(0, limitingFactor));
+  const progressPct = totalLaps > 0 ? (lapsCompleted / totalLaps) * 100 : 0;
+  const pitPct = totalLaps > 0 && pitLap <= totalLaps ? (pitLap / totalLaps) * 100 : null;
 
   const validLaps = laps.filter(l => l > 0);
   const lastLap = laps.length ? laps[laps.length - 1] : null;
   const bestLap = validLaps.length ? Math.min(...validLaps) : null;
+  const isLastBest = lastLap != null && bestLap != null && lastLap === bestLap && lastLap > 0;
 
   let status;
   if (lapsRemaining <= 0) {
@@ -158,28 +162,44 @@ export default function PitBoard() {
   };
 
   const toneText = { good: "text-green-400", warn: "text-amber-400", bad: "text-red-400", safe: "text-green-400", urgent: "text-red-400", done: "text-primary" };
-  const toneBar = { good: "bg-green-500", warn: "bg-amber-500", bad: "bg-red-500" };
-  const toneBg = { safe: "border-green-500/40 bg-green-500/10", warn: "border-amber-500/40 bg-amber-500/10", urgent: "border-red-500/50 bg-red-500/15", done: "border-primary/40 bg-primary/10" };
+  // Full-width sector banner: left accent + tinted background, no rounded corners
+  const bannerAccent = { safe: "border-l-green-500", warn: "border-l-amber-500", urgent: "border-l-red-500", done: "border-l-primary" };
+  const bannerBg = { safe: "bg-green-500/10", warn: "bg-amber-500/10", urgent: "bg-red-500/15", done: "bg-primary/10" };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <MobileHeader title="Pit Board" />
-      <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-1">
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Immersive accent glow */}
+      <div className="fixed inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at top, hsl(var(--primary) / 0.07), transparent 55%)" }} />
+      {/* Urgent screen-edge red glow */}
+      {status.tone === "urgent" && (
+        <div className="fixed inset-0 pointer-events-none z-30 animate-pulse" style={{ boxShadow: "inset 0 0 140px rgba(239,68,68,0.28)" }} />
+      )}
+
+      {/* Floating back button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 z-40 flex items-center justify-center w-10 h-10 rounded-full border border-border/60 bg-card/70 backdrop-blur-md text-muted-foreground hover:text-foreground transition-colors"
+        style={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-4 h-4" />
+      </button>
+
+      <div className="relative max-w-2xl mx-auto px-4 pt-16 pb-28">
+        <div className="mb-6 text-center">
+          <div className="flex items-center justify-center gap-2 mb-1">
             <Flag className="w-5 h-5 text-primary" />
             <h1 className="font-heading text-2xl font-bold tracking-tight">Pit Board</h1>
           </div>
           <p className="text-sm text-muted-foreground">Tap <span className="font-semibold text-foreground">Complete Lap</span> each lap — lap time, fuel, tyres & pit window update automatically.</p>
         </div>
 
-        {/* Timer + controls */}
-        <div className="rounded-2xl border border-border bg-card p-5 mb-3">
+        {/* Race clock — digital, prominent */}
+        <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 mb-3">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">Race Time</div>
-              <div className="text-4xl font-bold tabular-nums font-mono">{fmtRace(elapsedMs)}</div>
+              <div className="text-5xl font-bold tabular-nums font-digi text-primary">{fmtRace(elapsedMs)}</div>
             </div>
             <div className="flex gap-2">
               <Button onClick={toggleRun} size="lg" className="h-12 w-12 rounded-full p-0">
@@ -192,109 +212,122 @@ export default function PitBoard() {
           </div>
         </div>
 
-        {/* Lap counter + last/best */}
-        <div className="rounded-2xl border border-border bg-card p-5 mb-3">
+        {/* Lap counter + last/best with delta */}
+        <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 mb-3">
           <div className="flex items-end justify-between mb-3">
             <div>
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">Lap</div>
-              <div className="text-5xl font-bold tabular-nums leading-none">
+              <div className="text-5xl font-bold tabular-nums leading-none font-digi">
                 {lapsCompleted}<span className="text-muted-foreground text-2xl"> / {totalLaps}</span>
               </div>
             </div>
             <div className="text-right">
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">To Go</div>
-              <div className="text-5xl font-bold tabular-nums leading-none">{lapsRemaining}</div>
+              <div className="text-5xl font-bold tabular-nums leading-none font-digi">{lapsRemaining}</div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
+
+          {/* Race progress strip with pit-window marker */}
+          <div className="relative h-2.5 rounded-full bg-muted/60 overflow-visible mb-4">
+            <div className="absolute left-0 top-0 h-full rounded-full bg-primary/50 transition-all duration-300" style={{ width: `${progressPct}%` }} />
+            {needPit && pitPct != null && (
+              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10" style={{ left: `${pitPct}%` }} title={`Pit around lap ${pitLap}`}>
+                <Flag className="w-3.5 h-3.5 text-amber-400" />
+              </div>
+            )}
+            <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10" style={{ left: `${progressPct}%` }}>
+              <div className="w-3 h-3 rounded-full bg-primary ring-2 ring-background" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/50">
             <div className="flex items-center gap-2">
               <Timer className="w-4 h-4 text-muted-foreground" />
-              <div>
+              <div className="flex-1">
                 <div className="text-[10px] text-muted-foreground tracking-widest uppercase">Last Lap</div>
-                <div className="text-lg font-bold tabular-nums font-mono">{lastLap != null ? fmtLap(lastLap) : "—:—.—"}</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-lg font-bold tabular-nums font-digi">{lastLap != null ? fmtLap(lastLap) : "—:—.—"}</span>
+                  {lastLap != null && bestLap != null && (
+                    isLastBest
+                      ? <span className="text-purple-400 text-[10px] font-bold tracking-widest">BEST</span>
+                      : <span className="text-red-400 text-[11px] tabular-nums font-digi">{fmtDelta(lastLap - bestLap)}</span>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" />
+              <TrendingUp className="w-4 h-4 text-primary" />
               <div>
                 <div className="text-[10px] text-muted-foreground tracking-widest uppercase">Best Lap</div>
-                <div className="text-lg font-bold tabular-nums font-mono text-primary">{bestLap != null ? fmtLap(bestLap) : "—:—.—"}</div>
+                <div className="text-lg font-bold tabular-nums font-digi text-primary">{bestLap != null ? fmtLap(bestLap) : "—:—.—"}</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Primary action: Complete Lap */}
-        <button
+        <motion.button
           onClick={completeLap}
-          className="w-full h-20 rounded-2xl bg-primary text-primary-foreground font-heading text-2xl font-bold tracking-wider active:scale-[0.99] transition-transform shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mb-3 select-none"
+          whileTap={{ scale: 0.98 }}
+          className={`w-full h-20 rounded-2xl bg-primary text-primary-foreground font-heading text-2xl font-bold tracking-wider transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mb-3 select-none ${justLapped ? "ring-4 ring-primary/40" : ""}`}
         >
           <Zap className="w-7 h-7" />
           COMPLETE LAP
-        </button>
+        </motion.button>
         <p className="text-center text-[11px] text-muted-foreground mb-4">or press <span className="font-semibold text-foreground">Space</span></p>
 
-        {/* Pit status banner */}
-        <div className={`rounded-2xl border p-5 mb-3 ${status.tone === "urgent" ? "animate-pulse" : ""} ${toneBg[status.tone]}`}>
-          <div className="flex items-center gap-3">
-            <status.icon className={`w-9 h-9 shrink-0 ${toneText[status.tone]}`} />
-            <div className="flex-1">
-              <div className={`font-heading text-2xl font-bold tracking-wide ${toneText[status.tone]}`}>{status.text}</div>
-              {status.tone !== "safe" && status.tone !== "done" && fuelToAdd > 0 && (
-                <div className="text-sm text-muted-foreground mt-1">
-                  Add <span className="font-bold text-foreground">{fuelToAdd.toFixed(1)} L</span> at pit to reach the finish.
-                </div>
-              )}
-              {status.tone === "urgent" && (
-                <div className="text-sm text-muted-foreground mt-1">Limited by {limiter}.</div>
-              )}
+        {/* Sector-style pit banner — full-width band */}
+        <div className={`-mx-4 mb-3 ${status.tone === "urgent" ? "animate-pulse" : ""}`}>
+          <div className={`px-5 py-5 border-l-4 ${bannerAccent[status.tone]} ${bannerBg[status.tone]}`}>
+            <div className="flex items-center gap-3">
+              <status.icon className={`w-9 h-9 shrink-0 ${toneText[status.tone]}`} />
+              <div className="flex-1">
+                <div className={`font-heading text-2xl font-bold tracking-wide ${toneText[status.tone]}`}>{status.text}</div>
+                {status.tone !== "safe" && status.tone !== "done" && fuelToAdd > 0 && (
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Add <span className="font-bold text-foreground">{fuelToAdd.toFixed(1)} L</span> at pit to reach the finish.
+                  </div>
+                )}
+                {status.tone === "urgent" && (
+                  <div className="text-sm text-muted-foreground mt-1">Limited by {limiter}.</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Fuel & Tyres glance cards */}
+        {/* Circular fuel & tyre gauges */}
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Fuel className={`w-5 h-5 ${toneText[fuelTone]}`} />
-              <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase">Fuel</span>
-            </div>
-            <div className={`text-3xl font-bold tabular-nums ${toneText[fuelTone]}`}>{lapsOfFuel.toFixed(1)}</div>
-            <div className="text-[11px] text-muted-foreground">laps of fuel</div>
-            <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
-              <div className={`h-full rounded-full transition-all ${toneBar[fuelTone]}`} style={{ width: `${Math.min(100, fuelPct)}%` }} />
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 tabular-nums">{currentFuel.toFixed(1)} / {tankSize} L</div>
-            <div className="flex gap-1.5 mt-2">
-              <button onClick={() => setCurrentFuel(f => Math.max(0, +(f - 1).toFixed(2)))} className="flex-1 h-8 rounded-lg border border-border bg-secondary text-sm font-bold active:scale-95 transition-transform flex items-center justify-center"><Minus className="w-4 h-4" /></button>
-              <button onClick={() => setCurrentFuel(f => Math.min(tankSize, +(f + 1).toFixed(2)))} className="flex-1 h-8 rounded-lg border border-border bg-secondary text-sm font-bold active:scale-95 transition-transform flex items-center justify-center"><Plus className="w-4 h-4" /></button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Gauge className={`w-5 h-5 ${toneText[tyreTone]}`} />
-              <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase">Tyres</span>
-            </div>
-            <div className={`text-3xl font-bold tabular-nums ${toneText[tyreTone]}`}>{lapsOfTyre.toFixed(1)}</div>
-            <div className="text-[11px] text-muted-foreground">laps of life</div>
-            <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
-              <div className={`h-full rounded-full transition-all ${toneBar[tyreTone]}`} style={{ width: `${Math.min(100, tyreCondition)}%` }} />
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 tabular-nums">{Math.round(tyreCondition)}% life</div>
-            <div className="flex gap-1.5 mt-2">
-              <button onClick={() => setTyreCondition(t => Math.max(0, +(t - 5).toFixed(1)))} className="flex-1 h-8 rounded-lg border border-border bg-secondary text-sm font-bold active:scale-95 transition-transform flex items-center justify-center"><Minus className="w-4 h-4" /></button>
-              <button onClick={() => setTyreCondition(t => Math.min(100, +(t + 5).toFixed(1)))} className="flex-1 h-8 rounded-lg border border-border bg-secondary text-sm font-bold active:scale-95 transition-transform flex items-center justify-center"><Plus className="w-4 h-4" /></button>
-            </div>
-          </div>
+          <RaceGauge
+            value={fuelPct}
+            tone={fuelTone}
+            icon={Fuel}
+            centerValue={lapsOfFuel.toFixed(1)}
+            unit="laps"
+            label="Fuel"
+            sublabel={`${currentFuel.toFixed(1)} / ${tankSize} L`}
+            onMinus={() => setCurrentFuel(f => Math.max(0, +(f - 1).toFixed(2)))}
+            onPlus={() => setCurrentFuel(f => Math.min(tankSize, +(f + 1).toFixed(2)))}
+          />
+          <RaceGauge
+            value={tyreCondition}
+            tone={tyreTone}
+            icon={Gauge}
+            centerValue={lapsOfTyre.toFixed(1)}
+            unit="laps"
+            label="Tyres"
+            sublabel={`${Math.round(tyreCondition)}% life`}
+            onMinus={() => setTyreCondition(t => Math.max(0, +(t - 5).toFixed(1)))}
+            onPlus={() => setTyreCondition(t => Math.min(100, +(t + 5).toFixed(1)))}
+          />
         </div>
 
         {/* Pit service buttons */}
         <div className="grid grid-cols-3 gap-2 mb-4">
-          <button onClick={() => pitService(true, false)} className="h-11 rounded-xl border border-border bg-secondary text-xs font-heading font-semibold tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+          <button onClick={() => pitService(true, false)} className="h-11 rounded-xl border border-border/50 bg-secondary/60 text-xs font-heading font-semibold tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-1.5">
             <Fuel className="w-4 h-4" /> Fuel Only
           </button>
-          <button onClick={() => pitService(false, true)} className="h-11 rounded-xl border border-border bg-secondary text-xs font-heading font-semibold tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+          <button onClick={() => pitService(false, true)} className="h-11 rounded-xl border border-border/50 bg-secondary/60 text-xs font-heading font-semibold tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-1.5">
             <Gauge className="w-4 h-4" /> Tyres Only
           </button>
           <button onClick={() => pitService(true, true)} className="h-11 rounded-xl border border-primary/40 bg-primary/10 text-xs font-heading font-semibold tracking-wide text-primary active:scale-95 transition-transform flex items-center justify-center gap-1.5">
@@ -304,27 +337,33 @@ export default function PitBoard() {
 
         {/* Lap log */}
         {laps.length > 0 && (
-          <details className="rounded-2xl border border-border bg-card p-5 mb-4" open>
+          <details className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 mb-4" open>
             <summary className="cursor-pointer font-heading text-sm font-bold tracking-wide flex items-center gap-2">
               <Timer className="w-4 h-4 text-primary" /> Lap Log <span className="text-muted-foreground font-normal">({laps.length})</span>
             </summary>
-            <div className="mt-3 space-y-1 max-h-48 overflow-y-auto">
+            <div className="mt-3 space-y-1 max-h-56 overflow-y-auto">
               {laps.map((l, i) => {
                 const isBest = bestLap != null && l === bestLap && l > 0;
                 return (
-                  <div key={i} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-sm tabular-nums font-mono ${isBest ? "bg-primary/10 text-primary font-bold" : "bg-secondary/50"}`}>
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-sm tabular-nums font-digi ${isBest ? "bg-primary/10 text-primary font-bold" : "bg-secondary/40"}`}
+                  >
                     <span className="text-muted-foreground">L{pad(i + 1)}</span>
                     <span>{l > 0 ? fmtLap(l) : "—:—.—"}</span>
-                    {isBest && <span className="text-[10px] tracking-widest">BEST</span>}
-                  </div>
+                    {isBest ? <span className="text-[10px] tracking-widest text-purple-400">BEST</span> : <span className="w-8" />}
+                  </motion.div>
                 );
               })}
             </div>
           </details>
         )}
 
-        {/* Settings (pre-race) */}
-        <details className="rounded-2xl border border-border bg-card p-5">
+        {/* Settings */}
+        <details className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5">
           <summary className="cursor-pointer font-heading text-sm font-bold tracking-wide flex items-center gap-2">
             <Settings className="w-4 h-4 text-primary" /> Race Settings
           </summary>
@@ -339,7 +378,6 @@ export default function PitBoard() {
           <p className="text-[11px] text-muted-foreground mt-3">Set these before the race. Your race state & lap times are saved automatically — refreshing the page won't lose them.</p>
         </details>
       </div>
-      <Footer />
     </div>
   );
 }
@@ -353,7 +391,7 @@ function SettingField({ label, value, onChange, step }) {
         step={step}
         value={value}
         onChange={e => onChange(+e.target.value)}
-        className="w-full h-9 rounded-lg border border-border bg-secondary text-sm px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+        className="w-full h-9 rounded-lg border border-border/50 bg-secondary/60 text-sm px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
       />
     </div>
   );
