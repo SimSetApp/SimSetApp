@@ -3,9 +3,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MobileHeader from "../components/MobileHeader";
 import { Button } from "@/components/ui/button";
-import { Fuel, Gauge, Flag, Play, Pause, RotateCcw, AlertTriangle, CheckCircle2, Zap, Settings, Plus, Minus, Wrench, Trophy } from "lucide-react";
+import { Fuel, Gauge, Flag, Play, Pause, RotateCcw, AlertTriangle, CheckCircle2, Zap, Settings, Plus, Minus, Wrench, Trophy, Clock, Timer } from "lucide-react";
 
-const STORE_KEY = "pitboard-race-state-v1";
+const STORE_KEY = "pitboard-race-state-v2";
 
 function loadState() {
   try {
@@ -15,10 +15,32 @@ function loadState() {
   return null;
 }
 
+const pad = (n, w = 2) => String(n).padStart(w, "0");
+
+// mm:ss.t  — race clock
+const fmtRace = (ms) => {
+  const total = Math.floor(ms / 100);
+  const m = Math.floor(total / 600);
+  const s = Math.floor((total % 600) / 10);
+  const t = total % 10;
+  return `${m}:${pad(s)}.${t}`;
+};
+
+// m:ss.ttt — lap time
+const fmtLap = (ms) => {
+  const totalMs = Math.max(0, Math.round(ms));
+  const m = Math.floor(totalMs / 60000);
+  const s = Math.floor((totalMs % 60000) / 1000);
+  const ms3 = totalMs % 1000;
+  return `${m}:${pad(s)}.${pad(ms3, 3)}`;
+};
+
 export default function PitBoard() {
   const saved = loadState();
   const [running, setRunning] = useState(saved?.running ?? false);
-  const [elapsed, setElapsed] = useState(saved?.elapsed ?? 0);
+  const [baseMs, setBaseMs] = useState(saved?.elapsedMs ?? 0);
+  const [startedAt, setStartedAt] = useState(null);
+  const [now, setNow] = useState(0);
   const [fuelPerLap, setFuelPerLap] = useState(saved?.fuelPerLap ?? 3.0);
   const [tankSize, setTankSize] = useState(saved?.tankSize ?? 100);
   const [currentFuel, setCurrentFuel] = useState(saved?.currentFuel ?? 100);
@@ -26,43 +48,66 @@ export default function PitBoard() {
   const [lapsCompleted, setLapsCompleted] = useState(saved?.lapsCompleted ?? 0);
   const [tyreCondition, setTyreCondition] = useState(saved?.tyreCondition ?? 100);
   const [tyreWearPerLap, setTyreWearPerLap] = useState(saved?.tyreWearPerLap ?? 3);
+  const [laps, setLaps] = useState(saved?.laps ?? []);
+  const [lastLapMs, setLastLapMs] = useState(saved?.lastLapMs ?? 0);
   const intervalRef = useRef(null);
 
-  // Persist
+  // Resume timer if it was running
   useEffect(() => {
-    const data = { running, elapsed, fuelPerLap, tankSize, currentFuel, totalLaps, lapsCompleted, tyreCondition, tyreWearPerLap };
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch {}
-  }, [running, elapsed, fuelPerLap, tankSize, currentFuel, totalLaps, lapsCompleted, tyreCondition, tyreWearPerLap]);
+    if (running) setStartedAt(Date.now());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Timer
+  // Tick
   useEffect(() => {
     if (running) {
-      intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+      intervalRef.current = setInterval(() => setNow(Date.now()), 100);
       return () => clearInterval(intervalRef.current);
     }
   }, [running]);
 
-  const formatTime = (s) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
+  const elapsedMs = running && startedAt ? baseMs + (Date.now() - startedAt) : baseMs;
+
+  // Persist
+  useEffect(() => {
+    const data = {
+      running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps,
+      lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs,
+    };
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch {}
+  }, [running, elapsedMs, fuelPerLap, tankSize, currentFuel, totalLaps, lapsCompleted, tyreCondition, tyreWearPerLap, laps, lastLapMs]);
+
+  const toggleRun = () => {
+    if (running) {
+      setBaseMs(b => b + (Date.now() - startedAt));
+      setStartedAt(null);
+      setRunning(false);
+    } else {
+      setStartedAt(Date.now());
+      setRunning(true);
+    }
   };
 
   const completeLap = useCallback(() => {
+    const cur = running && startedAt ? baseMs + (Date.now() - startedAt) : baseMs;
+    const split = cur - lastLapMs;
+    setLaps(l => [...l, split]);
+    setLastLapMs(cur);
     setLapsCompleted(l => l + 1);
     setCurrentFuel(f => Math.max(0, +(f - fuelPerLap).toFixed(2)));
     setTyreCondition(t => Math.max(0, +(t - tyreWearPerLap).toFixed(1)));
-  }, [fuelPerLap, tyreWearPerLap]);
+  }, [running, startedAt, baseMs, lastLapMs, fuelPerLap, tyreWearPerLap]);
 
   // Keyboard: space = lap, p = play/pause
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
       if (e.code === "Space") { e.preventDefault(); completeLap(); }
-      else if (e.key === "p" || e.key === "P") { setRunning(r => !r); }
+      else if (e.key === "p" || e.key === "P") { toggleRun(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completeLap]);
 
   // Strategy calcs
@@ -72,7 +117,10 @@ export default function PitBoard() {
   const lapsRemaining = Math.max(0, totalLaps - lapsCompleted);
   const limiter = lapsOfFuel < lapsOfTyre ? "fuel" : "tyres";
 
-  // Pit status
+  const validLaps = laps.filter(l => l > 0);
+  const lastLap = laps.length ? laps[laps.length - 1] : null;
+  const bestLap = validLaps.length ? Math.min(...validLaps) : null;
+
   let status;
   if (lapsRemaining <= 0) {
     status = { text: "FINISHED", tone: "done", icon: Trophy };
@@ -86,7 +134,6 @@ export default function PitBoard() {
     status = { text: `PIT IN ${Math.floor(limitingFactor)} LAPS`, tone: "warn", icon: AlertTriangle };
   }
 
-  // Fuel to add at pit to reach the finish (with 0.5 lap margin)
   const fuelNeededToFinish = Math.max(0, (lapsRemaining + 0.5) * fuelPerLap - currentFuel);
   const fuelToAdd = Math.min(tankSize - currentFuel, Math.ceil(fuelNeededToFinish * 10) / 10);
 
@@ -96,10 +143,13 @@ export default function PitBoard() {
 
   const reset = () => {
     setRunning(false);
-    setElapsed(0);
+    setStartedAt(null);
+    setBaseMs(0);
     setLapsCompleted(0);
     setCurrentFuel(tankSize);
     setTyreCondition(100);
+    setLaps([]);
+    setLastLapMs(0);
   };
 
   const pitService = (refuel, newTyres) => {
@@ -121,7 +171,7 @@ export default function PitBoard() {
             <Flag className="w-5 h-5 text-primary" />
             <h1 className="font-heading text-2xl font-bold tracking-tight">Pit Board</h1>
           </div>
-          <p className="text-sm text-muted-foreground">Glanceable race strategy. Tap <span className="font-semibold text-foreground">Complete Lap</span> each lap — fuel, tyres & pit window update automatically.</p>
+          <p className="text-sm text-muted-foreground">Tap <span className="font-semibold text-foreground">Complete Lap</span> each lap — lap time, fuel, tyres & pit window update automatically.</p>
         </div>
 
         {/* Timer + controls */}
@@ -129,10 +179,10 @@ export default function PitBoard() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">Race Time</div>
-              <div className="text-4xl font-bold tabular-nums font-mono">{formatTime(elapsed)}</div>
+              <div className="text-4xl font-bold tabular-nums font-mono">{fmtRace(elapsedMs)}</div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={() => setRunning(r => !r)} size="lg" className="h-12 w-12 rounded-full p-0">
+              <Button onClick={toggleRun} size="lg" className="h-12 w-12 rounded-full p-0">
                 {running ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
               </Button>
               <Button onClick={reset} variant="outline" size="lg" className="h-12 w-12 rounded-full p-0">
@@ -142,9 +192,9 @@ export default function PitBoard() {
           </div>
         </div>
 
-        {/* Lap counter */}
+        {/* Lap counter + last/best */}
         <div className="rounded-2xl border border-border bg-card p-5 mb-3">
-          <div className="flex items-end justify-between">
+          <div className="flex items-end justify-between mb-3">
             <div>
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">Lap</div>
               <div className="text-5xl font-bold tabular-nums leading-none">
@@ -154,6 +204,22 @@ export default function PitBoard() {
             <div className="text-right">
               <div className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase mb-1">To Go</div>
               <div className="text-5xl font-bold tabular-nums leading-none">{lapsRemaining}</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <div className="text-[10px] text-muted-foreground tracking-widest uppercase">Last Lap</div>
+                <div className="text-lg font-bold tabular-nums font-mono">{lastLap != null ? fmtLap(lastLap) : "—:—.—"}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary" />
+              <div>
+                <div className="text-[10px] text-muted-foreground tracking-widest uppercase">Best Lap</div>
+                <div className="text-lg font-bold tabular-nums font-mono text-primary">{bestLap != null ? fmtLap(bestLap) : "—:—.—"}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -168,7 +234,7 @@ export default function PitBoard() {
         </button>
         <p className="text-center text-[11px] text-muted-foreground mb-4">or press <span className="font-semibold text-foreground">Space</span></p>
 
-        {/* Pit status banner — the single most glanceable element */}
+        {/* Pit status banner */}
         <div className={`rounded-2xl border p-5 mb-3 ${status.tone === "urgent" ? "animate-pulse" : ""} ${toneBg[status.tone]}`}>
           <div className="flex items-center gap-3">
             <status.icon className={`w-9 h-9 shrink-0 ${toneText[status.tone]}`} />
@@ -188,7 +254,6 @@ export default function PitBoard() {
 
         {/* Fuel & Tyres glance cards */}
         <div className="grid grid-cols-2 gap-3 mb-3">
-          {/* Fuel */}
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center gap-2 mb-2">
               <Fuel className={`w-5 h-5 ${toneText[fuelTone]}`} />
@@ -206,7 +271,6 @@ export default function PitBoard() {
             </div>
           </div>
 
-          {/* Tyres */}
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center gap-2 mb-2">
               <Gauge className={`w-5 h-5 ${toneText[tyreTone]}`} />
@@ -238,6 +302,27 @@ export default function PitBoard() {
           </button>
         </div>
 
+        {/* Lap log */}
+        {laps.length > 0 && (
+          <details className="rounded-2xl border border-border bg-card p-5 mb-4" open>
+            <summary className="cursor-pointer font-heading text-sm font-bold tracking-wide flex items-center gap-2">
+              <Timer className="w-4 h-4 text-primary" /> Lap Log <span className="text-muted-foreground font-normal">({laps.length})</span>
+            </summary>
+            <div className="mt-3 space-y-1 max-h-48 overflow-y-auto">
+              {laps.map((l, i) => {
+                const isBest = bestLap != null && l === bestLap && l > 0;
+                return (
+                  <div key={i} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-sm tabular-nums font-mono ${isBest ? "bg-primary/10 text-primary font-bold" : "bg-secondary/50"}`}>
+                    <span className="text-muted-foreground">L{pad(i + 1)}</span>
+                    <span>{l > 0 ? fmtLap(l) : "—:—.—"}</span>
+                    {isBest && <span className="text-[10px] tracking-widest">BEST</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        )}
+
         {/* Settings (pre-race) */}
         <details className="rounded-2xl border border-border bg-card p-5">
           <summary className="cursor-pointer font-heading text-sm font-bold tracking-wide flex items-center gap-2">
@@ -251,7 +336,7 @@ export default function PitBoard() {
             <SettingField label="Tyre Wear / Lap (%)" value={tyreWearPerLap} onChange={setTyreWearPerLap} step={0.5} />
             <SettingField label="Tyre Life (%)" value={tyreCondition} onChange={setTyreCondition} step={1} />
           </div>
-          <p className="text-[11px] text-muted-foreground mt-3">Set these before the race. Your race state is saved automatically — refreshing the page won't lose it.</p>
+          <p className="text-[11px] text-muted-foreground mt-3">Set these before the race. Your race state & lap times are saved automatically — refreshing the page won't lose them.</p>
         </details>
       </div>
       <Footer />
