@@ -5,7 +5,6 @@ import MobileHeader from "../components/MobileHeader";
 import CarSelector from "../components/CarSelector";
 import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
-import CarDiagram from "../components/CarDiagram";
 import SmartSetupMatch from "../components/SmartSetupMatch";
 import { SETUP_PARAMETERS } from "../lib/simData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,23 +15,10 @@ import TyreAnalyzer from "../components/TyreAnalyzer";
 export default function SetupGuide() {
   const [sim, setSim] = useState("");
   const [car, setCar] = useState("");
-  const [activeCategory, setActiveCategory] = useState(null);
   const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
   const defaultTab = urlParams.get("tab") || "parameters";
-
-  // Map car diagram category IDs to SETUP_PARAMETERS indices
-  const categoryMap = {
-    tyres: 0,
-    geometry: 1,
-    suspension: 2,
-    arb: 3,
-    aero: 4,
-    diff: 5,
-    brakes: 6,
-    electronics: 7,
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,16 +97,6 @@ export default function SetupGuide() {
                 Open
               </button>
             </div>
-
-            {/* Interactive Car Diagram */}
-            <CarDiagram onSelect={(id) => {
-              const idx = categoryMap[id];
-              if (idx !== undefined) {
-                setActiveCategory(id);
-                const el = document.getElementById(`category-${idx}`);
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-              }
-            }} activeCategory={activeCategory} />
 
             {/* Parameter categories */}
             {SETUP_PARAMETERS.map((cat, idx) => (
