@@ -7,9 +7,12 @@ Reads live telemetry from your sim and streams it to the SimSetApp
 The browser dashboard connects directly to this bridge — no cloud round-trip,
 zero latency, and your data never leaves your machine.
 
+Uses aiohttp which handles both HTTP (Chrome's PNA preflight) and WebSocket
+upgrades on the same port natively — no fragile process_request hacks.
+
 -----------------------------------------------------------------------------
 ONE-CLICK (auto-detect — no flags needed):
-    pip install websockets psutil
+    pip install aiohttp psutil
     python telemetry_bridge.py
     # launch your sim → the bridge detects it automatically and goes live
 
@@ -34,22 +37,19 @@ import time
 from datetime import datetime
 
 try:
-    import websockets
+    from aiohttp import web, WSMsgType
 except ImportError:
-    raise SystemExit("Missing dependency. Install with:  pip install websockets")
+    raise SystemExit("Missing dependency. Install with:  pip install aiohttp")
 
 DEFAULT_PORT = 3344
 
 
-def now_iso():
-    return datetime.utcnow().isoformat() + "Z"
-
-
-def safe(v, default=None):
-    return v if v is not None else default
-
-
+# ---------------------------------------------------------------------------
+# Telemetry providers — each exposes .read() -> dict (or None) and .sim_name()
+# ---------------------------------------------------------------------------
 class MockProvider:
+    """Generates realistic telemetry so the dashboard works without a sim."""
+
     def __init__(self):
         self.t = 0.0
         self.lap = 1
@@ -116,6 +116,8 @@ class MockProvider:
 
 
 class iRacingProvider:
+    """Reads iRacing telemetry via the irsdk library (pip install irsdk)."""
+
     def __init__(self):
         try:
             import irsdk
@@ -176,6 +178,8 @@ class iRacingProvider:
 
 
 class ACCProvider:
+    """ACC reads from shared memory. See README for the pyaccsharedmemory setup."""
+
     def __init__(self):
         try:
             import acc_shared_memory as asm  # noqa
@@ -216,6 +220,10 @@ class ACCProvider:
 
 PROVIDERS = {"mock": MockProvider, "iracing": iRacingProvider, "acc": ACCProvider}
 
+
+# ---------------------------------------------------------------------------
+# Sim auto-detection (psutil)
+# ---------------------------------------------------------------------------
 SIM_PROFILES = [
     ("iracing", ["iRacingSim64.exe", "iRacingSim64DX11.exe"], "iracing"),
     ("acc", ["acc.exe"], "acc"),
@@ -258,10 +266,20 @@ def make_provider(key):
         return None
 
 
+# ---------------------------------------------------------------------------
+# Shared state
+# ---------------------------------------------------------------------------
 clients = set()
 state = {"provider": None, "sim": None, "manual": None, "warned_psutil": False, "warned_missing": set()}
 
 
+def ts():
+    return datetime.now().strftime("%H:%M:%S")
+
+
+# ---------------------------------------------------------------------------
+# Sim detection loop
+# ---------------------------------------------------------------------------
 async def detect_loop():
     while True:
         if state["manual"]:
@@ -270,7 +288,7 @@ async def detect_loop():
                 if p:
                     state["provider"] = p
                     state["sim"] = p.sim_name()
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] source: {state['sim']}")
+                    print(f"[{ts()}] source: {state['sim']}")
         else:
             if _psutil is None:
                 if not state["warned_psutil"]:
@@ -286,13 +304,13 @@ async def detect_loop():
                         if p:
                             state["provider"] = p
                             state["sim"] = p.sim_name()
-                            print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {state['sim']}")
+                            print(f"[{ts()}] detected {state['sim']}")
                         elif key not in state["warned_missing"]:
                             state["warned_missing"].add(key)
-                            print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {key} but its telemetry library isn't installed — see README")
+                            print(f"[{ts()}] detected {key} but its telemetry library isn't installed — see README")
                     elif not prov_key and state["sim"] != key:
                         state["sim"] = key
-                        print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {key} (provider coming soon)")
+                        print(f"[{ts()}] detected {key} (provider coming soon)")
                 else:
                     if state["provider"] is not None:
                         try:
@@ -303,10 +321,13 @@ async def detect_loop():
                             pass
                         state["provider"] = None
                         state["sim"] = None
-                        print(f"[{datetime.now().strftime('%H:%M:%S')}] sim closed — waiting…")
+                        print(f"[{ts()}] sim closed — waiting…")
         await asyncio.sleep(2)
 
 
+# ---------------------------------------------------------------------------
+# Broadcast loop — sends telemetry or status frames to all connected clients
+# ---------------------------------------------------------------------------
 async def broadcast_loop(hz):
     interval = 1.0 / hz
     last_status = 0.0
@@ -328,97 +349,82 @@ async def broadcast_loop(hz):
                 msg = None
         if msg and clients:
             dead = []
-            for c in list(clients):
+            for ws in list(clients):
                 try:
-                    await c.send(msg)
+                    await ws.send_str(msg)
                 except Exception:
-                    dead.append(c)
-            for c in dead:
-                clients.discard(c)
+                    dead.append(ws)
+            for ws in dead:
+                clients.discard(ws)
         await asyncio.sleep(interval)
 
 
-def _pna_headers():
-    return [
-        ("Access-Control-Allow-Origin", "*"),
-        ("Access-Control-Allow-Private-Network", "true"),
-        ("Access-Control-Allow-Methods", "GET, OPTIONS"),
-        ("Access-Control-Allow-Headers", "*"),
-    ]
+# ---------------------------------------------------------------------------
+# aiohttp handlers
+# ---------------------------------------------------------------------------
+def _cors_headers():
+    return {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Private-Network": "true",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+    }
 
 
-def _is_pna(headers):
-    if not headers:
-        return False
-    try:
-        return headers.get("Access-Control-Request-Private-Network", "").lower() == "true"
-    except Exception:
-        return False
+async def handle_preflight(request):
+    """Answer Chrome's PNA preflight (OPTIONS) — a normal HTTP request, not a hack."""
+    print(f"[{ts()}] PNA preflight answered (200)")
+    return web.Response(status=200, headers=_cors_headers())
 
 
-def process_request(conn_or_path, request_or_headers):
-    """Answer Chrome's Private Network Access (PNA) preflight.
-
-    Chrome blocks public-origin (HTTPS) web pages from reaching local/private
-    network services unless the service responds to the CORS preflight (an
-    OPTIONS request carrying Access-Control-Request-Private-Network: true)
-    with Access-Control-Allow-Private-Network: true.
-
-    Without this, the Live Telemetry dashboard gets
-    ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.
-
-    Uses connection.respond() — the documented stable API in websockets >= 14
-    — with fallbacks for older versions.
-    """
-    # websockets >= 14: (connection, request) with request.method / request.headers
-    if not isinstance(conn_or_path, str):
-        connection = conn_or_path
-        request = request_or_headers
-        method = getattr(request, "method", "GET")
-        headers = getattr(request, "headers", None)
-        if method != "OPTIONS" and not _is_pna(headers):
-            return None  # normal WebSocket upgrade — proceed with handshake
-
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] PNA preflight answered (200)")
-
-        # Primary: connection.respond() — documented stable API (websockets 14+)
-        try:
-            from http import HTTPStatus
-            from websockets.datastructures import Headers
-            return connection.respond(HTTPStatus.OK, b"", Headers(_pna_headers()))
-        except Exception as e:
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] respond() failed ({e}), trying fallback")
-        # Fallback 1: construct Response directly
-        try:
-            from websockets.http11 import Response
-            from websockets.datastructures import Headers
-            return Response(200, "OK", Headers(_pna_headers()), b"")
-        except ImportError:
-            pass
-        # Fallback 2: legacy tuple
-        return (200, _pna_headers(), b"")
-
-    # legacy websockets < 14: (path, request_headers)
-    headers = request_or_headers
-    if not _is_pna(headers):
-        return None
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] PNA preflight answered (legacy 200)")
-    return (200, _pna_headers(), b"")
+async def handle_health(request):
+    """Simple health check — visit localhost:3344/health in a browser."""
+    return web.json_response({"bridge": True, "sim": state["sim"]}, headers=_cors_headers())
 
 
-async def handler(ws):
+async def handle_websocket(request):
+    """WebSocket upgrade — adds the client to the broadcast set."""
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
     clients.add(ws)
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] dashboard connected")
+    print(f"[{ts()}] dashboard connected ({len(clients)} client{'s' if len(clients) != 1 else ''})")
     try:
-        async for _msg in ws:
-            pass
+        async for msg in ws:
+            if msg.type == WSMsgType.ERROR:
+                break
     except Exception:
         pass
     finally:
         clients.discard(ws)
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] dashboard disconnected")
+        print(f"[{ts()}] dashboard disconnected ({len(clients)} client{'s' if len(clients) != 1 else ''})")
+    return ws
 
 
+async def handle_root(request):
+    """Root path — if it's a WebSocket upgrade, handle it; otherwise show health."""
+    if request.headers.get("Upgrade", "").lower() == "websocket":
+        return await handle_websocket(request)
+    return await handle_health(request)
+
+
+def build_app():
+    app = web.Application()
+    # PNA preflight — must be matched before the root handler
+    app.router.add_route("OPTIONS", "/", handle_preflight)
+    app.router.add_route("OPTIONS", "/ws", handle_preflight)
+    app.router.add_route("OPTIONS", "/health", handle_preflight)
+    # Health check
+    app.router.add_get("/health", handle_health)
+    # WebSocket endpoint
+    app.router.add_get("/ws", handle_websocket)
+    # Root — handles both WebSocket upgrades and health checks
+    app.router.add_get("/", handle_root)
+    return app
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 async def main():
     parser = argparse.ArgumentParser(description="SimSetApp Live Telemetry Bridge")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
@@ -430,16 +436,23 @@ async def main():
         state["manual"] = args.sim
 
     print("=" * 60)
-    print(" SimSetApp Telemetry Bridge")
-    print(f" Mode   : {'auto-detect' if args.sim == 'auto' else args.sim}")
-    print(f" WebSocket : ws://localhost:{args.port}")
-    print(f" Rate   : {args.hz} Hz")
+    print(" SimSetApp Telemetry Bridge (aiohttp)")
+    print(f" Mode       : {'auto-detect' if args.sim == 'auto' else args.sim}")
+    print(f" WebSocket  : ws://localhost:{args.port}/ws")
+    print(f" Health     : http://localhost:{args.port}/health")
+    print(f" Rate       : {args.hz} Hz")
     print("=" * 60)
     print("Open SimSetApp -> Live Telemetry -> Connect.\n")
 
-    async with websockets.serve(handler, "localhost", args.port, process_request=process_request):
-        asyncio.create_task(detect_loop())
-        await broadcast_loop(args.hz)
+    app = build_app()
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "localhost", args.port)
+    await site.start()
+    print(f"[{ts()}] server listening on localhost:{args.port}")
+
+    asyncio.create_task(detect_loop())
+    await broadcast_loop(args.hz)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const DEFAULT_URL = "ws://localhost:3344";
+const DEFAULT_URL = "ws://localhost:3344/ws";
 const STORAGE_KEY = "simsetapp-telemetry-url";
 
 /**

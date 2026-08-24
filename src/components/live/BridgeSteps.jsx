@@ -76,10 +76,10 @@ export default function BridgeSteps() {
               <FolderOpen className="w-3 h-3 text-primary mt-0.5 shrink-0" />
               <p><strong className="text-foreground">Windows:</strong> File Explorer → go to the folder → click the address bar, type <code className="font-mono">cmd</code>, press Enter.<br /><strong className="text-foreground">Mac:</strong> right-click the folder → Services → "New Terminal at Folder".</p>
             </div>
-            <CopyChip text="pip install websockets psutil" />
+            <CopyChip text="pip install aiohttp psutil" />
             <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
               <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install websockets psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; ACC uses shared memory (see the script header).</p>
+              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install aiohttp psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; ACC uses shared memory (see the script header).</p>
             </div>
           </Step>
 

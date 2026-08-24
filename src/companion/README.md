@@ -24,7 +24,7 @@ The simplest path: a single double-clickable `.exe` — no Python, no terminal.
 > on your computer. Copy `companion/build-bridge.yml` to
 > `.github/workflows/build-bridge.yml`, then push a tag like `bridge-v1`; the
 > workflow builds and publishes the `.exe` to Releases automatically. Or build
-> locally: `pip install pyinstaller websockets psutil`, then from the
+> locally: `pip install pyinstaller aiohttp psutil`, then from the
 > `companion/` folder run `pyinstaller telemetry_bridge.spec`. Output:
 > `dist/SimSetAppBridge.exe` (single file).
 >
@@ -38,7 +38,7 @@ The simplest path: a single double-clickable `.exe` — no Python, no terminal.
 ### 1. Install
 
 ```bash
-pip install websockets psutil
+pip install aiohttp psutil
 ```
 
 `psutil` powers auto-detection — without it you'll need `--sim <mock|iracing|acc>`.
@@ -73,10 +73,11 @@ python telemetry_bridge.py --port 3344 --hz 20
 You should see:
 
 ```
- SimSetApp Telemetry Bridge
- Mode   : auto-detect
- WebSocket : ws://localhost:3344
- Rate   : 20 Hz
+ SimSetApp Telemetry Bridge (aiohttp)
+ Mode       : auto-detect
+ WebSocket  : ws://localhost:3344/ws
+ Health     : http://localhost:3344/health
+ Rate       : 20 Hz
 ```
 
 ### 3. Connect in the app
@@ -97,13 +98,20 @@ times, delta), and a `type:"status"` heartbeat once per second while waiting for
 a sim. The dashboard renders it live and (optionally) auto-logs each lap to your
 session history.
 
-## Browser note
+## Browser note (PNA / CORS)
 
-The app is served over HTTPS but connects to `ws://localhost`. Chrome, Edge and
-Firefox all **allow** insecure WebSocket to `localhost` from secure pages
-(localhost is treated as a trusted origin), so this works out of the box. If your
-browser blocks it, run the bridge with `wss://` + a self-signed cert and accept
-the cert once.
+The app is served over HTTPS but connects to `ws://localhost`. Chrome blocks
+public-origin pages from reaching local/private network services unless the
+service answers a **Private Network Access (PNA) preflight** — an `OPTIONS`
+request with `Access-Control-Request-Private-Network: true`.
+
+The bridge handles this natively with **aiohttp**: the `OPTIONS` route returns
+`Access-Control-Allow-Private-Network: true` + CORS headers as a normal HTTP
+response, then the browser sends the WebSocket upgrade and the dashboard
+connects. No fragile library hacks, no special browser flags needed.
+
+You can verify the bridge is running by visiting `http://localhost:3344/health`
+in your browser — it returns `{"bridge": true, "sim": null}`.
 
 ## ACC shared memory
 

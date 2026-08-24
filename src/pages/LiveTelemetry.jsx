@@ -190,7 +190,7 @@ export default function LiveTelemetry() {
                   <input
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="ws://localhost:3344"
+                    placeholder="ws://localhost:3344/ws"
                     className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                   <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider">

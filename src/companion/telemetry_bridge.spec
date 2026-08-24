@@ -2,7 +2,7 @@
 # PyInstaller spec for the SimSetApp Telemetry Bridge.
 #
 # Build a one-click Windows executable (run from the src/companion/ folder):
-#   pip install pyinstaller websockets psutil
+#   pip install pyinstaller aiohttp psutil
 #   pyinstaller telemetry_bridge.spec
 #
 # Output: dist/SimSetAppBridge/SimSetAppBridge.exe
@@ -17,7 +17,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['psutil', 'websockets'],  # add 'irsdk' here if you build with iRacing support
+    hiddenimports=['psutil', 'aiohttp'],  # add 'irsdk' here if you build with iRacing support
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
