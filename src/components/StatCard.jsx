@@ -18,8 +18,7 @@ function MiniRing({ value, tone }) {
 
 export default function StatCard({ icon: Icon, label, value, unit, tone, gauge, gaugeTone }) {
   return (
-    <div className="group relative rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-3 overflow-hidden transition-all duration-200 hover:border-primary/30 hover:bg-card h-full">
-      <div className="absolute -right-6 -top-6 w-16 h-16 rounded-full bg-primary/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <div className="group relative rounded-xl border border-border bg-card p-3 transition-colors duration-200 hover:border-primary/30 h-full">
       <div className="relative flex items-center justify-between gap-2 h-full">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">

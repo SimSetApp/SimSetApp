@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
-import { Sparkles, Bot, Flag, Activity, FolderOpen, Car, MapPin, Clock, MessageSquare, Users, ArrowRight, Wrench, Gauge, TrendingUp, Calendar, LayoutDashboard } from "lucide-react";
+import { Sparkles, Bot, Flag, Activity, FolderOpen, Car, MapPin, Clock, MessageSquare, Users, ArrowRight, TrendingUp, Calendar, LayoutDashboard } from "lucide-react";
 
 const QUICK_ACTIONS = [
-  { icon: Sparkles, label: "Setup Wizard", href: "/setup-wizard", accent: "text-primary", bg: "bg-primary/10" },
-  { icon: Bot, label: "Race Engineer", href: "/race-engineer", accent: "text-chart-5", bg: "bg-chart-5/10" },
-  { icon: Flag, label: "Pit Board", href: "/pit-board", accent: "text-chart-3", bg: "bg-chart-3/10" },
-  { icon: Activity, label: "Telemetry", href: "/telemetry", accent: "text-chart-2", bg: "bg-chart-2/10" },
+  { icon: Sparkles, label: "Setup Wizard", href: "/setup-wizard" },
+  { icon: Bot, label: "Race Engineer", href: "/race-engineer" },
+  { icon: Flag, label: "Pit Board", href: "/pit-board" },
+  { icon: Activity, label: "Telemetry", href: "/telemetry" },
 ];
 
 function timeAgo(dateStr) {
@@ -93,11 +93,11 @@ export default function Dashboard() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-24 text-center">
-          <div className="rounded-2xl border border-border bg-card p-10">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
+          <div className="rounded-xl border border-border bg-card p-10">
+            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-5">
               <LayoutDashboard className="w-7 h-7 text-primary" />
             </div>
-            <h2 className="font-display text-xl font-bold tracking-tight mb-2">Your Sim Racing Dashboard</h2>
+            <h2 className="font-heading text-xl font-semibold tracking-tight mb-2">Your Sim Racing Dashboard</h2>
             <p className="text-sm text-muted-foreground mb-6">
               Sign in to pick up where you left off — your latest setup, last session, and community activity.
             </p>
@@ -117,25 +117,25 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <MobileHeader title="Dashboard" />
-      <div className="max-w-5xl mx-auto px-4 py-8 pb-24">
+      <div className="max-w-5xl mx-auto px-4 py-10 pb-24">
         {/* Greeting */}
-        <div className="mb-6">
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Welcome back, {greeting}</h1>
-          <p className="text-sm text-muted-foreground mt-1">Pick up where you left off.</p>
+        <div className="mb-8">
+          <p className="text-xs text-muted-foreground mb-1">Welcome back</p>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">{greeting}</h1>
         </div>
 
         {/* Quick actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
           {QUICK_ACTIONS.map(a => (
             <Link
               key={a.href}
               to={a.href}
-              className="group rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-4 hover:border-primary/40 hover:bg-card transition-all"
+              className="group rounded-xl border border-border bg-card p-4 hover:border-primary/40 transition-colors"
             >
-              <div className={`w-9 h-9 rounded-lg ${a.bg} flex items-center justify-center mb-2.5`}>
-                <a.icon className={`w-4.5 h-4.5 ${a.accent}`} />
+              <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center mb-2.5">
+                <a.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <div className="text-sm font-semibold">{a.label}</div>
+              <div className="text-sm font-medium">{a.label}</div>
               <div className="flex items-center gap-1 text-[11px] text-primary mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 Open <ArrowRight className="w-3 h-3" />
               </div>
@@ -144,26 +144,26 @@ export default function Dashboard() {
         </div>
 
         {/* Continue where you left off */}
-        <div className="mb-8">
-          <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-2">
+        <div className="mb-10">
+          <h2 className="font-heading text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
             <Clock className="w-3.5 h-3.5" /> Continue Where You Left Off
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Last setup */}
-            <Link to="/saved-setups" className="group rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 hover:border-primary/40 transition-all">
+            <Link to="/saved-setups" className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <FolderOpen className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+                  <FolderOpen className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Latest Setup</span>
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Latest Setup</span>
               </div>
               {setupsLoading ? (
                 <div className="space-y-2"><Skeleton className="h-4 w-2/3" /><Skeleton className="h-3 w-1/2" /></div>
               ) : lastSetup ? (
                 <>
-                  <h3 className="font-heading text-sm font-semibold truncate">{lastSetup.title}</h3>
+                  <h3 className="font-heading text-sm font-medium truncate">{lastSetup.title}</h3>
                   <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Car className="w-3 h-3 text-primary" />{lastSetup.car}</span>
+                    <span className="flex items-center gap-1"><Car className="w-3 h-3" />{lastSetup.car}</span>
                     {lastSetup.track && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{lastSetup.track}</span>}
                   </div>
                   <div className="text-[11px] text-muted-foreground mt-2">Updated {timeAgo(lastSetup.updated_date)}</div>
@@ -174,12 +174,12 @@ export default function Dashboard() {
             </Link>
 
             {/* Last session */}
-            <Link to="/telemetry" className="group rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 hover:border-primary/40 transition-all">
+            <Link to="/telemetry" className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-chart-2/10 flex items-center justify-center">
-                  <Activity className="w-4 h-4 text-chart-2" />
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Last Session</span>
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Session</span>
               </div>
               {sessions.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No sessions logged yet. Import telemetry or log a session.</p>
@@ -187,7 +187,7 @@ export default function Dashboard() {
                 <>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">{lastSession.session_type}</Badge>
-                    {lastSession.best_lap_time && <span className="text-sm font-bold tabular-nums font-digi text-primary">{lastSession.best_lap_time}</span>}
+                    {lastSession.best_lap_time && <span className="text-sm font-semibold tabular-nums font-digi text-primary">{lastSession.best_lap_time}</span>}
                   </div>
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
                     {lastSession.total_laps != null && <span>{lastSession.total_laps} laps</span>}
@@ -200,10 +200,10 @@ export default function Dashboard() {
         </div>
 
         {/* Activity */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
           {/* Comments on your setups */}
-          <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5">
-            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-2">
+          <div className="rounded-xl border border-border bg-card p-5">
+            <h2 className="font-heading text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
               <MessageSquare className="w-3.5 h-3.5" /> Comments On Your Setups
             </h2>
             {mySetupIds.size === 0 ? (
@@ -229,8 +229,8 @@ export default function Dashboard() {
           </div>
 
           {/* New from followed creators */}
-          <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-5">
-            <h2 className="font-heading text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-2">
+          <div className="rounded-xl border border-border bg-card p-5">
+            <h2 className="font-heading text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
               <Users className="w-3.5 h-3.5" /> From Creators You Follow
             </h2>
             {followingIds.size === 0 ? (
@@ -258,18 +258,18 @@ export default function Dashboard() {
         </div>
 
         {/* At-a-glance stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { icon: FolderOpen, label: "Saved Setups", value: setups.length },
             { icon: Activity, label: "Sessions", value: sessions.length },
             { icon: Users, label: "Shared", value: myCommunitySetups.length },
             { icon: TrendingUp, label: "Following", value: followingIds.size },
           ].map((s, i) => (
-            <div key={i} className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-3">
+            <div key={i} className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                 <s.icon className="w-3.5 h-3.5" /> {s.label}
               </div>
-              <div className="text-xl font-bold tabular-nums font-digi">{s.value}</div>
+              <div className="text-xl font-semibold tabular-nums font-digi">{s.value}</div>
             </div>
           ))}
         </div>
