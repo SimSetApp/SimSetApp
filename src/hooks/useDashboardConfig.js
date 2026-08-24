@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
 
-const KEY = "ddu3-config";
+const KEY = "ddu3-config-v2";
 
+// Non-overlapping grid layout within the 1000×560 design canvas.
+// Columns: left (16–316), center (332–668), right (680–984).
+// Rows: shift strip (8–40), body (48–508), status strip (516–552).
 const DEFAULT_WIDGETS = [
-  { id: "w_shift", type: "shiftLights", x: 20, y: 10, w: 960, h: 36, color: null },
-  { id: "w_tyres", type: "tyres", x: 20, y: 60, w: 300, h: 300, color: null },
-  { id: "w_inputs", type: "inputs", x: 20, y: 370, w: 300, h: 170, color: null },
-  { id: "w_fuel", type: "fuel", x: 340, y: 60, w: 300, h: 180, color: null },
-  { id: "w_gear", type: "gear", x: 340, y: 250, w: 300, h: 200, color: null },
-  { id: "w_delta", type: "delta", x: 660, y: 60, w: 320, h: 150, color: null },
-  { id: "w_laps", type: "laps", x: 660, y: 220, w: 320, h: 90, color: null },
-  { id: "w_cars", type: "cars", x: 660, y: 320, w: 320, h: 220, color: null },
-  { id: "w_status", type: "status", x: 20, y: 500, w: 960, h: 50, color: null },
+  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 32, color: null },
+  { id: "w_tyres", type: "tyres", x: 16, y: 48, w: 300, h: 300, color: null },
+  { id: "w_inputs", type: "inputs", x: 16, y: 356, w: 300, h: 152, color: null },
+  { id: "w_fuel", type: "fuel", x: 332, y: 48, w: 336, h: 176, color: null },
+  { id: "w_gear", type: "gear", x: 332, y: 232, w: 336, h: 276, color: null },
+  { id: "w_delta", type: "delta", x: 680, y: 48, w: 304, h: 140, color: null },
+  { id: "w_laps", type: "laps", x: 680, y: 196, w: 304, h: 84, color: null },
+  { id: "w_cars", type: "cars", x: 680, y: 288, w: 304, h: 220, color: null },
+  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
 ];
 
 const DEFAULT = {
