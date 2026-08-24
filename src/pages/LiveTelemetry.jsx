@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Radio, Wifi, WifiOff, Loader2, Gauge, Fuel, Cpu, Download, CheckCircle2, Activity } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
+import CopyChip from "@/components/live/CopyChip";
 import TelemetryGauge from "@/components/live/TelemetryGauge";
 import TyreGrid from "@/components/live/TyreGrid";
 import InputBars from "@/components/live/InputBars";
@@ -88,6 +89,14 @@ export default function LiveTelemetry() {
     lapTimesRef.current = [];
   }, [logSetupId, autoLog]);
 
+  // Auto-connect to the bridge on first mount
+  const autoConnectedRef = useRef(false);
+  useEffect(() => {
+    if (autoConnectedRef.current) return;
+    autoConnectedRef.current = true;
+    connect(url);
+  }, [connect, url]);
+
   const st = STATUS_META[status] || STATUS_META.idle;
   const connected = status === "connected" && data;
   const rpmColor =
@@ -149,16 +158,20 @@ export default function LiveTelemetry() {
           </div>
 
           {!connected && (
-            <div className="mt-4 rounded-lg border border-border bg-secondary/30 p-3 text-xs text-muted-foreground leading-relaxed">
-              <div className="flex items-center gap-1.5 mb-2 text-foreground font-medium">
-                <Download className="w-3.5 h-3.5 text-primary" /> First time? Run the local bridge:
+            <div className="mt-4 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
+                  <Download className="w-3.5 h-3.5" /> Download bridge script
+                </a>
+                <span className="text-xs text-muted-foreground">then run these in a terminal:</span>
               </div>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Install: <code className="font-mono text-foreground">pip install websockets</code></li>
-                <li>Run: <code className="font-mono text-foreground">python telemetry_bridge.py</code> (mock data)</li>
-                <li>For iRacing: <code className="font-mono text-foreground">pip install irsdk</code> then <code className="font-mono text-foreground">--sim iracing</code></li>
-                <li>Hit Connect above — the bridge is in the <code className="font-mono text-foreground">companion/</code> folder of the app repo.</li>
-              </ol>
+              <div className="flex flex-wrap items-center gap-2">
+                <CopyChip text="pip install websockets" />
+                <CopyChip text="python telemetry_bridge.py" />
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Mock mode works with no sim running. For iRacing add <code className="font-mono text-foreground">--sim iracing</code> (needs <code className="font-mono text-foreground">pip install irsdk</code>). The dashboard auto-connects as soon as the bridge is up.
+              </p>
             </div>
           )}
         </div>
@@ -277,7 +290,7 @@ export default function LiveTelemetry() {
             </div>
             <h3 className="font-heading text-lg font-semibold mb-1">Waiting for the bridge</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Start the local companion and hit Connect to stream live speed, RPM, tyres, fuel and lap times here.
+              Start the local companion and the dashboard auto-connects to stream live speed, RPM, tyres, fuel and lap times here.
             </p>
           </div>
         )}
