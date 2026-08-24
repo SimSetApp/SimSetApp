@@ -163,21 +163,35 @@ class MockProvider:
                 self.shift_timer = 0.16
                 self.shift_dir = -1
 
-            # smooth throttle/brake that saturates at 100% during hard accel/braking
-            if diff > 0:
-                intent_thr = min(1.0, diff / 15.0)
-                intent_brk = 0.0
-            else:
+            # Real pedal shapes driven by the track speed-profile slope:
+            # brake = hard initial spike that trails off into the corner;
+            # throttle = ramps up out of a corner ("building... full") then
+            # holds at 100% on the straight (not dropping when speed matches).
+            t_next = self._target_speed((phase + 0.02) % 1.0)
+            dtgt = t_next - target
+            if dtgt < -1.5:            # braking zone (target falling ahead)
                 intent_thr = 0.0
-                intent_brk = min(1.0, -diff / 30.0)
+                intent_brk = min(1.0, -dtgt / 20.0)
+            elif dtgt > 1.5:           # acceleration zone (target rising)
+                intent_thr = 1.0
+                intent_brk = 0.0
+            elif target > 170:         # fast/straight section — hold throttle
+                intent_thr = 1.0
+                intent_brk = 0.0
+            else:                      # corner — maintenance throttle, brake trailing
+                intent_thr = 0.35
+                intent_brk = 0.0
             if self.shift_timer > 0:
                 self.shift_timer -= dt
                 if self.shift_dir > 0:
-                    intent_thr = 0.3  # upshift lift
+                    intent_thr = 0.3   # upshift lift
                 else:
                     intent_thr = max(intent_thr, 0.55)  # downshift blip
-            self.throttle += (intent_thr - self.throttle) * 0.5
-            self.brake += (intent_brk - self.brake) * 0.5
+            # asymmetric ease: throttle builds slowly / lifts fast; brake spikes fast / trails slow
+            thr_err = intent_thr - self.throttle
+            self.throttle += thr_err * (0.2 if thr_err > 0 else 0.4)
+            brk_err = intent_brk - self.brake
+            self.brake += brk_err * (0.6 if brk_err > 0 else 0.15)
 
             corner = max(0.0, (200 - target) / 130)
             in_corner = corner > 0.15

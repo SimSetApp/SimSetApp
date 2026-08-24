@@ -79,16 +79,22 @@ function mockTick(s) {
     if (rpmNow > 7400 && cur < 6 && s.shiftTimer <= 0) { s.gear = cur + 1; s.shiftTimer = 0.18; s.shiftDir = 1; }
     else if (rpmNow < 3600 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
 
+    const tNext = _mockTargetSpeed((phase + 0.02) % 1);
+    const dtgt = tNext - target;
     let intentThr, intentBrk;
-    if (diff > 0) { intentThr = Math.min(1, diff / 15); intentBrk = 0; }
-    else { intentThr = 0; intentBrk = Math.min(1, -diff / 30); }
+    if (dtgt < -1.5) { intentThr = 0; intentBrk = Math.min(1, -dtgt / 20); }
+    else if (dtgt > 1.5) { intentThr = 1; intentBrk = 0; }
+    else if (target > 170) { intentThr = 1; intentBrk = 0; }
+    else { intentThr = 0.35; intentBrk = 0; }
     if (s.shiftTimer > 0) {
       s.shiftTimer -= dt;
       if (s.shiftDir > 0) intentThr = 0.3;
       else intentThr = Math.max(intentThr, 0.55);
     }
-    s.throttle += (intentThr - s.throttle) * 0.5;
-    s.brake += (intentBrk - s.brake) * 0.5;
+    const thrErr = intentThr - s.throttle;
+    s.throttle += thrErr * (thrErr > 0 ? 0.2 : 0.4);
+    const brkErr = intentBrk - s.brake;
+    s.brake += brkErr * (brkErr > 0 ? 0.6 : 0.15);
 
     const corner = Math.max(0, (200 - target) / 130);
     const inCorner = corner > 0.15;
