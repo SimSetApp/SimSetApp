@@ -178,43 +178,73 @@ class iRacingProvider:
 
 
 class ACCProvider:
-    """ACC reads from shared memory. See README for the pyaccsharedmemory setup."""
+    """ACC reads from shared memory via pyaccsharedmemory (pip install pyaccsharedmemory)."""
 
     def __init__(self):
         try:
-            import acc_shared_memory as asm  # noqa
-            self.sm = asm.AccessSharedMemory()
+            from pyaccsharedmemory import accSharedMemory
+            self.sm = accSharedMemory()
         except Exception:
             raise SystemExit(
-                "ACC provider needs the ACC shared-memory bindings. "
-                "See companion/README.md for setup."
+                "ACC provider needs pyaccsharedmemory. "
+                "Install with:  pip install pyaccsharedmemory"
             )
 
     def sim_name(self):
         return "Assetto Corsa Competizione"
 
+    @staticmethod
+    def _ms_to_s(ms):
+        if not ms:
+            return None
+        return round(ms / 1000.0, 3)
+
     def read(self):
-        s = self.sm.read_graphics()
-        ph = self.sm.read_physics()
+        sm = self.sm.read_shared_memory()
+        if sm is None:
+            return None  # ACC not in a live session — bridge sends status frames
+        ph = sm.Physics
+        g = sm.Graphics
+        st = sm.Static
+
+        def w(wheels, idx):
+            try:
+                return round(float([wheels.front_left, wheels.front_right,
+                                    wheels.rear_left, wheels.rear_right][idx]), 1)
+            except Exception:
+                return 0
+
+        temps = getattr(ph, "tyre_core_temp", None)
+        pressures = getattr(ph, "wheel_pressure", None)
         tyres = {
-            "fl": {"temp_c": round(getattr(ph, "tyreTemp", [0, 0, 0, 0])[0], 1), "wear_pct": 0, "pressure_psi": 0},
-            "fr": {"temp_c": round(getattr(ph, "tyreTemp", [0, 0, 0, 0])[1], 1), "wear_pct": 0, "pressure_psi": 0},
-            "rl": {"temp_c": round(getattr(ph, "tyreTemp", [0, 0, 0, 0])[2], 1), "wear_pct": 0, "pressure_psi": 0},
-            "rr": {"temp_c": round(getattr(ph, "tyreTemp", [0, 0, 0, 0])[3], 1), "wear_pct": 0, "pressure_psi": 0},
+            "fl": {"temp_c": w(temps, 0), "wear_pct": 0, "pressure_psi": w(pressures, 0)},
+            "fr": {"temp_c": w(temps, 1), "wear_pct": 0, "pressure_psi": w(pressures, 1)},
+            "rl": {"temp_c": w(temps, 2), "wear_pct": 0, "pressure_psi": w(pressures, 2)},
+            "rr": {"temp_c": w(temps, 3), "wear_pct": 0, "pressure_psi": w(pressures, 3)},
         }
         return {
             "type": "telemetry", "ts": time.time(), "sim": self.sim_name(),
-            "connected": True, "session_type": "Race", "track": getattr(s, "track", ""),
-            "car": getattr(s, "carModel", ""), "lap": getattr(s, "completedLaps", 0) + 1,
-            "total_laps": getattr(s, "numberOfLaps", 0), "position": getattr(s, "position", 0),
-            "incidents": 0, "current_lap_time": round(getattr(s, "currentTime", 0), 3),
-            "last_lap_time": round(getattr(s, "lastTime", 0), 3) or None,
-            "best_lap_time": round(getattr(s, "bestTime", 0), 3) or None,
-            "lap_delta": None, "speed_kmh": round(getattr(ph, "speedKmh", 0), 1),
-            "rpm": int(getattr(ph, "rpms", 0)), "max_rpm": 8000,
-            "gear": int(getattr(ph, "gear", 0)), "throttle": round(getattr(ph, "gas", 0), 2),
-            "brake": round(getattr(ph, "brake", 0), 2), "steer": round(getattr(ph, "steer", 0), 2),
-            "fuel_litres": round(getattr(ph, "fuel", 0), 1), "fuel_per_lap": None, "tyres": tyres,
+            "connected": True, "session_type": str(getattr(g, "session_type", "Race")),
+            "track": getattr(st, "track", "") or "",
+            "car": getattr(st, "car_model", "") or "",
+            "lap": getattr(g, "completed_lap", 0) + 1,
+            "total_laps": getattr(g, "number_of_laps", 0),
+            "position": getattr(g, "position", 0),
+            "incidents": 0,
+            "current_lap_time": self._ms_to_s(getattr(g, "current_time", 0)),
+            "last_lap_time": self._ms_to_s(getattr(g, "last_time", 0)),
+            "best_lap_time": self._ms_to_s(getattr(g, "best_time", 0)),
+            "lap_delta": None,
+            "speed_kmh": round(getattr(ph, "speed_kmh", 0) or 0, 1),
+            "rpm": int(getattr(ph, "rpm", 0) or 0),
+            "max_rpm": int(getattr(st, "max_rpm", 8000) or 8000),
+            "gear": int(getattr(ph, "gear", 0) or 0),
+            "throttle": round(getattr(ph, "gas", 0) or 0, 2),
+            "brake": round(getattr(ph, "brake", 0) or 0, 2),
+            "steer": round(getattr(ph, "steer_angle", 0) or 0, 2),
+            "fuel_litres": round(getattr(ph, "fuel", 0) or 0, 1),
+            "fuel_per_lap": round(getattr(g, "fuel_per_lap", 0) or 0, 2) or None,
+            "tyres": tyres,
         }
 
 
