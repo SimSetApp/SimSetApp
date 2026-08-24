@@ -93,7 +93,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-24 text-center">
-          <div className="rounded-xl border border-border bg-card p-10">
+          <div className="rounded-xl glass p-10">
             <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-5">
               <LayoutDashboard className="w-7 h-7 text-primary" />
             </div>
@@ -130,7 +130,7 @@ export default function Dashboard() {
             <Link
               key={a.href}
               to={a.href}
-              className="group rounded-xl border border-border bg-card p-4 hover:border-primary/40 transition-colors"
+              className="group rounded-xl glass p-4 hover:border-primary/40 transition-colors"
             >
               <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center mb-2.5">
                 <a.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -150,7 +150,7 @@ export default function Dashboard() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Last setup */}
-            <Link to="/saved-setups" className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
+            <Link to="/saved-setups" className="group rounded-xl glass p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
                   <FolderOpen className="w-4 h-4 text-muted-foreground" />
@@ -174,7 +174,7 @@ export default function Dashboard() {
             </Link>
 
             {/* Last session */}
-            <Link to="/telemetry" className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
+            <Link to="/telemetry" className="group rounded-xl glass p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
                   <Activity className="w-4 h-4 text-muted-foreground" />
@@ -202,7 +202,7 @@ export default function Dashboard() {
         {/* Activity */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
           {/* Comments on your setups */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl glass p-5">
             <h2 className="font-heading text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
               <MessageSquare className="w-3.5 h-3.5" /> Comments On Your Setups
             </h2>
@@ -229,7 +229,7 @@ export default function Dashboard() {
           </div>
 
           {/* New from followed creators */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl glass p-5">
             <h2 className="font-heading text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
               <Users className="w-3.5 h-3.5" /> From Creators You Follow
             </h2>
@@ -265,7 +265,7 @@ export default function Dashboard() {
             { icon: Users, label: "Shared", value: myCommunitySetups.length },
             { icon: TrendingUp, label: "Following", value: followingIds.size },
           ].map((s, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-3">
+            <div key={i} className="rounded-xl glass p-3">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                 <s.icon className="w-3.5 h-3.5" /> {s.label}
               </div>
