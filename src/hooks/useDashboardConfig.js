@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 
 const DEFAULT = {
   accent: "#00e5ff",
+  scale: 1,
   gearScale: 1,
+  tyreScale: 1,
+  deltaScale: 1,
   show: {
     shiftLights: true,
     sideLeds: true,

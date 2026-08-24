@@ -59,10 +59,34 @@ export default function DashboardCustomizer({ config, update, toggle, reset, onC
 
       <div>
         <div className="flex justify-between text-xs text-muted-foreground mb-1">
-          <span>Gear Size</span>
-          <span className="tabular-nums">{config.gearScale.toFixed(2)}×</span>
+          <span>Dashboard Scale</span>
+          <span className="tabular-nums">{config.scale.toFixed(2)}×</span>
         </div>
-        <Slider value={[config.gearScale]} min={0.7} max={1.6} step={0.05} onValueChange={(v) => update({ gearScale: v[0] })} />
+        <Slider value={[config.scale]} min={0.6} max={1.5} step={0.05} onValueChange={(v) => update({ scale: v[0] })} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-3">
+        <div>
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Gear Size</span>
+            <span className="tabular-nums">{config.gearScale.toFixed(2)}×</span>
+          </div>
+          <Slider value={[config.gearScale]} min={0.7} max={1.6} step={0.05} onValueChange={(v) => update({ gearScale: v[0] })} />
+        </div>
+        <div>
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Tyre Size</span>
+            <span className="tabular-nums">{config.tyreScale.toFixed(2)}×</span>
+          </div>
+          <Slider value={[config.tyreScale]} min={0.7} max={1.8} step={0.05} onValueChange={(v) => update({ tyreScale: v[0] })} />
+        </div>
+        <div>
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Delta Size</span>
+            <span className="tabular-nums">{config.deltaScale.toFixed(2)}×</span>
+          </div>
+          <Slider value={[config.deltaScale]} min={0.7} max={1.8} step={0.05} onValueChange={(v) => update({ deltaScale: v[0] })} />
+        </div>
       </div>
 
       <div>

@@ -88,7 +88,7 @@ export default function DDU3Dashboard({ data, demo }) {
         style={{ backgroundColor: C.bg, color: C.text }}
         className={`font-digi select-none overflow-hidden rounded-2xl border-2 ${fs ? "w-screen h-screen flex flex-col justify-center max-w-none border-0 p-4" : "w-full"}`}
       >
-        <div className={`flex gap-1.5 p-1.5 rounded-xl ${fs ? "max-w-5xl mx-auto w-full" : ""}`} style={{ background: C.bg, border: `1px solid ${C.bezel}` }}>
+        <div className={`flex gap-1.5 p-1.5 rounded-xl ${fs ? "max-w-5xl mx-auto w-full" : ""}`} style={{ background: C.bg, border: `1px solid ${C.bezel}`, zoom: fs ? 1 : config.scale }}>
           {show.sideLeds && <SideLEDs />}
           <div className="flex-1 min-w-0">
             {/* Shift-light strip */}
@@ -137,10 +137,10 @@ export default function DDU3Dashboard({ data, demo }) {
                     <>
                       <SectionLabel>TYRES</SectionLabel>
                       <div className="grid grid-cols-2 gap-1">
-                        <TyreBlock label="FL" t={tyres.fl} />
-                        <TyreBlock label="FR" t={tyres.fr} />
-                        <TyreBlock label="RL" t={tyres.rl} />
-                        <TyreBlock label="RR" t={tyres.rr} />
+                        <TyreBlock label="FL" t={tyres.fl} scale={config.tyreScale} />
+                        <TyreBlock label="FR" t={tyres.fr} scale={config.tyreScale} />
+                        <TyreBlock label="RL" t={tyres.rl} scale={config.tyreScale} />
+                        <TyreBlock label="RR" t={tyres.rr} scale={config.tyreScale} />
                       </div>
                     </>
                   )}
@@ -183,7 +183,7 @@ export default function DDU3Dashboard({ data, demo }) {
                       <Row label="BEST LAP" value={fmt(data.best_lap_time)} />
                       <div className="text-center py-0.5">
                         <div className="text-[9px] tracking-widest" style={{ color: C.label }}>DELTA</div>
-                        <div className={`${fs ? "text-4xl" : "text-2xl"} font-bold tabular-nums leading-none`} style={{ color: deltaTone }}>
+                        <div className="font-bold tabular-nums leading-none" style={{ color: deltaTone, fontSize: `${(fs ? 2.25 : 1.5) * config.deltaScale}rem` }}>
                           {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
                         </div>
                       </div>
@@ -249,12 +249,12 @@ function Row({ label, value, labelColor, valueColor }) {
     </div>
   );
 }
-function TyreBlock({ label, t }) {
+function TyreBlock({ label, t, scale = 1 }) {
   const temp = t?.temp_c, press = t?.pressure_psi, wear = t?.wear_pct;
   return (
     <div className="rounded border p-1.5" style={{ borderColor: C.border, background: C.panel }}>
       <div className="text-[9px] tracking-widest" style={{ color: C.label }}>{label}</div>
-      <div className="text-lg font-bold tabular-nums leading-tight" style={{ color: tempColor(temp) }}>{temp != null ? Math.round(temp) : "--"}°</div>
+      <div className="font-bold tabular-nums leading-tight" style={{ color: tempColor(temp), fontSize: `${1.125 * scale}rem` }}>{temp != null ? Math.round(temp) : "--"}°</div>
       <div className="text-[9px] tabular-nums" style={{ color: C.label }}>PRS <span className="text-white">{press != null ? press.toFixed(1) : "--"}</span></div>
       <div className="text-[9px] tabular-nums" style={{ color: C.label }}>WR <span style={{ color: wearColor(wear) }}>{wear != null ? Math.round(wear) : "--"}%</span></div>
     </div>
