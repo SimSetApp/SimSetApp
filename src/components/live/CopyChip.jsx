@@ -3,12 +3,23 @@ import { Check, Copy } from "lucide-react";
 
 export default function CopyChip({ text, label }) {
   const [copied, setCopied] = useState(false);
+
   const copy = () => {
-    navigator.clipboard?.writeText(text).then(() => {
+    const done = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    });
+    };
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+      } else {
+        fallbackCopy(text, done);
+      }
+    } catch {
+      fallbackCopy(text, done);
+    }
   };
+
   return (
     <button
       onClick={copy}
@@ -18,4 +29,21 @@ export default function CopyChip({ text, label }) {
       {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3 text-muted-foreground group-hover:text-primary" />}
     </button>
   );
+}
+
+function fallbackCopy(text, done) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    done();
+  } catch {
+    /* ignore */
+  }
 }
