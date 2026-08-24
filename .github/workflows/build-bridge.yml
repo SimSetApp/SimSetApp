@@ -1,1 +1,38 @@
+name: Build Telemetry Bridge (Windows .exe)
 
+on:
+  push:
+    tags: ['bridge-v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: pip install pyinstaller websockets psutil
+
+      - name: Build the one-file exe
+        working-directory: companion
+        run: pyinstaller telemetry_bridge.spec --noconfirm
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimSetAppBridge
+          path: companion/dist/SimSetAppBridge.exe
+
+      - name: Publish to GitHub Releases
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: companion/dist/SimSetAppBridge.exe
