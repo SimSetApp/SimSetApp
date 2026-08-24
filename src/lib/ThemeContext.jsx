@@ -7,6 +7,11 @@ export const THEMES = [
   { id: 'sunset',   label: 'Sunset',   color: '#ff9c1a' },
   { id: 'stealth',  label: 'Stealth',  color: '#00d4d4' },
   { id: 'nova',     label: 'Nova',     color: '#9933ff' },
+  { id: 'graphite', label: 'Graphite', color: '#8ba3c0' },
+  { id: 'ember',    label: 'Ember',    color: '#e8484e' },
+  { id: 'forest',   label: 'Forest',   color: '#26c474' },
+  { id: 'cobalt',   label: 'Cobalt',   color: '#7a8cf5' },
+  { id: 'magma',    label: 'Magma',    color: '#e05ce0' },
 ];
 
 const ThemeContext = createContext();

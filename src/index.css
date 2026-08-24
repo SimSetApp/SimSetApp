@@ -187,6 +187,121 @@
   --ring: 270 100% 70%;
 }
 
+/* ── GRAPHITE (cool neutral dark, muted slate accent) ──────────────── */
+.theme-graphite {
+  --background: 210 12% 6%;
+  --foreground: 210 10% 94%;
+  --card: 210 10% 9%;
+  --card-foreground: 210 10% 94%;
+  --popover: 210 10% 9%;
+  --popover-foreground: 210 10% 94%;
+  --primary: 210 22% 66%;
+  --primary-foreground: 210 12% 6%;
+  --secondary: 210 8% 14%;
+  --secondary-foreground: 210 8% 90%;
+  --muted: 210 8% 12%;
+  --muted-foreground: 210 6% 62%;
+  --accent: 210 22% 66%;
+  --accent-foreground: 210 12% 6%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 210 7% 17%;
+  --input: 210 7% 17%;
+  --ring: 210 22% 66%;
+}
+
+/* ── EMBER (deep warm black, restrained crimson accent) ────────────── */
+.theme-ember {
+  --background: 0 8% 6%;
+  --foreground: 0 6% 95%;
+  --card: 0 6% 9%;
+  --card-foreground: 0 6% 95%;
+  --popover: 0 6% 9%;
+  --popover-foreground: 0 6% 95%;
+  --primary: 0 74% 60%;
+  --primary-foreground: 0 8% 6%;
+  --secondary: 0 5% 14%;
+  --secondary-foreground: 0 4% 90%;
+  --muted: 0 5% 12%;
+  --muted-foreground: 0 4% 62%;
+  --accent: 0 74% 60%;
+  --accent-foreground: 0 8% 6%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 4% 18%;
+  --input: 0 4% 18%;
+  --ring: 0 74% 60%;
+}
+
+/* ── FOREST (deep green-black, emerald accent) ─────────────────────── */
+.theme-forest {
+  --background: 150 12% 5%;
+  --foreground: 140 10% 94%;
+  --card: 150 10% 8%;
+  --card-foreground: 140 10% 94%;
+  --popover: 150 10% 8%;
+  --popover-foreground: 140 10% 94%;
+  --primary: 150 68% 46%;
+  --primary-foreground: 150 12% 5%;
+  --secondary: 150 8% 13%;
+  --secondary-foreground: 140 8% 90%;
+  --muted: 150 8% 11%;
+  --muted-foreground: 140 6% 60%;
+  --accent: 150 68% 46%;
+  --accent-foreground: 150 12% 5%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 150 7% 16%;
+  --input: 150 7% 16%;
+  --ring: 150 68% 46%;
+}
+
+/* ── COBALT (deep navy, indigo accent) ──────────────────────────────── */
+.theme-cobalt {
+  --background: 235 30% 7%;
+  --foreground: 230 20% 95%;
+  --card: 235 26% 10%;
+  --card-foreground: 230 20% 95%;
+  --popover: 235 26% 10%;
+  --popover-foreground: 230 20% 95%;
+  --primary: 235 82% 70%;
+  --primary-foreground: 235 30% 7%;
+  --secondary: 235 22% 16%;
+  --secondary-foreground: 230 16% 90%;
+  --muted: 235 22% 13%;
+  --muted-foreground: 232 16% 64%;
+  --accent: 235 82% 70%;
+  --accent-foreground: 235 30% 7%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 235 20% 22%;
+  --input: 235 20% 22%;
+  --ring: 235 82% 70%;
+}
+
+/* ── MAGMA (deep warm black, magenta accent) ───────────────────────── */
+.theme-magma {
+  --background: 320 12% 6%;
+  --foreground: 320 8% 95%;
+  --card: 320 10% 9%;
+  --card-foreground: 320 8% 95%;
+  --popover: 320 10% 9%;
+  --popover-foreground: 320 8% 95%;
+  --primary: 320 85% 64%;
+  --primary-foreground: 320 12% 6%;
+  --secondary: 320 8% 15%;
+  --secondary-foreground: 320 6% 90%;
+  --muted: 320 8% 12%;
+  --muted-foreground: 320 6% 64%;
+  --accent: 320 85% 64%;
+  --accent-foreground: 320 12% 6%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 320 7% 18%;
+  --input: 320 7% 18%;
+  --ring: 320 85% 64%;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
