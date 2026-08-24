@@ -7,13 +7,10 @@ import Footer from "@/components/Footer";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Radio, Wifi, WifiOff, Loader2, Gauge, Fuel, Cpu, Download, CheckCircle2, Activity, Play } from "lucide-react";
+import { Radio, Wifi, WifiOff, Loader2, Cpu, Download, CheckCircle2, Play } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import CopyChip from "@/components/live/CopyChip";
-import TelemetryGauge from "@/components/live/TelemetryGauge";
-import TyreGrid from "@/components/live/TyreGrid";
-import InputBars from "@/components/live/InputBars";
-import LapTiming from "@/components/live/LapTiming";
+import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 import { toast } from "sonner";
 
 function fmt(t) {
@@ -99,9 +96,6 @@ export default function LiveTelemetry() {
 
   const st = STATUS_META[status] || STATUS_META.idle;
   const connected = status === "connected" && data;
-  const rpmColor =
-    data?.rpm && data.max_rpm ? (data.rpm / data.max_rpm > 0.92 ? "hsl(0 84% 55%)" : data.rpm / data.max_rpm > 0.75 ? "hsl(38 80% 56%)" : "hsl(var(--primary))") : "hsl(var(--primary))";
-  const fuelPct = data?.fuel_litres != null && data?.fuel_per_lap ? Math.min(100, (data.fuel_litres / Math.max(1, data.fuel_per_lap * 30)) * 100) : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -207,77 +201,7 @@ export default function LiveTelemetry() {
         {/* Dashboard */}
         {connected ? (
           <div className="space-y-4">
-            {/* Session strip */}
-            <div className="flex flex-wrap gap-2 text-xs">
-              {data.car && <Badge variant="outline">{data.car}</Badge>}
-              {data.track && <Badge variant="outline">{data.track}</Badge>}
-              {data.session_type && <Badge variant="outline">{data.session_type}</Badge>}
-            </div>
-
-            {/* Lap timing */}
-            <LapTiming
-              lap={data.lap}
-              totalLaps={data.total_laps}
-              current={data.current_lap_time}
-              last={data.last_lap_time}
-              best={data.best_lap_time}
-              delta={data.lap_delta}
-              position={data.position}
-              incidents={data.incidents}
-            />
-
-            {/* Gauges + gear */}
-            <div className="rounded-xl border border-border bg-card p-5">
-              <div className="flex items-center justify-around flex-wrap gap-4">
-                <TelemetryGauge value={data.speed_kmh} max={340} label="Speed" unit="km/h" color="hsl(var(--primary))" />
-                <div className="flex flex-col items-center">
-                  <span className="text-[10px] text-muted-foreground tracking-widest uppercase mb-1">Gear</span>
-                  <span className="text-6xl font-bold tabular-nums font-digi text-primary leading-none">
-                    {data.gear > 0 ? data.gear : "N"}
-                  </span>
-                </div>
-                <TelemetryGauge value={data.rpm} max={data.max_rpm || 8000} label="RPM" unit="rpm" color={rpmColor} />
-              </div>
-            </div>
-
-            {/* Inputs + tyres */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-border bg-card p-5">
-                <h4 className="font-heading text-sm font-semibold tracking-wide mb-3 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-primary" /> Inputs
-                </h4>
-                <InputBars throttle={data.throttle} brake={data.brake} steer={data.steer} />
-              </div>
-              <div className="rounded-xl border border-border bg-card p-5">
-                <h4 className="font-heading text-sm font-semibold tracking-wide mb-3 flex items-center gap-2">
-                  <Gauge className="w-4 h-4 text-primary" /> Tyres
-                </h4>
-                <TyreGrid tyres={data.tyres} />
-              </div>
-            </div>
-
-            {/* Fuel */}
-            {data.fuel_litres != null && (
-              <div className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-heading text-sm font-semibold tracking-wide flex items-center gap-2">
-                    <Fuel className="w-4 h-4 text-primary" /> Fuel
-                  </h4>
-                  <span className="text-sm font-bold tabular-nums font-digi">
-                    {data.fuel_litres.toFixed(1)} L
-                    {data.fuel_per_lap != null && <span className="text-muted-foreground font-normal"> · {data.fuel_per_lap} L/lap</span>}
-                  </span>
-                </div>
-                <div className="h-3 rounded-full bg-secondary overflow-hidden">
-                  <div className="h-full bg-primary rounded-full transition-[width] duration-200" style={{ width: `${fuelPct ?? 0}%` }} />
-                </div>
-                {data.fuel_per_lap != null && data.fuel_per_lap > 0 && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    ≈ {(data.fuel_litres / data.fuel_per_lap).toFixed(1)} laps of fuel remaining
-                  </p>
-                )}
-              </div>
-            )}
+            <DDU3Dashboard data={data} demo={demo} />
 
             {/* Auto-log */}
             {isAuthenticated && (
