@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec for the SimSetApp Telemetry Bridge.
 #
-# Build a one-click Windows executable (run from the companion/ folder):
+# Build a one-click Windows executable (run from the src/companion/ folder):
 #   pip install pyinstaller websockets psutil
 #   pyinstaller telemetry_bridge.spec
 #
