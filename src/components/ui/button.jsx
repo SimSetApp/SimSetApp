@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/85 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.25),0_8px_24px_-10px_hsl(var(--primary)/0.55)] hover:shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.32),0_14px_34px_-10px_hsl(var(--primary)/0.7)] hover:-translate-y-0.5",
+          "bg-primary text-primary-foreground hover:bg-primary/85 shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.25),0_8px_24px_-10px_hsl(var(--primary)/0.55)] hover:shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.35),0_18px_40px_-8px_hsl(var(--primary)/0.8),0_0_0_3px_hsl(var(--primary)/0.22)] hover:-translate-y-1",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/85 hover:-translate-y-0.5",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/85 hover:shadow-[0_14px_32px_-10px_hsl(0_72%_55%/0.6),0_0_0_3px_hsl(0_72%_55%/0.2)] hover:-translate-y-1",
         outline:
-          "glass hover:bg-foreground/8 hover:border-primary/40 hover:-translate-y-0.5",
+          "glass hover:bg-foreground/8 hover:border-primary/50 hover:shadow-[0_0_0_3px_hsl(var(--primary)/0.18),0_14px_30px_-12px_hsl(var(--primary)/0.4)] hover:-translate-y-1",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary hover:-translate-y-0.5",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary hover:shadow-[0_12px_28px_-12px_hsl(0_0%_0%/0.3)] hover:-translate-y-1",
         ghost: "hover:bg-foreground/10 hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
