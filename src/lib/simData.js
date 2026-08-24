@@ -18,111 +18,234 @@ export const SIM_TITLES = [
 export const CAR_LISTS = {
   "iRacing": {
     "GT3": [
+      "Aston Martin V8 Vantage GT3 EVO",
       "Audi R8 LMS EVO II GT3",
-      "BMW M4 GT3",
+      "BMW M4 GT3 EVO",
       "Chevrolet Corvette Z06 GT3.R",
       "Ferrari 296 GT3",
       "Ford Mustang GT3",
-      "Lamborghini Huracán GT3 EVO2",
+      "Lamborghini Huracán GT3 EVO",
       "McLaren 720S GT3 EVO",
-      "Mercedes-AMG GT3 EVO 2020",
-      "Porsche 911 GT3 R (992)"
+      "Mercedes-AMG GT3 2020",
+      "Porsche 911 GT3 R (992)",
+      "Acura NSX GT3 EVO 22",
+      "Ferrari 488 GT3 Evo 2020",
+      "Audi R8 LMS GT3",
+      "BMW Z4 GT3",
+      "Ferrari 488 GT3",
+      "Ford GT-R",
+      "McLaren MP4-12C GT3",
+      "Mercedes-AMG GT3",
+      "Porsche 911 GT3 R",
+      "Porsche 911 GT3 Cup"
     ],
     "GT4": [
       "Aston Martin Vantage GT4",
-      "BMW M4 GT4",
+      "BMW M4 G82 GT4 Evo",
+      "BMW M4 F82 GT4 (2018)",
       "McLaren 570S GT4",
       "Mercedes-AMG GT4",
-      "Porsche 718 Cayman GT4",
-      "Toyota GR86 GT4"
+      "Porsche 718 Cayman GT4 Clubsport",
+      "Ford Mustang GT4"
     ],
     "GTE": [
-      "Chevrolet Corvette C8.R GTE",
-      "Ferrari 488 GT3 EVO (GTE Spec)",
+      "BMW M8 GTE",
+      "Chevrolet Corvette C8.R",
+      "Chevrolet Corvette C6.R",
+      "Ferrari 488 GTE",
       "Ford GT GTE",
-      "Porsche 911 RSR (991.2)"
+      "Porsche 911 RSR"
     ],
     "GTP / LMDh": [
       "Acura ARX-06 GTP",
       "BMW M Hybrid V8",
       "Cadillac V-Series.R GTP",
+      "Ferrari 499P",
       "Porsche 963 GTP"
     ],
-    "LMP2": [
-      "Dallara P217 LMP2"
+    "LMP / DP": [
+      "Dallara P217 LMP2",
+      "Ligier JS P320",
+      "Radical SR10",
+      "Porsche 919 LMP1",
+      "Audi R18 LMP1",
+      "Chevrolet Corvette C7 Daytona Prototype",
+      "HPD ARX 01c",
+      "Riley Mk XX Daytona Prototype",
+      "Nissan GTP ZX-T",
+      "Radical SR8 V8",
+      "SCCA Spec Racer Ford"
     ],
     "Touring / TCR": [
       "Audi RS 3 LMS TCR",
+      "Audi RS 3 LMS Gen2 TCR",
+      "BMW M2 CS Racing",
       "Honda Civic Type R TCR",
-      "Hyundai Elantra N TC",
-      "Volkswagen Golf GTI TCR"
+      "Hyundai Elantra N TCR",
+      "Hyundai Veloster N TCR",
+      "Renault Clio R.S. V",
+      "Toyota GR86",
+      "Volkswagen Jetta TDi"
+    ],
+    "GT1": [
+      "Aston Martin DBR9 GT1"
+    ],
+    "Supercars": [
+      "Supercars Chevrolet Camaro Gen 3",
+      "Supercars Ford Mustang Gen 3",
+      "Supercars Ford Mustang GT",
+      "Supercars Holden ZB Commodore",
+      "V8 Supercar Holden VF Commodore (2014)",
+      "V8 Supercar Ford FG Falcon (2014)",
+      "V8 Supercar Ford Falcon (2009)"
     ],
     "Open Wheel": [
-      "Dallara F3 (2019)",
-      "Dallara iR-04 (Formula iRacing)",
-      "Dallara F2 (2018)",
-      "Formula Vee (1600)",
-      "IndyCar IR-18",
-      "Super Formula SF23",
-      "Williams FW31 (F1 2009)",
-      "Porsche TAG Turbo (F1 1987)",
-      "Skip Barber Formula 2000"
-    ],
-    "Mazda": [
-      "Mazda MX-5 Cup",
-      "Mazda MX-5 Mx-5 (Spec Racer)"
+      "Dallara IR18 INDYCAR",
+      "Dallara DW12",
+      "Dallara IR05 (2009)",
+      "Super Formula SF23 (Honda)",
+      "Super Formula SF23 (Toyota)",
+      "Super Formula Lights",
+      "Dallara IL-15",
+      "Indy Pro 2000",
+      "FIA F3",
+      "Dallara iR-01",
+      "Dallara F3",
+      "USF2000",
+      "Formula Renault 3.5",
+      "Formula Renault 2.0",
+      "Pro Mazda",
+      "Ray FF1600",
+      "Skip Barber Formula 2000",
+      "Formula Vee",
+      "Mercedes-AMG F1 W13 E Performance",
+      "Mercedes-AMG F1 W12 E Performance",
+      "McLaren Honda MP4-30",
+      "Williams-Toyota FW31",
+      "Lotus 49",
+      "Lotus 79",
+      "C&R Racing Silver Crown Car",
+      "Sprint Car"
     ],
     "NASCAR Cup": [
-      "NASCAR Next Gen Camaro ZL1",
-      "NASCAR Next Gen Mustang",
-      "NASCAR Next Gen Camry"
+      "Next Gen NASCAR Cup Series Chevrolet Camaro ZL1",
+      "Next Gen NASCAR Cup Series Ford Mustang",
+      "Next Gen NASCAR Cup Series Toyota Camry",
+      "NASCAR Cup Series Chevrolet Camaro ZL1",
+      "NASCAR Cup Series Ford Mustang",
+      "NASCAR Cup Series Ford Fusion",
+      "NASCAR Cup Series Toyota Camry",
+      "NASCAR Chevrolet SS Cup Car",
+      "NASCAR Gen 4 Cup",
+      "Gen 4 Chevrolet Monte Carlo (2003)",
+      "Gen 4 Ford Taurus (2003)",
+      "NASCAR Legends Buick LeSabre (1987)",
+      "NASCAR Legends Ford Thunderbird (1987)",
+      "NASCAR Legends Pontiac Grand Prix (1987)",
+      "NASCAR Legends Chevrolet Monte Carlo (1987)"
     ],
     "NASCAR Xfinity": [
-      "NASCAR Xfinity Camaro",
-      "NASCAR Xfinity Mustang",
-      "NASCAR Xfinity Supra"
+      "NASCAR Xfinity Series Chevrolet Camaro",
+      "NASCAR Xfinity Series Ford Mustang",
+      "NASCAR Xfinity Series Toyota Supra",
+      "NASCAR Xfinity Series Toyota Camry (2018)",
+      "NASCAR Xfinity Series Chevrolet Camaro (2018)",
+      "NASCAR Xfinity Series Ford Mustang (2018)",
+      "NASCAR Xfinity Series Chevrolet Impala SS (2011)"
     ],
     "NASCAR Truck": [
-      "NASCAR Truck Silverado",
-      "NASCAR Truck Tundra",
-      "NASCAR Truck F-150"
+      "NASCAR Truck Series Chevrolet Silverado",
+      "NASCAR Truck Series Ram",
+      "NASCAR Truck Series Toyota Tundra TRD",
+      "NASCAR Truck Chevrolet Silverado (2008)"
+    ],
+    "ARCA / Modified": [
+      "ARCA Chevrolet SS",
+      "ARCA Ford Mustang",
+      "ARCA Toyota Camry",
+      "NASCAR Whelen Tour Modified",
+      "SK Modified Car",
+      "SRX"
     ],
     "Oval / Dirt": [
-      "Late Model Stock Car",
+      "Late Model Stock",
       "Super Late Model",
-      "Sprint Car Non-Wing (305)",
-      "Sprint Car 410 Wing",
+      "Street Stock (Panther)",
+      "Street Stock (Eagle)",
+      "Street Stock (Casino)",
+      "Mini Stock",
+      "Legends Ford '34 Coupe",
+      "World of Outlaws 410 Sprint Car",
+      "DIRTcar 360 Sprint Car",
+      "DIRTcar 305 Sprint Car",
       "Dirt Midget",
-      "Dirt Late Model",
-      "Legend Car (1990s Ford Thunderbird)",
-      "Street Stock"
+      "World of Outlaws Super Late Model",
+      "DIRTcar Pro Late Model",
+      "DIRTcar Limited Late Model",
+      "USAC 410 Sprint Car",
+      "USAC 360 Sprint Car",
+      "UMP Modified",
+      "DIRTcar 358 Small Block Modified",
+      "Super DIRTcar Big Block Modified",
+      "Dirt Street Stock"
     ],
-    "Radical / Sports": [
-      "Radical SR10"
+    "Rallycross / Off-Road": [
+      "FIA Cross Car",
+      "Subaru WRX STI",
+      "Ford Fiesta RS WRC",
+      "VW Beetle",
+      "VW Beetle Lite",
+      "Lucas Oil Off Road Pro 2 Truck",
+      "Lucas Oil Off Road Pro 4 Truck",
+      "Lucas Oil Off-Road Pro 2 Lite Truck"
+    ],
+    "Mazda / Spec": [
+      "Global Mazda MX-5 Cup",
+      "Mazda MX-5 Cup (2010)",
+      "Mazda MX-5 Roadster (2010)",
+      "Pontiac Solstice Club Sport",
+      "Pontiac Solstice Club Sport (Rookie)",
+      "Cadillac CTS-V",
+      "Kia Optima",
+      "Ford Mustang FR500S",
+      "Audi 90 GTO",
+      "RUF Rt 12 R",
+      "Porsche Mission R",
+      "Stockcar Brasil Chevrolet Cruze",
+      "Stockcar Brasil Toyota Corolla"
     ]
   },
 
   "Assetto Corsa Competizione": {
     "GT3": [
-      "Aston Martin Vantage V8 GT3 (2019)",
-      "Aston Martin Vantage GT3 AMR (2022)",
-      "Audi R8 LMS GT3 EVO (2019)",
-      "Audi R8 LMS GT3 EVO II (2022)",
+      "Aston Martin V12 Vantage GT3 (2013)",
+      "Aston Martin V8 Vantage GT3 (2019)",
+      "Audi R8 LMS GT3 (2015)",
+      "Audi R8 LMS EVO GT3 (2019)",
+      "Audi R8 LMS EVO II GT3 (2022)",
+      "Bentley Continental GT3 (2015)",
       "Bentley Continental GT3 (2018)",
-      "Bentley Continental GT3 (2020)",
-      "BMW M4 GT3 (2022)",
       "BMW M6 GT3 (2017)",
+      "BMW M4 GT3 (2021)",
       "Emil Frey Jaguar G3 (2012)",
       "Ferrari 296 GT3 (2023)",
-      "Ferrari 488 GT3 EVO (2020)",
-      "Honda NSX GT3 EVO (2019)",
-      "Lamborghini Huracán GT3 EVO (2019)",
+      "Ferrari 488 GT3 (2018)",
+      "Ferrari 488 EVO GT3 (2020)",
+      "Ford Mustang GT3",
+      "Honda NSX GT3 (2017)",
+      "Honda NSX Evo GT3 (2019)",
+      "Lamborghini Huracán GT3 (2015)",
+      "Lamborghini Huracán EVO GT3 (2019)",
       "Lamborghini Huracán GT3 EVO2 (2023)",
       "Lexus RC F GT3 (2016)",
-      "McLaren 720S GT3 EVO (2023)",
       "McLaren 650S GT3 (2015)",
-      "Mercedes-AMG GT3 EVO (2020)",
+      "McLaren 720S GT3 (2019)",
+      "McLaren 720S GT3 EVO (2023)",
+      "Mercedes-AMG GT3 (2015)",
+      "Mercedes-AMG EVO GT3 (2020)",
+      "Nissan GT-R Nismo GT3 (2015)",
       "Nissan GT-R Nismo GT3 (2018)",
+      "Porsche 911 GT3 R (2018)",
       "Porsche 911 GT3 R (991 II) (2019)",
       "Porsche 911 GT3 R (992) (2023)",
       "Reiter Engineering R-EX GT3"
@@ -135,23 +258,25 @@ export const CAR_LISTS = {
       "Chevrolet Camaro GT4.R",
       "Ginetta G55 GT4",
       "KTM X-Bow GT4",
-      "Maserati MC GT4",
+      "Maserati GranTurismo MC GT4",
       "McLaren 570S GT4",
       "Mercedes-AMG GT4",
-      "Porsche 718 Cayman GT4 MR"
+      "Porsche 718 Cayman GT4 Clubsport"
     ],
     "GT2": [
       "Audi R8 LMS GT2",
       "KTM X-Bow GT2",
       "Maserati MC20 GT2",
       "Mercedes-AMG GT2",
-      "Porsche 911 GT2 RS CS Evo"
+      "Porsche 911 GT2 RS CS Evo",
+      "Porsche 935 (GT2)"
     ],
-    "Cup Cars": [
+    "Cup / One-Make": [
       "Ferrari 488 Challenge EVO",
-      "Lamborghini Huracán ST (2015)",
-      "Lamborghini Huracán ST EVO2 (2023)",
-      "Porsche 992 GT3 Cup"
+      "Lamborghini Huracán Super Trofeo (2015)",
+      "Lamborghini Huracán Super Trofeo EVO2 (2021)",
+      "Porsche 911 GT3 Cup (991 II) (2017)",
+      "Porsche 911 GT3 Cup (992) (2021)"
     ],
     "TCX": [
       "BMW M2 CS Racing"
@@ -160,159 +285,288 @@ export const CAR_LISTS = {
 
   "Assetto Corsa": {
     "GT3": [
-      "Audi R8 LMS Ultra",
+      "Audi R8 LMS Ultra (2014)",
+      "Audi R8 LMS (2016)",
       "BMW Z4 GT3",
-      "Ferrari 458 GT3",
-      "Ferrari 458 Italia GT3 (2012)",
+      "Ferrari 458 Italia GT3",
+      "Ferrari 488 GT3",
       "Lamborghini Huracán GT3",
+      "Lamborghini Huracán Super Trofeo",
+      "McLaren MP4-12C GT3",
       "McLaren 650S GT3",
-      "Mercedes SLS AMG GT3",
+      "Mercedes-Benz SLS AMG GT3",
+      "Mercedes-Benz AMG GT3",
       "Nissan GT-R Nismo GT3",
-      "Porsche 911 GT3 R (991)"
+      "Porsche 911 GT3 R (2016)",
+      "Porsche 911 GT3 Cup (2017)"
     ],
     "GTE / GT2": [
-      "Ferrari 458 Italia GTE",
-      "Porsche 911 RSR (991)",
       "BMW M3 GT2 (E92)",
-      "Chevrolet Corvette C7.R"
+      "Chevrolet Corvette C7.R GTE",
+      "Ferrari 458 GT2",
+      "McLaren F1 GTR",
+      "Porsche 911 GT1",
+      "Porsche 911 RSR (2017)"
     ],
-    "LMP1": [
-      "Audi R18 e-tron quattro (2014)",
-      "Toyota TS040 Hybrid (2014)",
-      "Porsche 919 Hybrid Evo (2017)"
+    "LMP1 / Prototype": [
+      "Audi R18 e-tron quattro",
+      "Audi R18 (2016)",
+      "Porsche 919 Hybrid (2015)",
+      "Porsche 919 Hybrid (2016)",
+      "Toyota TS040 Hybrid",
+      "Scuderia Glickenhaus SCG003"
     ],
-    "LMP2": [
-      "Ligier JS P2 Honda",
-      "Morgan LMP2 Judd"
+    "LMP2 / P3": [
+      "Praga R1"
     ],
     "GT4": [
       "BMW M4 GT4 (F82)",
-      "Maserati Gran Turismo MC GT4"
+      "Lotus 2-Eleven GT4",
+      "Maserati GranTurismo MC GT4",
+      "McLaren 570S GT4",
+      "Porsche Cayman GT4 Clubsport"
     ],
-    "Touring / WTCC": [
-      "Honda Civic WTCC 2014",
+    "Touring": [
+      "Audi TT Cup (2016)",
+      "Audi TT RS (VLN)",
+      "BMW M235i Racing",
       "BMW M3 E30 Group A",
-      "Ford Sierra RS500 Cosworth",
-      "Alfa Romeo 155 Ti V6 DTM",
-      "BMW 320si WTCC 2006"
+      "BMW M3 E30 Drift",
+      "Ford Escort RS 1600",
+      "Toyota Celica ST185 Turbo",
+      "Toyota AE86 Drift",
+      "Toyota Supra MK IV Drift"
     ],
-    "Open Wheel": [
-      "Dallara F312",
-      "Formula Abarth",
-      "Lotus 98T Formula 1 (1986)",
-      "Ferrari 312T Formula 1 (1975)",
-      "Tatuus FA 010 (Formula Abarth)"
+    "Open Wheel / F1": [
+      "Classic Team Lotus Type 25",
+      "Classic Team Lotus Type 72",
+      "Classic Team Lotus Type 49",
+      "Classic Team Lotus Type 98T",
+      "Ferrari 312T (1975)",
+      "Ferrari F138 (F1 2013)",
+      "Ferrari SF-15T (F1 2015)",
+      "Ferrari F2004 (F1 2004)",
+      "Ferrari SF70H (F1 2017)",
+      "Lotus Exos T125",
+      "Tatuus FA01 (Formula Abarth)",
+      "Formula Abarth"
     ],
-    "GT Sport / Road": [
-      "Ferrari 458 Italia",
-      "Ferrari 599 GTB Fiorano",
-      "Ferrari F40",
-      "Ferrari 599XX EVO",
-      "Lamborghini Huracán LP610-4",
-      "Lamborghini Aventador LP700-4",
-      "Lamborghini Sesto Elemento",
-      "McLaren P1",
-      "McLaren MP4-12C",
-      "Pagani Huayra",
-      "Pagani Zonda R",
-      "Porsche 918 Spyder",
-      "Lotus Exige 240R",
-      "Lotus Exige S Roadster",
-      "Lotus Evora GTC",
-      "KTM X-Bow R",
-      "Alfa Romeo 4C",
-      "BMW M4 (F82)",
-      "BMW 1M Coupe",
+    "GT / Road Car": [
       "Abarth 500 Assetto Corse",
-      "Shelby Cobra 427 S/C"
+      "Abarth 500 EsseEsse",
+      "Abarth 595 SS",
+      "Alfa Romeo 33 Stradale",
+      "Alfa Romeo 4C",
+      "Alfa Romeo 155 Ti V6 (1993)",
+      "Alfa Romeo Giulia QV",
+      "Alfa Romeo GTA",
+      "Alfa Romeo Giulietta QV",
+      "Alfa Romeo Mito QV",
+      "Audi R8 V10 Plus",
+      "Audi S1",
+      "Audi Sport Quattro",
+      "Audi Sport Quattro S1 E2",
+      "BMW 1 Series M Coupe",
+      "BMW M3 E30",
+      "BMW M3 E92",
+      "Chevrolet Corvette C7 Stingray",
+      "Ferrari 458 Italia",
+      "Ferrari 488 GTB",
+      "Ferrari 599XX Evo",
+      "Ferrari 812 Superfast",
+      "Ferrari F40",
+      "Ferrari FXX K",
+      "Ferrari LaFerrari",
+      "Ferrari 250 GTO (1962)",
+      "Ferrari 330 P4",
+      "Ford Mustang (2015)",
+      "Ford GT40 MKI",
+      "KTM X-Bow R",
+      "Lamborghini Aventador SuperVeloce",
+      "Lamborghini Countach",
+      "Lamborghini Gallardo SuperLeggera",
+      "Lamborghini Huracán Performante",
+      "Lamborghini Miura",
+      "Lamborghini Sesto Elemento",
+      "Lotus Elise SC",
+      "Lotus Evora GTC",
+      "Lotus Evora GTE",
+      "Lotus Evora S",
+      "Lotus Exige 240R",
+      "Lotus Exige S",
+      "Lotus Exige S Roadster",
+      "Lotus Exige V6 CUP",
+      "Maserati Alfieri",
+      "Maserati Levante S",
+      "Maserati Quattroporte GTS",
+      "Mazda 787B",
+      "Mazda MX-5 (2015)",
+      "Mazda MX-5 Cup",
+      "Mazda RX-7 Spirit R",
+      "McLaren MP4-12C",
+      "McLaren P1",
+      "McLaren P1 GTR",
+      "Mercedes-Benz C9 (1989 LM)",
+      "Mercedes-Benz Sauber C9",
+      "Mercedes-Benz SLS AMG",
+      "Nissan 370Z NISMO",
+      "Nissan GT-R R34 Skyline V-Spec",
+      "Pagani Huayra",
+      "Pagani Huayra BC",
+      "Pagani Zonda R",
+      "Porsche 718 Cayman S",
+      "Porsche 911 Carrera S",
+      "Porsche 911 Carrera RSR 3.0",
+      "Porsche 911 GT1",
+      "Porsche 911 GT3 RS",
+      "Porsche 911 R",
+      "Porsche 911 Turbo S",
+      "Porsche 917/30 Spyder",
+      "Porsche 917 K",
+      "Porsche 918 Spyder",
+      "Porsche 935/78 Moby Dick",
+      "Porsche 908 LH",
+      "Porsche 962C Long Tail",
+      "Porsche 962C Short Tail",
+      "Porsche Cayenne Turbo S",
+      "Porsche Macan Turbo",
+      "Porsche Panamera Turbo",
+      "RUF CTR Yellowbird",
+      "RUF RT 12R AWD",
+      "RUF RT12 R",
+      "Scuderia Glickenhaus P4/5 Competizione",
+      "Shelby Cobra 427 S/C",
+      "Toyota GT-86",
+      "Toyota AE86",
+      "Toyota Supra MK IV",
+      "Toyota Supra Time Attack"
     ]
   },
 
   "Assetto Corsa Evo": {
-    "GT3 (2024 Spec)": [
-      "Audi R8 LMS GT3 EVO II",
-      "BMW M4 GT3",
+    "GT3": [
+      "BMW M4 GT3 Evo",
       "Ferrari 296 GT3",
-      "Lamborghini Huracán GT3 EVO2",
-      "McLaren 720S GT3 EVO",
-      "Mercedes-AMG GT3 EVO",
+      "Ford Mustang GT3",
       "Porsche 911 GT3 R (992)"
     ],
-    "GTE": [
-      "Ferrari 488 GTE Evo",
-      "Porsche 911 RSR-19",
-      "Ford GT GTE (2019)"
+    "GT2": [
+      "KTM X-Bow GT2",
+      "Maserati GT2 (MC20)",
+      "Mercedes-AMG GT2",
+      "Porsche 911 GT2 RS Clubsport Evo",
+      "Porsche 935 (2018)"
     ],
     "GT4": [
+      "Audi R8 LMS GT4 Evo",
       "BMW M4 GT4",
+      "KTM X-Bow GT4",
       "McLaren 570S GT4",
       "Mercedes-AMG GT4",
-      "Porsche 718 Cayman GT4 MR"
+      "Porsche 718 Cayman GT4 Clubsport",
+      "Porsche 718 Cayman GT4 RS"
     ],
-    "Cup Cars": [
-      "Porsche 992 GT3 Cup",
-      "Ferrari 488 Challenge EVO",
-      "Lamborghini Huracán ST EVO2"
+    "Cup / One-Make": [
+      "Ferrari 488 Challenge Evo",
+      "Lamborghini Huracán Super Trofeo EVO2",
+      "Porsche 911 GT3 Cup (992)",
+      "BMW M2 CS Racing",
+      "Mazda MX-5 ND Global Cup"
     ],
-    "Touring": [
-      "Honda Civic Type R FK8 (BTCC Spec)",
-      "BMW 330e M Sport (BTCC Spec)",
-      "Alfa Romeo Giulia GTA M"
+    "Touring / TCR": [
+      "Alfa Romeo Giulia GTAm",
+      "Audi RS 3 Sportback",
+      "BMW M3 E30 Sport Evolution",
+      "BMW M3 E46 CSL",
+      "Hyundai i30 N Performance",
+      "Volkswagen Golf Mk8 GTI Clubsport",
+      "Volkswagen Golf Mk8 R"
     ],
-    "Supercars / Road": [
-      "Ferrari Roma",
-      "Ferrari SF90 Stradale",
-      "Lamborghini Huracán EVO",
-      "Lamborghini Huracán Tecnica",
-      "McLaren 720S",
-      "McLaren Artura",
+    "Road / Supercar": [
+      "Abarth 695 Biposto",
+      "Alfa Romeo 75 Turbo Evoluzione",
+      "Alfa Romeo Giulia Sprint GTA",
+      "Alfa Romeo Junior Elettrica 280 Veloce",
+      "Alpine A110 S",
+      "Alpine A290",
+      "Audi RS 6",
+      "Audi Sport Quattro (1983)",
+      "BMW M4 CSL",
+      "BMW M8 Competition",
+      "Caterham Seven Academy",
+      "Caterham Seven 485 CSR",
+      "Chevrolet Camaro ZL1 1LE",
+      "Dallara Stradale",
+      "Dallara EXP",
+      "Datsun 240Z",
+      "Ferrari 288 GTO",
+      "Ferrari 296 GTB",
+      "Ferrari Daytona SP3",
+      "Ferrari F40 LM",
+      "Ferrari F2004 (F1 2004)",
+      "Ferrari SF-25 (F1 2025)",
+      "Ford Escort Cosworth RS",
+      "Honda NSX-R (NA1)",
+      "Honda S2000 (AP1)",
+      "Lamborghini Countach LP5000 Quattrovalvole",
+      "Lamborghini Huracán STO",
+      "Lancia Delta HF Integrale Evo II",
+      "Lancia Delta HF Integrale Evo 3 Prototype",
+      "Lotus Emira First Edition",
+      "Lotus Exige V6 Cup",
+      "Mazda MX-5 (NA)",
+      "McMurtry Spéirling",
+      "Mercedes-Benz 190E Evo II",
+      "Mini John Cooper S",
+      "Morgan Super 3",
+      "Peugeot 205 T16",
+      "Porsche 911 Turbo 3.6 (964)",
       "Porsche 911 GT3 RS (992)",
-      "Porsche 911 Turbo S (992)",
-      "BMW M4 Competition (G82)",
-      "BMW M2 (G87)",
-      "Abarth 500 Assetto Corse",
-      "Alfa Romeo Giulia GTA",
+      "Renault 5 GT Turbo",
       "Toyota GR86",
-      "Toyota GR Supra"
+      "Toyota Supra MKIV RZ"
     ]
   },
 
   "Le Mans Ultimate": {
     "Hypercar (LMH / LMDh)": [
-      "Toyota GR010 HYBRID",
+      "Toyota GR010 Hybrid",
       "Ferrari 499P",
       "Porsche 963",
       "Cadillac V-Series.R",
       "BMW M Hybrid V8",
       "Alpine A424",
+      "Aston Martin Valkyrie AMR-LMH",
       "Peugeot 9X8 (2023 Spec)",
       "Peugeot 9X8 (2024 Spec, with wing)",
       "Lamborghini SC63",
       "Isotta Fraschini Tipo6 LMH Competizione",
       "Vanwall Vandervell 680",
-      "Glickenhaus 007 LMH"
+      "Glickenhaus 007 LMH",
+      "Genesis GMR-001"
     ],
     "LMP2": [
-      "ORECA 07 Gibson",
-      "Ligier JS P217 Gibson"
+      "ORECA 07 Gibson (2023)"
     ],
     "LMGT3 (2024)": [
-      "Aston Martin Vantage GT3 AMR",
-      "BMW M4 GT3",
-      "Chevrolet Corvette Z06 GT3.R",
-      "Ferrari 296 GT3",
-      "Ford Mustang GT3",
-      "Lamborghini Huracán GT3 EVO2",
-      "McLaren 720S GT3 EVO",
-      "Mercedes-AMG GT3 EVO",
-      "Porsche 911 GT3 R (992)",
-      "Toyota GR Supra GT3"
+      "Ford Mustang LMGT3",
+      "McLaren 720S LMGT3 Evo",
+      "Mercedes-AMG LMGT3",
+      "Aston Martin Vantage AMR LMGT3",
+      "BMW M4 LMGT3",
+      "Chevrolet Corvette Z06 LMGT3.R",
+      "Ferrari 296 LMGT3",
+      "Lamborghini Huracán LMGT3 EVO2",
+      "Lexus RC F LMGT3",
+      "Porsche 911 GT3 R (LMGT3)"
     ],
     "GTE (Legacy 2022)": [
       "Ferrari 488 GTE Evo",
       "Porsche 911 RSR-19",
       "Ford GT GTE",
-      "Chevrolet Corvette C8.R GTE"
+      "Chevrolet Corvette C8.R GTE",
+      "Aston Martin Vantage GTE",
+      "BMW M8 GTE"
     ]
   },
 
@@ -322,37 +576,57 @@ export const CAR_LISTS = {
       "BMW M4 GT3",
       "BMW M6 GT3",
       "Chevrolet Camaro GT3.R",
-      "Ferrari 488 GT3",
+      "Ferrari 488 GT3 Evo",
       "Lamborghini Huracán GT3 EVO2",
       "McLaren 720S GT3 EVO",
       "Mercedes-AMG GT3 EVO",
-      "Porsche 911 GT3 R (992)"
+      "Porsche 911 GT3 R (992)",
+      "Aston Martin V8 Vantage GT3",
+      "Audi R8 LMS GT3 Evo",
+      "McLaren 650S GT3"
     ],
     "GT4": [
+      "Aston Martin Vantage GT4",
       "BMW M4 GT4",
       "Ginetta G55 GT4",
+      "KTM X-Bow GT4",
       "McLaren 570S GT4",
-      "Porsche 718 Cayman GT4",
-      "Toyota GR86 GT4"
+      "Mercedes-AMG GT4",
+      "Porsche 718 Cayman GT4 Clubsport",
+      "Toyota GR86"
     ],
     "GTE": [
       "Chevrolet Corvette C7.R",
-      "Ford GT GTE",
-      "Porsche 911 RSR (991.2)"
+      "Ferrari 488 GTE",
+      "Ford GT LM GTE",
+      "Porsche 911 RSR (2017)"
     ],
-    "LMP": [
+    "GT1": [
+      "Aston Martin DBR9 GT1",
+      "Audi R8 GT1 (LMP)",
+      "Maserati MC12 GT1",
+      "Porsche 911 GT1-98"
+    ],
+    "LMP / Prototype": [
       "ORECA 07 LMP2",
       "Dallara P217 LMP2",
-      "Metalmoro AJR P3",
-      "Ligier JS P320 LMP3"
+      "Ligier JS P320 LMP3",
+      "Cadillac DPi-V.R",
+      "Metalmoro AJR P3"
     ],
-    "Prototype / Group C": [
-      "Sigma P1 Group C",
+    "Group C": [
       "Porsche 956 Group C",
+      "Porsche 962C Group C",
       "Jaguar XJR-9 Group C",
-      "Mercedes C291 Group C"
+      "Mercedes-Benz C9 Group C",
+      "Lancia LC2 Group C",
+      "Nissan R90CK Group C",
+      "Mazda 787B Group C",
+      "Sauber Mercedes C9 Group C"
     ],
     "Cup Cars": [
+      "Porsche 911 GT3 Cup 3.8 (2016)",
+      "Porsche 911 GT3 Cup 4.0 (2019)",
       "Porsche 992 GT3 Cup",
       "Lamborghini Huracán Super Trofeo EVO2",
       "Ferrari 488 Challenge EVO"
@@ -366,34 +640,57 @@ export const CAR_LISTS = {
     "Copa Truck": [
       "Mercedes-Benz Actros Copa Truck",
       "Volkswagen Constellation Copa Truck",
-      "Scania S Copa Truck",
-      "Iveco Hi-Way Copa Truck"
+      "MAN TGX Copa Truck",
+      "IVECO Stralis Copa Truck",
+      "Scania Copa Truck"
     ],
     "Formula": [
-      "Formula Ultimate Gen 2 (F1 2022 inspired)",
+      "Formula Ultimate Gen 2 (F1 2022)",
       "Formula V10 Gen 1 (1998)",
       "Formula V10 Gen 2 (2005)",
+      "Formula V12",
       "Formula 3 (Dallara F3 2019)",
-      "Formula Reiza (Open Wheel)",
+      "F3 Brasil",
+      "Formula Reiza",
       "Formula Classic Gen 1 (1967)",
       "Formula Classic Gen 2 (1975)",
       "Formula Classic Gen 3 (1979)",
+      "Formula Classic Gen 4 (1980s)",
+      "Formula Retro Gen 1",
+      "Formula Retro Gen 2",
+      "Formula Retro Gen 3",
       "Formula Trainer",
+      "Formula Trainer Advanced",
+      "Formula Vee Brazil",
+      "Formula USA Gen 1 (1995)",
+      "Formula USA Gen 2 (1998)",
+      "Formula USA Gen 3 (2000)",
+      "Formula USA 2023 (IndyCar)",
       "Super Formula SF14",
       "Super V8"
     ],
     "Touring / Road": [
       "BMW 2002 Turbo (1974)",
+      "BMW M3 E30 Group A",
       "Caterham 620R",
+      "Caterham Academy",
+      "Caterham Superlight",
       "Caterham Supersport",
+      "Chevrolet Chevette",
+      "Fiat Uno",
+      "Fiat Uno Classic B",
+      "Ford Sierra RS500 Cosworth Group A",
       "Ginetta G40 Junior",
+      "Ginetta G55 Supercup",
       "Mini Cooper S (1965)",
       "Opala Stock Car (1970s)",
       "Opala Copa Stock (1986)",
       "Puma GTE",
+      "Puma GTB",
       "Radical SR3",
       "Ultima GTR 720",
-      "Volkswagen Fusca (Beetle)"
+      "Volkswagen Fusca (Beetle)",
+      "Volkswagen Gol"
     ],
     "Historic F1": [
       "Lotus 49C (1970)",
@@ -401,13 +698,24 @@ export const CAR_LISTS = {
       "Brabham BT26A (1969)",
       "March 701 (1970)",
       "McLaren M23 (1974)",
-      "Tyrrell P34 Six-Wheeler (1977)"
+      "Tyrrell P34 Six-Wheeler (1977)",
+      "Classic Team Lotus Type 25",
+      "Classic Team Lotus Type 72",
+      "Formula Vintage Gen 1",
+      "Formula Vintage Gen 2",
+      "Formula Junior"
     ],
-    "Touring Car Historic": [
+    "Historic Touring": [
       "BMW M3 E30 Group A",
       "Ford Sierra RS500 Cosworth Group A",
       "Mercedes C-Class (2006 DTM)",
-      "Alfa Romeo 155 V6 Ti DTM"
+      "Alfa Romeo 155 V6 Ti DTM",
+      "Opel Calibra V6 DTM"
+    ],
+    "Rally / Grp A": [
+      "Lancia Delta HF Integrale",
+      "Mitsubishi Lancer Evo",
+      "Subaru Impreza WRX STI"
     ]
   },
 
@@ -454,9 +762,8 @@ export const CAR_LISTS = {
       "Mercedes-Benz CLK-LM '98",
       "Nissan GT-R GT500 '08",
       "Nissan GT-R NISMO GT500 '16",
-      "Toyota GT-One (TS020) '99"        
+      "Toyota GT-One (TS020) '99"
     ],
-    
     "Gr.3": [
       "Alfa Romeo 4C Gr.3 Road Car",
       "Alfa Romeo 4C Gr.3",
@@ -513,9 +820,8 @@ export const CAR_LISTS = {
       "Toyota GR Supra Racing Concept '18",
       "Toyota Supra GT500 '97",
       "Volkswagen Beetle Gr.3",
-      "Volkswagen GTI VGT (Gr.3)" 
+      "Volkswagen GTI VGT (Gr.3)"
     ],
-    
     "Gr.4": [
       "Alfa Romeo 4C Gr.4",
       "Alfa Romeo 155 2.5 V6 TI '93",
@@ -532,8 +838,7 @@ export const CAR_LISTS = {
       "Genesis G70 Gr.4",
       "Honda NSX Gr.4",
       "Hyundai Genesis Gr.4",
-      "Hyundai ELANTRA N TC '24",
-      
+      "Hyundai ELANTRA N TC '24"
     ],
     "Gr.B Rally Car": [
       "Audi Sport Quattro S1 Evo 2 Rally Car",
@@ -547,14 +852,22 @@ export const CAR_LISTS = {
       "Honda Life Step Van '72",
       "Mazda Carol '15",
       "Suzuki Cappuccino '91",
-      "Suzuki Swift Sport '17"
+      "Suzuki Swift Sport '17",
+      "Daihatsu Copen '02",
+      "Honda Z ACT '98",
+      "Suzuki Wagon R ST '98"
     ],
     "N200": [
       "Alfa Romeo MiTo '09",
       "Honda Fit Hybrid '14",
       "Mazda Demio XD Touring '15",
       "MINI Cooper S '05",
-      "Toyota Aqua S '14"
+      "Toyota Aqua S '14",
+      "Honda N600 '70",
+      "Mazda Kusabi '03",
+      "Nissan Be-1 '87",
+      "Nissan Pao '89",
+      "Suzuki Cervo SR '82"
     ],
     "N300": [
       "Abarth 595 SS '69",
@@ -564,13 +877,20 @@ export const CAR_LISTS = {
       "Honda Integra Type R (DC5) '04",
       "Mazda RX-8 Spirit R '12",
       "Mazda MX-5 Miata (NA) '89",
+      "Mazda MX-5 (NB) '98",
       "Porsche 718 Cayman '16",
       "Subaru BRZ S '21",
       "Toyota 86 '15",
       "Toyota GR Yaris RZ '20",
       "Toyota GR86 (ZN8) '21",
       "VW Golf VIII GTI '21",
-      "VW Polo GTI '14"
+      "VW Polo GTI '14",
+      "Honda S660 '15",
+      "Mazda Roadster RS '02",
+      "Mazda MX-5 (ND) '15",
+      "Nissan Silvia K's '90",
+      "Nissan Silvia spec-R (S15) '02",
+      "Subaru WRX STI '15"
     ],
     "N400": [
       "BMW M2 Competition '18",
@@ -585,7 +905,41 @@ export const CAR_LISTS = {
       "Nissan Skyline GT-R (R34) V-spec II",
       "Subaru Impreza WRX STI '04",
       "Toyota MR2 GT-S (SW20) '97",
-      "Toyota Supra RZ (JZA80) '97"
+      "Toyota Supra RZ (JZA80) '97",
+      "Nissan Fairlady Z (Z34) '08",
+      "Renault Sport Clio R.S. 220 EDC '16",
+      "Volkswagen Scirocco R '10"
+    ],
+    "N500": [
+      "Aston Martin V8 Vantage '06",
+      "Audi R8 4.2 FSI '07",
+      "Chevrolet Corvette (C7) '14",
+      "Dodge Viper GTS '02",
+      "Ferrari F355 '94",
+      "Honda NSX '17",
+      "Lexus RC F '14",
+      "Mercedes-AMG GT R '17",
+      "Nissan GT-R (R35) '17"
+    ],
+    "N600": [
+      "BMW M3 (E30) '91",
+      "Ferrari 812 Superfast '17",
+      "Lamborghini Countach LP400 '74",
+      "Nissan Skyline GT-R V-Spec II (R32) '94"
+    ],
+    "N700": [
+      "Ferrari F40 '92",
+      "Lamborghini Aventador LP700-4 '11",
+      "McLaren F1 '94",
+      "Porsche 911 GT3 RS (991) '16"
+    ],
+    "N800": [
+      "Ferrari Enzo Ferrari '02",
+      "Lamborghini Murcielago LP640 '09",
+      "McLaren P1 '13",
+      "Pagani Huayra '13",
+      "Porsche Carrera GT '04",
+      "Porsche 918 Spyder '13"
     ],
     "S (Supercar)": [
       "Aston Martin DB5 '64",
@@ -609,13 +963,19 @@ export const CAR_LISTS = {
     ],
     "Gr.X / Vision GT": [
       "Red Bull X2019 Competition",
+      "Red Bull X2014 Junior",
+      "Red Bull X2014 Standard",
       "Tomahawk X Vision Gran Turismo",
       "Toyota Gazoo FT-1 Vision Gran Turismo",
       "Daihatsu Copen RJ Vision GT",
       "Genesis X Gran Berlinetta VGT",
       "Lamborghini Lambo V12 Vision GT",
       "Mazda RX-Vision GT3 Concept",
-      "Mercedes-AMG Vision GT"
+      "Mercedes-AMG Vision GT",
+      "Ferrari F1500T-A",
+      "F3500-A",
+      "F3500-B",
+      "Racing Kart 125 Shifter"
     ]
   }
 };
