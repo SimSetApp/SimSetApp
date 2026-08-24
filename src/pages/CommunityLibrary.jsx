@@ -1,11 +1,14 @@
 import { useState, useCallback, useMemo } from "react";
-import { Star, Download, TrendingUp, Clock, Globe, Users } from "lucide-react";
+import { Star, Download, TrendingUp, Clock, Globe, Users, BadgeCheck, MessageSquare } from "lucide-react";
 import ReplayViewer from "../components/ReplayViewer";
+import SmartSetupMatch from "../components/SmartSetupMatch";
+import SetupComments from "../components/SetupComments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MobileSelect from "@/components/MobileSelect";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -49,7 +52,7 @@ function StarRating({ rating, onRate, interactive = false }) {
   );
 }
 
-function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
+function CommunitySetupCard({ setup, onAuthorClick, authorProfile, onCommentsClick }) {
   const queryClient = useQueryClient();
   const [showRating, setShowRating] = useState(false);
   const [pendingRating, setPendingRating] = useState(0);
@@ -114,7 +117,12 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-heading text-sm font-semibold truncate">{setup.title}</h3>
+            <div className="flex items-center gap-1.5">
+              {setup.is_curated && (
+                <BadgeCheck className="w-4 h-4 text-primary shrink-0" />
+              )}
+              <h3 className="font-heading text-sm font-semibold truncate">{setup.title}</h3>
+            </div>
             <button
               className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5 hover:text-primary transition-colors text-left"
               onClick={() => onAuthorClick?.(setup.author_id, displayAuthorName)}
@@ -127,6 +135,9 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
                 </span>
               )}
               {displayAuthorName}
+              {setup.verified_author && (
+                <Badge variant="outline" className="text-[9px] border-primary/40 text-primary px-1 py-0 h-3.5">{setup.verified_author}</Badge>
+              )}
             </button>
           </div>
           <Badge variant="outline" className="text-xs shrink-0">{setup.sim_title}</Badge>
@@ -192,7 +203,7 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
             disabled={saveMutation.isPending || saved}
           >
             <Download className="w-3 h-3 mr-1" />
-            {saved ? "Saved!" : "Save to Garage"}
+            {saved ? "Saved!" : "Save"}
           </Button>
           <Button
             size="sm"
@@ -202,6 +213,15 @@ function CommunitySetupCard({ setup, onAuthorClick, authorProfile }) {
           >
             <Star className="w-3 h-3 mr-1" />
             Rate
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="flex-1 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => onCommentsClick?.(setup)}
+          >
+            <MessageSquare className="w-3 h-3 mr-1" />
+            Discuss
           </Button>
         </div>
       </CardContent>
@@ -215,6 +235,7 @@ export default function CommunityLibrary() {
   const [sortBy, setSortBy] = useState("popular");
   const [replayFilter, setReplayFilter] = useState(false);
   const [profileSheet, setProfileSheet] = useState(null); // { id, name }
+  const [commentSetup, setCommentSetup] = useState(null);
   const { isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -331,7 +352,7 @@ export default function CommunityLibrary() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map(setup => (
-          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} authorProfile={authorProfileMap[setup.author_id]} />
+          <CommunitySetupCard key={setup.id} setup={setup} onAuthorClick={handleAuthorClick} authorProfile={authorProfileMap[setup.author_id]} onCommentsClick={setCommentSetup} />
         ))}
       </div>
     );
@@ -350,6 +371,11 @@ export default function CommunityLibrary() {
           <p className="text-sm text-muted-foreground mt-1">
             Browse and share setups from the sim racing community
           </p>
+        </div>
+
+        {/* Smart Setup Match */}
+        <div className="mb-6">
+          <SmartSetupMatch onSetupClick={(s) => setCommentSetup(s)} />
         </div>
 
         {/* Top Creators */}
@@ -435,6 +461,30 @@ export default function CommunityLibrary() {
           onClose={() => setProfileSheet(null)}
           currentUserId={currentUserId}
         />
+      )}
+
+      {commentSetup && (
+        <Dialog open={!!commentSetup} onOpenChange={(o) => { if (!o) setCommentSetup(null); }}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {commentSetup.is_curated && <BadgeCheck className="w-4 h-4 text-primary" />}
+                <span className="truncate">{commentSetup.title}</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-xs">{commentSetup.sim_title}</Badge>
+                <Badge variant="outline" className="text-xs">{commentSetup.car}</Badge>
+                {commentSetup.track && <Badge variant="outline" className="text-xs">{commentSetup.track}</Badge>}
+              </div>
+              {commentSetup.notes && <p className="text-sm text-muted-foreground leading-relaxed">{commentSetup.notes}</p>}
+            </div>
+            <div className="pt-3 border-t border-border">
+              <SetupComments setupId={commentSetup.id} />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

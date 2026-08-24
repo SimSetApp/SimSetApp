@@ -1,0 +1,47 @@
+{
+  "name": "SetupComment",
+  "type": "object",
+  "properties": {
+    "setup_id": {
+      "type": "string",
+      "title": "Community Setup ID"
+    },
+    "author_id": {
+      "type": "string",
+      "title": "Author User ID"
+    },
+    "author_name": {
+      "type": "string",
+      "title": "Author Display Name"
+    },
+    "content": {
+      "type": "string",
+      "title": "Comment Text"
+    }
+  },
+  "required": [
+    "setup_id",
+    "author_id",
+    "author_name",
+    "content"
+  ],
+  "access_control": {
+    "list": "public",
+    "get": "public",
+    "create": "authenticated",
+    "update": "authenticated",
+    "delete": "authenticated"
+  },
+  "rls": {
+    "create": {
+      "data.author_id": "{{user.id}}"
+    },
+    "read": null,
+    "update": {
+      "data.author_id": "{{user.id}}"
+    },
+    "delete": {
+      "data.author_id": "{{user.id}}"
+    }
+  }
+}

@@ -5,19 +5,34 @@ import MobileHeader from "../components/MobileHeader";
 import CarSelector from "../components/CarSelector";
 import SetupCategorySection from "../components/SetupCategorySection";
 import TrackTips from "../components/TrackTips";
+import CarDiagram from "../components/CarDiagram";
+import SmartSetupMatch from "../components/SmartSetupMatch";
 import { SETUP_PARAMETERS } from "../lib/simData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, MapPin, Car, Thermometer, ArrowLeft } from "lucide-react";
+import { BookOpen, MapPin, Car, Thermometer, ArrowLeft, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TyreAnalyzer from "../components/TyreAnalyzer";
 
 export default function SetupGuide() {
   const [sim, setSim] = useState("");
   const [car, setCar] = useState("");
+  const [activeCategory, setActiveCategory] = useState(null);
   const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
   const defaultTab = urlParams.get("tab") || "parameters";
+
+  // Map car diagram category IDs to SETUP_PARAMETERS indices
+  const categoryMap = {
+    tyres: 0,
+    geometry: 1,
+    suspension: 2,
+    arb: 3,
+    aero: 4,
+    diff: 5,
+    brakes: 6,
+    electronics: 7,
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,8 +92,41 @@ export default function SetupGuide() {
           </TabsList>
 
           <TabsContent value="parameters" className="space-y-3">
+            {/* Smart Setup Match */}
+            <SmartSetupMatch />
+
+            {/* AI Wizard CTA */}
+            <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-heading text-sm font-bold">Want a complete setup generated for you?</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Try the AI Setup Wizard — car, track, weather & issues → full setup with reasoning.</p>
+              </div>
+              <button
+                onClick={() => navigate("/setup-wizard")}
+                className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-heading tracking-wider hover:bg-primary/90 transition-colors shrink-0"
+              >
+                Open
+              </button>
+            </div>
+
+            {/* Interactive Car Diagram */}
+            <CarDiagram onSelect={(id) => {
+              const idx = categoryMap[id];
+              if (idx !== undefined) {
+                setActiveCategory(id);
+                const el = document.getElementById(`category-${idx}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
+            }} activeCategory={activeCategory} />
+
+            {/* Parameter categories */}
             {SETUP_PARAMETERS.map((cat, idx) => (
-              <SetupCategorySection key={cat.category} category={cat} index={idx} defaultOpen={idx === 0} />
+              <div key={cat.category} id={`category-${idx}`}>
+                <SetupCategorySection category={cat} index={idx} defaultOpen={idx === 0} />
+              </div>
             ))}
           </TabsContent>
 

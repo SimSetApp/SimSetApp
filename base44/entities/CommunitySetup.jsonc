@@ -71,6 +71,26 @@
         "type": "string"
       },
       "default": []
+    },
+    "is_curated": {
+      "type": "boolean",
+      "title": "Curated / Verified Pro Setup",
+      "default": false
+    },
+    "verified_author": {
+      "type": "string",
+      "title": "Verified Author Label"
+    },
+    "driving_style": {
+      "type": "string",
+      "title": "Recommended Driving Style",
+      "enum": [
+        "Smooth & Consistent",
+        "Aggressive & Attack",
+        "Trail-Braker",
+        "Late Apex Rotator",
+        "High-Speed Specialist"
+      ]
     }
   },
   "required": [

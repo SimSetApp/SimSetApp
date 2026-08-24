@@ -11,9 +11,11 @@ import PullToRefreshIndicator from "../components/PullToRefreshIndicator";
 import SaveSetupDialog from "../components/SaveSetupDialog";
 import TyrePressureCalc from "../components/TyrePressureCalc";
 import FuelCalc from "../components/FuelCalc";
+import TyreWearPredictor from "../components/TyreWearPredictor";
+import QRShareDialog from "../components/QRShareDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight } from "lucide-react";
+import { Plus, Pencil, Trash2, Car, MapPin, FileText, Loader2, SlidersHorizontal, Circle, Fuel, FolderOpen, Clock, GitCompare, Search, X, Share2, Check, Globe, Link, Trash, Video, History, Users, ArrowRight, QrCode, Activity, Gauge } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import ReplayUploader from "../components/ReplayUploader";
 
@@ -105,6 +107,7 @@ export default function SavedSetups() {
 
   const [sharingId, setSharingId] = useState(null);
   const [sharedSetupData, setSharedSetupData] = useState(null); // { id, replay_urls } for replay upload modal
+  const [qrSetup, setQrSetup] = useState(null);
 
   const shareToCommunityMutation = useMutation({
     mutationFn: async (setup) => {
@@ -250,10 +253,13 @@ export default function SavedSetups() {
               <FolderOpen className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Garage</span>
             </TabsTrigger>
             <TabsTrigger value="tyres" className="flex-1 font-heading text-xs tracking-wider">
-              <Circle className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Tyre Pressures</span>
+              <Circle className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Tyres</span>
+            </TabsTrigger>
+            <TabsTrigger value="wear" className="flex-1 font-heading text-xs tracking-wider">
+              <Gauge className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Wear</span>
             </TabsTrigger>
             <TabsTrigger value="fuel" className="flex-1 font-heading text-xs tracking-wider">
-              <Fuel className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Fuel Strategy</span>
+              <Fuel className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Fuel</span>
             </TabsTrigger>
             <TabsTrigger value="compare" className="flex-1 font-heading text-xs tracking-wider">
               <GitCompare className="w-3.5 h-3.5 sm:mr-1.5" /><span className="hidden sm:inline">Compare</span>
@@ -417,6 +423,9 @@ export default function SavedSetups() {
                       <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy share link" onClick={(e) => { e.stopPropagation(); shareSetup(setup); }}>
                         {copiedId === setup.id ? <Check className="w-3.5 h-3.5 text-primary" /> : <Link className="w-3.5 h-3.5" />}
                       </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" title="QR Code share" onClick={(e) => { e.stopPropagation(); setQrSetup(setup); }}>
+                        <QrCode className="w-3.5 h-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={(e) => { e.stopPropagation(); setDeleteId(setup.id); }}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
@@ -434,6 +443,15 @@ export default function SavedSetups() {
               <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Tyre Pressure Calculator</h2>
               <p className="text-xs text-muted-foreground mb-6">Calculates cold start pressures based on track and ambient temperatures.</p>
               <TyrePressureCalc />
+            </div>
+          </TabsContent>
+
+          {/* Tyre wear predictor */}
+          <TabsContent value="wear">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-sm font-bold tracking-wide mb-1">Tyre Wear Predictor</h2>
+              <p className="text-xs text-muted-foreground mb-6">Estimates degradation rate, stint life, and the wear cliff based on compound, conditions, and setup.</p>
+              <TyreWearPredictor />
             </div>
           </TabsContent>
 
@@ -511,6 +529,10 @@ export default function SavedSetups() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* QR Share Dialog */}
+      <QRShareDialog open={!!qrSetup} onOpenChange={(o) => { if (!o) setQrSetup(null); }} setup={qrSetup} />
+
       <Footer />
     </div>
   );

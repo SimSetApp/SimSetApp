@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Users, Instagram } from "lucide-react";
+import { BookOpen, FolderOpen, ArrowRight, SlidersHorizontal, MapPin, Gauge, Bot, Zap, Wrench, Users, Instagram, Sparkles, Flag, Activity, GraduationCap, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -16,20 +16,48 @@ const simStats = Object.entries(CAR_LISTS).map(([name, groups]) => ({
 
 const FEATURES = [
   {
+    icon: Sparkles,
+    title: "AI Setup Wizard",
+    desc: "Tell us your car, track, weather & issues — get a complete AI-generated setup with reasoning.",
+    accent: "text-primary",
+    bg: "bg-primary/10",
+    href: "/setup-wizard",
+    badge: "NEW",
+  },
+  {
+    icon: Activity,
+    title: "Telemetry Import",
+    desc: "Upload MoTeC or Garage 61 CSV exports. See lap consistency and correlate with your setups.",
+    accent: "text-chart-2",
+    bg: "bg-chart-2/10",
+    href: "/telemetry",
+    badge: "NEW",
+  },
+  {
+    icon: Flag,
+    title: "Pit Board Race Mode",
+    desc: "Live race dashboard — track fuel, tyres, and pit windows with big glanceable targets.",
+    accent: "text-chart-3",
+    bg: "bg-chart-3/10",
+    href: "/pit-board",
+    badge: "NEW",
+  },
+  {
+    icon: GraduationCap,
+    title: "Learning Path",
+    desc: "Progress from beginner to advanced — one concept at a time, with tracked progress.",
+    accent: "text-chart-4",
+    bg: "bg-chart-4/10",
+    href: "/learning-path",
+    badge: "NEW",
+  },
+  {
     icon: SlidersHorizontal,
-    title: "Every Parameter Explained",
-    desc: "From tyre pressures to differential preload — understand what each change does to your car.",
+    title: "Setup Guide",
+    desc: "Every parameter explained — from tyre pressures to differential preload.",
     accent: "text-primary",
     bg: "bg-primary/10",
     href: "/setup-guide",
-  },
-  {
-    icon: MapPin,
-    title: "Track-Specific Tips",
-    desc: "Wing levels, brake cooling, and key focus areas for popular circuits across all sims.",
-    accent: "text-chart-2",
-    bg: "bg-chart-2/10",
-    href: "/setup-guide?tab=tracks",
   },
   {
     icon: Gauge,
@@ -40,33 +68,25 @@ const FEATURES = [
     href: "/problem-solver",
   },
   {
+    icon: Bot,
+    title: "AI Race Engineer",
+    desc: "Chat with an AI race engineer about any handling problem — get specific advice.",
+    accent: "text-chart-5",
+    bg: "bg-chart-5/10",
+    href: "/race-engineer",
+  },
+  {
     icon: FolderOpen,
     title: "My Garage",
-    desc: "Save your setups with notes and session logs so you're never starting from scratch.",
+    desc: "Save your setups with notes, session logs, QR sharing, and tyre wear prediction.",
     accent: "text-chart-4",
     bg: "bg-chart-4/10",
     href: "/saved-setups",
   },
   {
-    icon: BookOpen,
-    title: "Setup Methodology",
-    desc: "A structured approach to building a setup from the ground up, one step at a time.",
-    accent: "text-chart-5",
-    bg: "bg-chart-5/10",
-    href: "/methodology",
-  },
-  {
-    icon: Wrench,
-    title: "Tuning Guide",
-    desc: "Deep-dive reference for every tunable element — suspension geometry, aero, diff and more.",
-    accent: "text-primary",
-    bg: "bg-primary/10",
-    href: "/tuning-guide",
-  },
-  {
     icon: Users,
     title: "Community Library",
-    desc: "Browse and share setups from the community. Rate, download, and improve your lap times.",
+    desc: "Browse and share setups. Smart matching, pro badges, discussions, and ratings.",
     accent: "text-chart-1",
     bg: "bg-chart-1/10",
     href: "/community-library",
@@ -95,15 +115,15 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="font-heading text-sm tracking-wider shadow-lg shadow-primary/20">
-                <Link to="/race-engineer">
-                  <Bot className="w-4 h-4 mr-2" />
-                  AI Race Engineer
+                <Link to="/setup-wizard">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  AI Setup Wizard
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="font-heading text-sm tracking-wider border-border/60 hover:border-primary/40">
-                <Link to="/setup-guide">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Setup Guide
+                <Link to="/race-engineer">
+                  <Bot className="w-4 h-4 mr-2" />
+                  AI Race Engineer
                 </Link>
               </Button>
             </div>
@@ -188,6 +208,9 @@ export default function Home() {
                 to={f.href}
                 className="group relative rounded-xl border border-border bg-card p-5 hover:border-border/80 hover:bg-secondary/30 transition-all duration-200 overflow-hidden"
               >
+                {f.badge && (
+                  <span className="absolute top-3 right-3 px-1.5 py-0.5 rounded-full bg-primary/15 text-primary text-[9px] font-bold tracking-wider">{f.badge}</span>
+                )}
                 <div className={`w-9 h-9 rounded-lg ${f.bg} flex items-center justify-center mb-3`}>
                   <f.icon className={`w-4.5 h-4.5 ${f.accent}`} />
                 </div>
