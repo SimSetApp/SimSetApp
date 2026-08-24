@@ -163,21 +163,21 @@ class MockProvider:
                 self.shift_timer = 0.16
                 self.shift_dir = -1
 
-            # smooth, proportional throttle/brake traces (eased, not stepped)
-            if diff >= 0:
-                base_thr = min(1.0, 0.35 + diff * 0.025)
-                base_brk = 0.0
+            # smooth throttle/brake that saturates at 100% during hard accel/braking
+            if diff > 0:
+                intent_thr = min(1.0, diff / 15.0)
+                intent_brk = 0.0
             else:
-                base_thr = 0.0
-                base_brk = min(1.0, -diff * 0.02)
+                intent_thr = 0.0
+                intent_brk = min(1.0, -diff / 30.0)
             if self.shift_timer > 0:
                 self.shift_timer -= dt
                 if self.shift_dir > 0:
-                    base_thr = 0.25  # upshift lift
+                    intent_thr = 0.3  # upshift lift
                 else:
-                    base_thr = max(base_thr, 0.5)  # downshift blip
-            self.throttle += (base_thr - self.throttle) * 0.3
-            self.brake += (base_brk - self.brake) * 0.3
+                    intent_thr = max(intent_thr, 0.55)  # downshift blip
+            self.throttle += (intent_thr - self.throttle) * 0.5
+            self.brake += (intent_brk - self.brake) * 0.5
 
             corner = max(0.0, (200 - target) / 130)
             in_corner = corner > 0.15

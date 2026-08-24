@@ -79,16 +79,16 @@ function mockTick(s) {
     if (rpmNow > 7400 && cur < 6 && s.shiftTimer <= 0) { s.gear = cur + 1; s.shiftTimer = 0.18; s.shiftDir = 1; }
     else if (rpmNow < 3600 && cur > 1 && s.shiftTimer <= 0) { s.gear = cur - 1; s.shiftTimer = 0.16; s.shiftDir = -1; }
 
-    let baseThr, baseBrk;
-    if (diff >= 0) { baseThr = Math.min(1, 0.35 + diff * 0.025); baseBrk = 0; }
-    else { baseThr = 0; baseBrk = Math.min(1, -diff * 0.02); }
+    let intentThr, intentBrk;
+    if (diff > 0) { intentThr = Math.min(1, diff / 15); intentBrk = 0; }
+    else { intentThr = 0; intentBrk = Math.min(1, -diff / 30); }
     if (s.shiftTimer > 0) {
       s.shiftTimer -= dt;
-      if (s.shiftDir > 0) baseThr = 0.25;
-      else baseThr = Math.max(baseThr, 0.5);
+      if (s.shiftDir > 0) intentThr = 0.3;
+      else intentThr = Math.max(intentThr, 0.55);
     }
-    s.throttle += (baseThr - s.throttle) * 0.3;
-    s.brake += (baseBrk - s.brake) * 0.3;
+    s.throttle += (intentThr - s.throttle) * 0.5;
+    s.brake += (intentBrk - s.brake) * 0.5;
 
     const corner = Math.max(0, (200 - target) / 130);
     const inCorner = corner > 0.15;
