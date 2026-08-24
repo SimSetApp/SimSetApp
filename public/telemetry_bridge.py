@@ -338,6 +338,42 @@ async def broadcast_loop(hz):
         await asyncio.sleep(interval)
 
 
+def process_request(conn_or_path, request_or_headers):
+    """Answer Chrome's Private Network Access (PNA) preflight.
+
+    Chrome blocks public-origin web pages from reaching local/private network
+    services unless the service responds to the CORS preflight with
+    Access-Control-Allow-Private-Network: true. Without this, the Live
+    Telemetry dashboard gets ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.
+
+    Works with both the new (>=14) and legacy (<14) websockets API.
+    """
+    cors_headers = [
+        ("Access-Control-Allow-Origin", "*"),
+        ("Access-Control-Allow-Private-Network", "true"),
+        ("Access-Control-Allow-Methods", "GET, OPTIONS"),
+        ("Access-Control-Allow-Headers", "*"),
+    ]
+    # websockets >= 14: (connection, request) with request.method / request.headers
+    if not isinstance(conn_or_path, str):
+        request = request_or_headers
+        method = getattr(request, "method", "GET")
+        headers = getattr(request, "headers", None) or {}
+        if method != "OPTIONS" and headers.get("Access-Control-Request-Private-Network", "").lower() != "true":
+            return None
+        try:
+            from websockets.http11 import Response
+            from websockets.datastructures import Headers
+            return Response(200, "OK", Headers(cors_headers), b"")
+        except ImportError:
+            return (200, cors_headers, b"")
+    # legacy websockets < 14: (path, request_headers)
+    headers = request_or_headers
+    if headers.get("Access-Control-Request-Private-Network", "").lower() != "true":
+        return None
+    return (200, cors_headers, b"")
+
+
 async def handler(ws):
     clients.add(ws)
     print(f"[{datetime.now().strftime('%H:%M:%S')}] dashboard connected")
@@ -369,7 +405,7 @@ async def main():
     print("=" * 60)
     print("Open SimSetApp -> Live Telemetry -> Connect.\n")
 
-    async with websockets.serve(handler, "localhost", args.port):
+    async with websockets.serve(handler, "localhost", args.port, process_request=process_request):
         asyncio.create_task(detect_loop())
         await broadcast_loop(args.hz)
 
