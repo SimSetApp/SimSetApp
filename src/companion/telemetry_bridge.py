@@ -146,10 +146,12 @@ class MockProvider:
         else:
             target = self._target_speed(phase)
             diff = target - self.speed
+            # throttle/brake-modulated: full pedal = harder accel (faster RPM climb),
+            # partial = gentler — the pedals drive the speed, not the other way around
             if diff > 0:
-                self.speed += max(48 * dt, diff * 0.12)
+                self.speed += max(6 * dt, diff * 0.14 * (0.2 + 0.8 * self.throttle))
             elif diff < 0:
-                self.speed += min(-58 * dt, diff * 0.12)
+                self.speed += min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * self.brake))
             self.speed = max(0, min(300, self.speed))
 
             cur = self.gear
@@ -169,9 +171,11 @@ class MockProvider:
             # holds at 100% on the straight (not dropping when speed matches).
             t_next = self._target_speed((phase + 0.02) % 1.0)
             dtgt = t_next - target
-            if dtgt < -1.5:            # braking zone (target falling ahead)
+            if dtgt < -1.5:            # braking zone — hard initial input, tapers as speed sheds
+                target_min_ahead = min(self._target_speed((phase + k * 0.01) % 1.0) for k in range(1, 9))
+                brake_demand = max(0.0, self.speed - target_min_ahead)
                 intent_thr = 0.0
-                intent_brk = min(1.0, -dtgt / 20.0)
+                intent_brk = min(1.0, brake_demand / 50.0)
             elif dtgt > 1.5:           # acceleration zone (target rising)
                 intent_thr = 1.0
                 intent_brk = 0.0
@@ -191,7 +195,7 @@ class MockProvider:
             thr_err = intent_thr - self.throttle
             self.throttle += thr_err * (0.2 if thr_err > 0 else 0.4)
             brk_err = intent_brk - self.brake
-            self.brake += brk_err * (0.6 if brk_err > 0 else 0.15)
+            self.brake += brk_err * (0.6 if brk_err > 0 else 0.25)
 
             corner = max(0.0, (200 - target) / 130)
             in_corner = corner > 0.15

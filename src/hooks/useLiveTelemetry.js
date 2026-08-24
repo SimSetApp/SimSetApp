@@ -70,8 +70,8 @@ function mockTick(s) {
   } else {
     const target = _mockTargetSpeed(phase);
     const diff = target - s.speed;
-    if (diff > 0) s.speed += Math.max(48 * dt, diff * 0.12);
-    else if (diff < 0) s.speed += Math.min(-58 * dt, diff * 0.12);
+    if (diff > 0) s.speed += Math.max(6 * dt, diff * 0.14 * (0.2 + 0.8 * s.throttle));
+    else if (diff < 0) s.speed += Math.min(-6 * dt, diff * 0.14 * (0.2 + 0.8 * s.brake));
     s.speed = Math.max(0, Math.min(300, s.speed));
 
     const cur = s.gear;
@@ -82,7 +82,13 @@ function mockTick(s) {
     const tNext = _mockTargetSpeed((phase + 0.02) % 1);
     const dtgt = tNext - target;
     let intentThr, intentBrk;
-    if (dtgt < -1.5) { intentThr = 0; intentBrk = Math.min(1, -dtgt / 20); }
+    if (dtgt < -1.5) {
+      let tMinAhead = Infinity;
+      for (let k = 1; k <= 8; k++) tMinAhead = Math.min(tMinAhead, _mockTargetSpeed((phase + k * 0.01) % 1));
+      const brakeDemand = Math.max(0, s.speed - tMinAhead);
+      intentThr = 0;
+      intentBrk = Math.min(1, brakeDemand / 50);
+    }
     else if (dtgt > 1.5) { intentThr = 1; intentBrk = 0; }
     else if (target > 170) { intentThr = 1; intentBrk = 0; }
     else { intentThr = 0.35; intentBrk = 0; }
@@ -94,7 +100,7 @@ function mockTick(s) {
     const thrErr = intentThr - s.throttle;
     s.throttle += thrErr * (thrErr > 0 ? 0.2 : 0.4);
     const brkErr = intentBrk - s.brake;
-    s.brake += brkErr * (brkErr > 0 ? 0.6 : 0.15);
+    s.brake += brkErr * (brkErr > 0 ? 0.6 : 0.25);
 
     const corner = Math.max(0, (200 - target) / 130);
     const inCorner = corner > 0.15;
