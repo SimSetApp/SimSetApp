@@ -359,40 +359,72 @@ async def broadcast_loop(hz):
         await asyncio.sleep(interval)
 
 
-def process_request(conn_or_path, request_or_headers):
-    """Answer Chrome's Private Network Access (PNA) preflight.
-
-    Chrome blocks public-origin web pages from reaching local/private network
-    services unless the service responds to the CORS preflight with
-    Access-Control-Allow-Private-Network: true. Without this, the Live
-    Telemetry dashboard gets ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.
-
-    Works with both the new (>=14) and legacy (<14) websockets API.
-    """
-    cors_headers = [
+def _pna_headers():
+    return [
         ("Access-Control-Allow-Origin", "*"),
         ("Access-Control-Allow-Private-Network", "true"),
         ("Access-Control-Allow-Methods", "GET, OPTIONS"),
         ("Access-Control-Allow-Headers", "*"),
     ]
+
+
+def _is_pna(headers):
+    if not headers:
+        return False
+    try:
+        return headers.get("Access-Control-Request-Private-Network", "").lower() == "true"
+    except Exception:
+        return False
+
+
+def process_request(conn_or_path, request_or_headers):
+    """Answer Chrome's Private Network Access (PNA) preflight.
+
+    Chrome blocks public-origin (HTTPS) web pages from reaching local/private
+    network services unless the service responds to the CORS preflight (an
+    OPTIONS request carrying Access-Control-Request-Private-Network: true)
+    with Access-Control-Allow-Private-Network: true.
+
+    Without this, the Live Telemetry dashboard gets
+    ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.
+
+    Uses connection.respond() — the documented stable API in websockets >= 14
+    — with fallbacks for older versions.
+    """
     # websockets >= 14: (connection, request) with request.method / request.headers
     if not isinstance(conn_or_path, str):
+        connection = conn_or_path
         request = request_or_headers
         method = getattr(request, "method", "GET")
-        headers = getattr(request, "headers", None) or {}
-        if method != "OPTIONS" and headers.get("Access-Control-Request-Private-Network", "").lower() != "true":
-            return None
+        headers = getattr(request, "headers", None)
+        if method != "OPTIONS" and not _is_pna(headers):
+            return None  # normal WebSocket upgrade — proceed with handshake
+
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] PNA preflight answered (200)")
+
+        # Primary: connection.respond() — documented stable API (websockets 14+)
+        try:
+            from http import HTTPStatus
+            from websockets.datastructures import Headers
+            return connection.respond(HTTPStatus.OK, b"", Headers(_pna_headers()))
+        except Exception as e:
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] respond() failed ({e}), trying fallback")
+        # Fallback 1: construct Response directly
         try:
             from websockets.http11 import Response
             from websockets.datastructures import Headers
-            return Response(200, "OK", Headers(cors_headers), b"")
+            return Response(200, "OK", Headers(_pna_headers()), b"")
         except ImportError:
-            return (200, cors_headers, b"")
+            pass
+        # Fallback 2: legacy tuple
+        return (200, _pna_headers(), b"")
+
     # legacy websockets < 14: (path, request_headers)
     headers = request_or_headers
-    if headers.get("Access-Control-Request-Private-Network", "").lower() != "true":
+    if not _is_pna(headers):
         return None
-    return (200, cors_headers, b"")
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] PNA preflight answered (legacy 200)")
+    return (200, _pna_headers(), b"")
 
 
 async def handler(ws):
