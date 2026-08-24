@@ -52,7 +52,7 @@ function ToolsDropdown({ location }) {
       </button>
 
       {open && (
-        <div         className="absolute top-full left-0 mt-2 w-56 rounded-xl glass-strong shadow-2xl overflow-hidden z-50">
+        <div className="absolute top-full left-0 mt-2 w-56 rounded-xl bg-background border border-border shadow-2xl overflow-hidden z-50">
           {toolsNav.map(({ path, label, icon: Icon, desc }) => {
             const active = location.pathname === path;
             return (
