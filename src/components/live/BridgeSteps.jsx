@@ -4,7 +4,7 @@ import CopyChip from "@/components/live/CopyChip";
 // Host your built .exe (see companion/README.md → "One-click Windows app") and paste
 // its public URL here. When set, users get a single download + double-click install.
 // e.g. "https://github.com/USER/REPO/releases/latest/download/SimSetAppBridge.exe"
-const EXE_URL = "";
+const EXE_URL = "https://github.com/SimSetApp/SimSetApp/releases/latest/download/SimSetAppBridge.exe";
 
 function Step({ n, icon: Icon, title, children }) {
   return (
