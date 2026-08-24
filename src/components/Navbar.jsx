@@ -102,7 +102,7 @@ function ThemeDropdown() {
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-40 rounded-xl glass-strong shadow-2xl overflow-hidden z-50">
+        <div className="absolute top-full right-0 mt-2 w-40 rounded-xl bg-background border border-border shadow-2xl overflow-hidden z-50">
           {THEMES.map(t => (
             <button
               key={t.id}
@@ -254,7 +254,7 @@ export default function Navbar() {
 
       {/* Mobile dropdown */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl">
+        <div className="md:hidden border-t border-border bg-background">
           <div className="max-w-6xl mx-auto px-4 py-2 flex flex-col gap-0.5">
             {allMobileNav.map(({ path, label }) => {
               const active = location.pathname === path;
