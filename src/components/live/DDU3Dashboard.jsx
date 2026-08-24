@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Maximize2, Minimize2, Grid } from "lucide-react";
+import { Maximize2, Minimize2 } from "lucide-react";
 
 function fmt(t) {
   if (t == null || isNaN(t)) return "--:--.---";
@@ -177,10 +177,6 @@ export default function DDU3Dashboard({ data, demo }) {
             <MiniBox label="MAP" value="0" border={C.green} />
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-center gap-1 py-1 text-sm font-bold tracking-[0.3em] text-white border-t" style={{ borderColor: C.border }}>
-            SIMUB<span className="inline-flex items-center"><Grid className="w-3.5 h-3.5 mx-0.5" /></span>X
-          </div>
         </div>
         <SideLEDs />
       </div>
