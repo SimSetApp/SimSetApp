@@ -1,4 +1,4 @@
-import { Download, Terminal, Play, Wifi, Info } from "lucide-react";
+import { Download, Terminal, Play, Wifi, Info, FolderOpen, HelpCircle } from "lucide-react";
 import CopyChip from "@/components/live/CopyChip";
 
 function Step({ n, icon: Icon, title, children }) {
@@ -21,27 +21,61 @@ function Step({ n, icon: Icon, title, children }) {
 export default function BridgeSteps() {
   return (
     <ol className="space-y-4">
-      <Step n={1} icon={Download} title="Download the bridge">
-        <p>A single Python file — no app or account needed.</p>
+      <Step n={1} icon={Download} title="Install Python (if you don't have it)">
+        <p>Get <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer" className="text-primary underline">Python 3.8+</a> from python.org.</p>
+        <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
+          <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
+          <p><strong className="text-foreground">Windows:</strong> in the installer, tick <em>"Add python.exe to PATH"</em> at the bottom before you click Install.</p>
+        </div>
+        <p>Check it worked — open a terminal and run:</p>
+        <CopyChip text="python --version" />
+      </Step>
+
+      <Step n={2} icon={Download} title="Download the bridge script">
+        <p>One small file — save it somewhere easy to find (e.g. your Desktop).</p>
         <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
           <Download className="w-3.5 h-3.5" /> telemetry_bridge.py
         </a>
       </Step>
-      <Step n={2} icon={Terminal} title="Install Python & dependencies">
-        <p>Requires <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer" className="text-primary underline">Python 3.8+</a>. Open a terminal and run:</p>
+
+      <Step n={3} icon={Terminal} title="Install the two libraries it needs">
+        <p>Open a terminal in the same folder as the file you just downloaded:</p>
+        <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
+          <FolderOpen className="w-3 h-3 text-primary mt-0.5 shrink-0" />
+          <p><strong className="text-foreground">Windows:</strong> File Explorer → go to the folder → click the address bar, type <code className="font-mono">cmd</code>, press Enter.<br /><strong className="text-foreground">Mac:</strong> right-click the folder → Services → "New Terminal at Folder".</p>
+        </div>
         <CopyChip text="pip install websockets psutil" />
-        <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2 mt-1">
+        <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
           <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-          <p>For <strong className="text-foreground">iRacing</strong> add <code className="font-mono text-foreground">pip install irsdk</code>. ACC uses shared memory — see the script header. These are optional; the bridge auto-detects whatever is installed.</p>
+          <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install websockets psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; ACC uses shared memory (see the script header).</p>
         </div>
       </Step>
-      <Step n={3} icon={Play} title="Run the bridge">
-        <p>Just run it — it auto-detects your sim when you launch one. No <code className="font-mono">--sim</code> flag needed:</p>
+
+      <Step n={4} icon={Play} title="Run the bridge">
+        <p>In that same terminal, start it — it auto-detects your sim when you launch one:</p>
         <CopyChip text="python telemetry_bridge.py" />
+        <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
+          <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
+          <p>On Mac/Linux use <code className="font-mono">python3</code> instead of <code className="font-mono">python</code>. Leave this window open while you drive.</p>
+        </div>
       </Step>
-      <Step n={4} icon={Wifi} title="Connect in the app">
-        <p>Tap <strong className="text-foreground">Connect to bridge</strong> on this page. When you start a session in your sim, the dashboard goes live automatically — no further setup.</p>
+
+      <Step n={5} icon={Wifi} title="Connect in the app">
+        <p>Tap <strong className="text-foreground">Connect to bridge</strong> on this page. You'll see "waiting for your sim" until you start a session — then the dashboard goes live automatically.</p>
       </Step>
+
+      <li className="flex gap-3 pt-2 border-t border-border">
+        <div className="pt-0.5">
+          <HelpCircle className="w-3.5 h-3.5 text-primary" />
+        </div>
+        <div className="flex-1 text-xs text-muted-foreground space-y-1.5">
+          <p className="font-medium text-foreground">Troubleshooting</p>
+          <p>• <strong className="text-foreground">"python not found"</strong> — use <code className="font-mono">py</code> (Windows) or <code className="font-mono">python3</code> (Mac/Linux).</p>
+          <p>• <strong className="text-foreground">"No module named websockets"</strong> — run the <code className="font-mono">pip install</code> command again in step 3.</p>
+          <p>• <strong className="text-foreground">Stuck on "waiting for your sim"</strong> — the bridge is running but your sim isn't detected. Launch the sim and start a session; for iRacing/ACC make sure the matching library (<code className="font-mono">irsdk</code> / ACC shared-memory binding) is installed.</p>
+          <p>• <strong className="text-foreground">"Connection error"</strong> — the bridge isn't running. Go back to the terminal from step 4 and start it.</p>
+        </div>
+      </li>
     </ol>
   );
 }
