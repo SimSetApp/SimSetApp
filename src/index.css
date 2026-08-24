@@ -96,18 +96,23 @@
 .theme-liquid.mode-light body {
   background-color: hsl(220 40% 96%);
   background-image:
-    radial-gradient(circle at 8% 4%, hsl(211 100% 72% / 0.55), transparent 38%),
-    radial-gradient(circle at 92% 10%, hsl(265 90% 74% / 0.48), transparent 40%),
-    radial-gradient(circle at 50% 100%, hsl(190 95% 68% / 0.45), transparent 44%),
-    radial-gradient(circle at 80% 85%, hsl(330 95% 80% / 0.38), transparent 42%),
-    radial-gradient(circle at 18% 72%, hsl(45 100% 72% / 0.30), transparent 40%);
+    radial-gradient(circle at 6% 2%, hsl(211 100% 72% / 0.62), transparent 36%),
+    radial-gradient(circle at 94% 8%, hsl(265 90% 74% / 0.54), transparent 38%),
+    radial-gradient(circle at 50% 102%, hsl(190 95% 68% / 0.52), transparent 42%),
+    radial-gradient(circle at 82% 88%, hsl(330 95% 80% / 0.44), transparent 40%),
+    radial-gradient(circle at 14% 74%, hsl(45 100% 72% / 0.36), transparent 38%),
+    radial-gradient(circle at 64% 42%, hsl(280 90% 78% / 0.22), transparent 44%);
   background-attachment: fixed;
 }
 .theme-liquid.mode-dark body {
+  background-color: hsl(222 32% 7%);
   background-image:
-    radial-gradient(circle at 12% 8%, hsl(211 100% 60% / 0.18), transparent 42%),
-    radial-gradient(circle at 88% 16%, hsl(265 85% 60% / 0.15), transparent 42%),
-    radial-gradient(circle at 50% 96%, hsl(190 85% 55% / 0.13), transparent 48%);
+    radial-gradient(circle at 10% 6%, hsl(211 100% 60% / 0.32), transparent 40%),
+    radial-gradient(circle at 90% 12%, hsl(265 85% 62% / 0.28), transparent 40%),
+    radial-gradient(circle at 50% 98%, hsl(190 90% 58% / 0.26), transparent 44%),
+    radial-gradient(circle at 80% 84%, hsl(330 90% 68% / 0.22), transparent 42%),
+    radial-gradient(circle at 18% 70%, hsl(160 80% 55% / 0.18), transparent 42%),
+    radial-gradient(circle at 62% 40%, hsl(280 80% 66% / 0.18), transparent 46%);
   background-attachment: fixed;
 }
 }
