@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Palette, Instagram, Sparkles, Flag, Activity, GraduationCap } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Trash2, Heart, ChevronDown, Wrench, BookOpen, Zap, FlaskConical, Bot, FolderOpen, Users, Gauge, UserCircle, Palette, Instagram, Sparkles, Flag, Activity, GraduationCap, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useTheme, THEMES } from "@/lib/ThemeContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -52,7 +52,7 @@ function ToolsDropdown({ location }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-2 w-56 rounded-xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden z-50">
+        <div         className="absolute top-full left-0 mt-2 w-56 rounded-xl glass-strong shadow-2xl overflow-hidden z-50">
           {toolsNav.map(({ path, label, icon: Icon, desc }) => {
             const active = location.pathname === path;
             return (
@@ -102,7 +102,7 @@ function ThemeDropdown() {
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-40 rounded-xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden z-50">
+        <div className="absolute top-full right-0 mt-2 w-40 rounded-xl glass-strong shadow-2xl overflow-hidden z-50">
           {THEMES.map(t => (
             <button
               key={t.id}
@@ -126,12 +126,12 @@ export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, logout, navigateToLogin, deleteAccount } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, mode, toggleMode, isDark } = useTheme();
 
   const allMobileNav = [...primaryNav, ...toolsNav];
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+    <nav className="sticky top-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-foreground/8" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <div className="max-w-6xl mx-auto px-4 h-12 flex items-center gap-2">
         {/* Logo */}
         <Link to="/" className="flex items-center flex-shrink-0 mr-2" onClick={() => setMobileOpen(false)}>
@@ -160,6 +160,16 @@ export default function Navbar() {
         {/* Right side actions */}
         <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
           <ThemeDropdown />
+
+          {theme === 'liquid' && (
+            <button
+              onClick={toggleMode}
+              className="flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+              aria-label="Toggle light/dark"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          )}
 
           {/* Instagram */}
           <a
@@ -277,6 +287,15 @@ export default function Navbar() {
                   </button>
                 ))}
               </div>
+              {theme === 'liquid' && (
+                <button
+                  onClick={() => toggleMode()}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+                >
+                  {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {isDark ? "Switch to Light" : "Switch to Dark"}
+                </button>
+              )}
             </div>
             <div className="pt-2 border-t border-border mt-1 space-y-1">
               {isAuthenticated ? (

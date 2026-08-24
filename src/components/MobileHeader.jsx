@@ -6,7 +6,7 @@ export default function MobileHeader({ title }) {
 
   return (
     <div
-      className="md:hidden sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border flex items-center gap-3 px-4 h-12"
+      className="md:hidden sticky top-0 z-40 bg-background/60 backdrop-blur-2xl border-b border-foreground/8 flex items-center gap-3 px-4 h-12"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <button

@@ -14,7 +14,7 @@ export default function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-xl border-t border-border"
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/60 backdrop-blur-2xl border-t border-foreground/8"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-stretch max-w-md mx-auto">
