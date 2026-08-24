@@ -9,10 +9,12 @@ this bridge on `ws://localhost:3344`. No cloud, no latency, no account needed.
 ## 1. Install
 
 ```bash
-pip install websockets
+pip install websockets psutil
 ```
 
-For real sim data, add the sim's library:
+`psutil` powers auto-detection — without it you'll need `--sim <mock|iracing|acc>`.
+
+For real sim data, add the sim's library (auto-detected when installed):
 
 ```bash
 # iRacing
@@ -21,19 +23,21 @@ pip install irsdk
 # ACC — uses shared memory; see the ACC section below
 ```
 
-## 2. Run
+## 2. Run (one click — auto-detects your sim)
 
 ```bash
-# Mock data (test the dashboard instantly, no sim required)
 python telemetry_bridge.py
+```
 
-# iRacing (launch iRacing + a session first)
+That's it. Launch your sim and start a session — the bridge detects the sim
+process automatically and goes live. No `--sim` flag, no port config.
+
+### Force a specific source (optional)
+
+```bash
+python telemetry_bridge.py --sim mock        # demo data, no sim needed
 python telemetry_bridge.py --sim iracing
-
-# ACC
 python telemetry_bridge.py --sim acc
-
-# Options
 python telemetry_bridge.py --port 3344 --hz 20
 ```
 
@@ -41,24 +45,46 @@ You should see:
 
 ```
  SimSetApp Telemetry Bridge
- Source : Mock Sim
+ Mode   : auto-detect
  WebSocket : ws://localhost:3344
+ Rate   : 20 Hz
 ```
 
 ## 3. Connect in the app
 
-Open SimSetApp → **Live Telemetry** (Tools menu) → tap **Connect**.
-The dashboard lights up immediately.
+Open SimSetApp → **Live Telemetry** → tap **Connect to bridge**.
+The page shows "waiting for your sim" until you start a session, then the
+dashboard lights up automatically.
+
+## Build a one-click .exe (optional)
+
+Package the bridge into a double-clickable Windows executable so users never
+touch a terminal:
+
+```bash
+pip install pyinstaller websockets psutil
+# (add `pip install irsdk` first if you want iRacing bundled in)
+pyinstaller telemetry_bridge.spec
+```
+
+Output: `dist/SimSetAppBridge/SimSetAppBridge.exe`. Double-click to run — it
+auto-detects the sim and starts the WebSocket. Drop a shortcut to it in the
+Windows Startup folder to auto-start with the PC.
+
+> Compiling the `.exe` is a native build step that runs on your machine — it
+> can't be produced from inside the web app.
 
 ## How it works
 
 ```
-[sim] --telemetry--> [telemetry_bridge.py] --ws://localhost:3344--> [SimSetApp dashboard]
+[sim] --shared memory / API--> [telemetry_bridge.py] --ws://localhost:3344--> [SimSetApp dashboard]
 ```
 
-The bridge sends a flat JSON frame ~20×/second with speed, RPM, gear, pedals,
-steering, fuel, tyre temps/wear/pressures, lap times, and delta. The dashboard
-renders it live and (optionally) auto-logs each lap to your session history.
+The bridge sends a flat JSON telemetry frame ~20×/second while a sim session is
+live (speed, RPM, gear, pedals, steering, fuel, tyre temps/wear/pressures, lap
+times, delta), and a `type:"status"` heartbeat once per second while waiting for
+a sim. The dashboard renders it live and (optionally) auto-logs each lap to your
+session history.
 
 ## Browser note
 

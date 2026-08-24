@@ -25,6 +25,7 @@ function fmt(t) {
 const STATUS_META = {
   idle: { label: "Not connected", tone: "text-muted-foreground", icon: WifiOff, dot: "bg-muted-foreground" },
   connecting: { label: "Connecting…", tone: "text-amber-400", icon: Loader2, dot: "bg-amber-400" },
+  searching: { label: "Looking for sim…", tone: "text-amber-400", icon: Loader2, dot: "bg-amber-400" },
   connected: { label: "Live", tone: "text-green-400", icon: Wifi, dot: "bg-green-400" },
   error: { label: "Connection error", tone: "text-red-400", icon: WifiOff, dot: "bg-red-400" },
   closed: { label: "Reconnecting…", tone: "text-amber-400", icon: Loader2, dot: "bg-amber-400" },
@@ -140,19 +141,26 @@ export default function LiveTelemetry() {
                 <WifiOff className="w-3.5 h-3.5 mr-1.5" /> Disconnect
               </Button>
             </div>
+          ) : status === "searching" ? (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Bridge connected — waiting for your sim to start…</span>
+              <Button variant="outline" onClick={disconnect} className="font-heading text-xs tracking-wider">
+                <WifiOff className="w-3.5 h-3.5 mr-1.5" /> Cancel
+              </Button>
+            </div>
           ) : (
             <div className="space-y-4">
-              {/* One-click demo */}
+              {/* One-click connect */}
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                    <Play className="w-4 h-4 text-primary" />
+                    <Wifi className="w-4 h-4 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-heading text-sm font-semibold mb-0.5">Try it instantly — no setup</h4>
-                    <p className="text-xs text-muted-foreground mb-3">Stream realistic demo telemetry right in your browser. Nothing to download or install.</p>
-                    <Button onClick={startDemo} className="w-full font-heading text-xs tracking-wider">
-                      <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo dashboard
+                    <h4 className="font-heading text-sm font-semibold mb-0.5">Connect to your sim</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Launch the bridge on your PC and tap connect — it auto-detects your sim. No URL or settings needed.</p>
+                    <Button onClick={() => connect()} className="w-full font-heading text-xs tracking-wider">
+                      <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect to bridge
                     </Button>
                   </div>
                 </div>
@@ -161,28 +169,35 @@ export default function LiveTelemetry() {
               {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="h-px bg-border flex-1" />
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">or connect a real sim</span>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">or try the demo</span>
                 <div className="h-px bg-border flex-1" />
               </div>
 
-              {/* Bridge path */}
-              <div className="space-y-3">
-                <BridgeSteps />
-                <details className="text-xs">
-                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">Advanced: bridge URL</summary>
-                  <div className="flex gap-2 mt-2">
-                    <input
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder="ws://localhost:3344"
-                      className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                    />
-                    <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider">
-                      <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
-                    </Button>
-                  </div>
-                </details>
-              </div>
+              <Button onClick={startDemo} variant="outline" className="w-full font-heading text-xs tracking-wider">
+                <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo dashboard
+              </Button>
+
+              {/* First-time install steps */}
+              <details className="text-xs">
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">First time? Install the bridge</summary>
+                <div className="mt-3"><BridgeSteps /></div>
+              </details>
+
+              {/* Advanced URL */}
+              <details className="text-xs">
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">Advanced: bridge URL</summary>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    placeholder="ws://localhost:3344"
+                    className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                  />
+                  <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider">
+                    <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
+                  </Button>
+                </div>
+              </details>
             </div>
           )}
         </div>
@@ -224,6 +239,16 @@ export default function LiveTelemetry() {
               </div>
             )}
           </div>
+        ) : status === "searching" ? (
+          <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+            <div className="w-14 h-14 rounded-xl bg-amber-400/15 flex items-center justify-center mx-auto mb-4">
+              <Loader2 className="w-7 h-7 text-amber-400 animate-spin" />
+            </div>
+            <h3 className="font-heading text-lg font-semibold mb-1">Waiting for your sim</h3>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              The bridge is connected. Launch your sim and start a session — the dashboard lights up automatically.
+            </p>
+          </div>
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
             <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
@@ -231,11 +256,16 @@ export default function LiveTelemetry() {
             </div>
             <h3 className="font-heading text-lg font-semibold mb-1">Live Telemetry</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
-              See speed, RPM, tyres, fuel and lap times in real time. Try it with one click — no setup needed.
+              See speed, RPM, tyres, fuel and lap times in real time. Connect your bridge or try the demo.
             </p>
-            <Button onClick={startDemo} className="font-heading text-xs tracking-wider">
-              <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo dashboard
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button onClick={() => connect()} className="font-heading text-xs tracking-wider">
+                <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect to bridge
+              </Button>
+              <Button onClick={startDemo} variant="outline" className="font-heading text-xs tracking-wider">
+                <Play className="w-3.5 h-3.5 mr-1.5" /> Start demo
+              </Button>
+            </div>
           </div>
         )}
       </div>

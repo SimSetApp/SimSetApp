@@ -21,26 +21,26 @@ function Step({ n, icon: Icon, title, children }) {
 export default function BridgeSteps() {
   return (
     <ol className="space-y-4">
-      <Step n={1} icon={Download} title="Download the bridge script">
+      <Step n={1} icon={Download} title="Download the bridge">
         <p>A single Python file — no app or account needed.</p>
         <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
           <Download className="w-3.5 h-3.5" /> telemetry_bridge.py
         </a>
       </Step>
-      <Step n={2} icon={Terminal} title="Install Python & the WebSocket library">
+      <Step n={2} icon={Terminal} title="Install Python & dependencies">
         <p>Requires <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer" className="text-primary underline">Python 3.8+</a>. Open a terminal and run:</p>
-        <CopyChip text="pip install websockets" />
-      </Step>
-      <Step n={3} icon={Play} title="Run the bridge">
-        <p>Start it in mock mode — works with no sim running:</p>
-        <CopyChip text="python telemetry_bridge.py" />
+        <CopyChip text="pip install websockets psutil" />
         <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2 mt-1">
           <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-          <p>For <strong className="text-foreground">iRacing</strong>: <code className="font-mono text-foreground">pip install irsdk</code>, then <code className="font-mono text-foreground">python telemetry_bridge.py --sim iracing</code>. ACC uses shared memory — see the script header.</p>
+          <p>For <strong className="text-foreground">iRacing</strong> add <code className="font-mono text-foreground">pip install irsdk</code>. ACC uses shared memory — see the script header. These are optional; the bridge auto-detects whatever is installed.</p>
         </div>
       </Step>
-      <Step n={4} icon={Wifi} title="The dashboard connects automatically">
-        <p>As soon as the bridge is running, this page detects it and goes live — no need to press Connect. Use <span className="text-foreground font-medium">Advanced</span> below only if your bridge runs on a different port.</p>
+      <Step n={3} icon={Play} title="Run the bridge">
+        <p>Just run it — it auto-detects your sim when you launch one. No <code className="font-mono">--sim</code> flag needed:</p>
+        <CopyChip text="python telemetry_bridge.py" />
+      </Step>
+      <Step n={4} icon={Wifi} title="Connect in the app">
+        <p>Tap <strong className="text-foreground">Connect to bridge</strong> on this page. When you start a session in your sim, the dashboard goes live automatically — no further setup.</p>
       </Step>
     </ol>
   );

@@ -133,17 +133,22 @@ export function useLiveTelemetry() {
       }
       wsRef.current = ws;
 
-      ws.onopen = () => setStatus("connected");
+      ws.onopen = () => setStatus("searching");
       ws.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data);
-          if (msg.type !== "telemetry") return;
-          setData(msg);
-          const lap = msg.lap;
-          if (prevLapRef.current != null && lap != null && lap > prevLapRef.current) {
-            setLastLap(msg);
+          if (msg.type === "telemetry") {
+            setData(msg);
+            setStatus("connected");
+            const lap = msg.lap;
+            if (prevLapRef.current != null && lap != null && lap > prevLapRef.current) {
+              setLastLap(msg);
+            }
+            prevLapRef.current = lap;
+          } else if (msg.type === "status") {
+            // bridge is up but no sim session yet — keep looking
+            setStatus("searching");
           }
-          prevLapRef.current = lap;
         } catch {}
       };
       ws.onerror = () => setStatus("error");
