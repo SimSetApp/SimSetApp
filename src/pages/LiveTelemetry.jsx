@@ -7,10 +7,11 @@ import Footer from "@/components/Footer";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Radio, Wifi, WifiOff, Loader2, Cpu, Download, CheckCircle2, Play } from "lucide-react";
+import { Radio, Wifi, WifiOff, Loader2, Cpu, CheckCircle2, Play } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import CopyChip from "@/components/live/CopyChip";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
+import BridgeSteps from "@/components/live/BridgeSteps";
 import { toast } from "sonner";
 
 function fmt(t) {
@@ -166,19 +167,7 @@ export default function LiveTelemetry() {
 
               {/* Bridge path */}
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <a href="/telemetry_bridge.py" download className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium font-heading tracking-wide hover:bg-primary/90 transition-colors">
-                    <Download className="w-3.5 h-3.5" /> Download bridge script
-                  </a>
-                  <span className="text-xs text-muted-foreground">then run in a terminal:</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <CopyChip text="pip install websockets" />
-                  <CopyChip text="python telemetry_bridge.py" />
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Mock mode works with no sim running. iRacing: add <code className="font-mono text-foreground">--sim iracing</code> (needs <code className="font-mono text-foreground">pip install irsdk</code>). The dashboard auto-connects as soon as the bridge is up.
-                </p>
+                <BridgeSteps />
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">Advanced: bridge URL</summary>
                   <div className="flex gap-2 mt-2">
