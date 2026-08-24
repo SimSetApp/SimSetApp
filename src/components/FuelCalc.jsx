@@ -1,6 +1,9 @@
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Fuel, Clock, RotateCcw, AlertTriangle } from "lucide-react";
 
@@ -13,6 +16,17 @@ export default function FuelCalc() {
   const [safetyMargin, setSafetyMargin] = useState(1);
   const [pitStops, setPitStops] = useState(1);
   const [tankSize, setTankSize] = useState(120);
+
+  const { data: latestSession } = useQuery({
+    queryKey: ["latest-session-fuel"],
+    queryFn: async () => { const r = await base44.entities.SessionLog.list("-created_date", 1); return r?.[0] || null; },
+  });
+
+  const applyLatest = () => {
+    if (!latestSession) return;
+    if (latestSession.fuel_per_lap_actual > 0) setFuelPerLap(Math.min(10, Math.max(1, latestSession.fuel_per_lap_actual)));
+    if (latestSession.total_laps > 0) setLapCount(Math.min(200, Math.max(1, latestSession.total_laps)));
+  };
 
   const lapResults = useMemo(() => {
     const base = lapCount * fuelPerLap;
@@ -100,6 +114,12 @@ export default function FuelCalc() {
 
   return (
     <div className="space-y-6">
+      {latestSession?.fuel_per_lap_actual > 0 && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
+          <span className="text-xs text-muted-foreground">Use real data from your latest session{latestSession.session_type ? ` (${latestSession.session_type})` : ""} — {latestSession.fuel_per_lap_actual.toFixed(2)} L/lap.</span>
+          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-primary hover:bg-primary/10" onClick={applyLatest}>Apply</Button>
+        </div>
+      )}
       <Tabs defaultValue="laps">
         <TabsList className="bg-secondary w-full">
           <TabsTrigger value="laps" className="flex-1 font-heading text-xs tracking-wider">

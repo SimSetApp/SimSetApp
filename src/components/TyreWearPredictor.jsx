@@ -1,4 +1,7 @@
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { Button } from "@/components/ui/button";
 import { Circle, AlertTriangle, TrendingDown, Clock, Gauge } from "lucide-react";
 import { predictTyreWear, estimateStintTimeLoss } from "@/lib/tyreWearModel";
 import { SIM_TITLES, CAR_LISTS, SIM_TYRE_CLASSES } from "@/lib/simData";
@@ -31,6 +34,18 @@ export default function TyreWearPredictor() {
   const [pressureRL, setPressureRL] = useState(27.0);
   const [pressureRR, setPressureRR] = useState(27.0);
 
+  const { data: latestSession } = useQuery({
+    queryKey: ["latest-session-tyre"],
+    queryFn: async () => { const r = await base44.entities.SessionLog.list("-created_date", 1); return r?.[0] || null; },
+  });
+
+  const applyLatest = () => {
+    if (!latestSession) return;
+    if (latestSession.track_temp > 0) setTrackTemp(latestSession.track_temp);
+    if (latestSession.air_temp > 0) setAmbientTemp(latestSession.air_temp);
+    if (latestSession.total_laps > 0) setStintLaps(latestSession.total_laps);
+  };
+
   const result = useMemo(() => {
     return predictTyreWear({
       compound,
@@ -58,6 +73,12 @@ export default function TyreWearPredictor() {
 
   return (
     <div className="space-y-5">
+      {latestSession && (latestSession.track_temp > 0 || latestSession.total_laps > 0) && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
+          <span className="text-xs text-muted-foreground">Use real conditions from your latest session{latestSession.session_type ? ` (${latestSession.session_type})` : ""}.</span>
+          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-primary hover:bg-primary/10" onClick={applyLatest}>Apply</Button>
+        </div>
+      )}
       {/* Inputs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Field label="Sim">
