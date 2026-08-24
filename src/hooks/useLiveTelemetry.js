@@ -120,6 +120,7 @@ export function useLiveTelemetry() {
       stopDemo();
       const target = overrideUrl || url;
       manualDisconnectRef.current = false;
+      if (reconnectRef.current) clearTimeout(reconnectRef.current);
       if (wsRef.current) {
         try { wsRef.current.close(); } catch {}
       }

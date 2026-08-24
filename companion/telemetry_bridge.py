@@ -280,7 +280,7 @@ def make_provider(key):
 # Shared state + WebSocket server
 # ---------------------------------------------------------------------------
 clients = set()
-state = {"provider": None, "sim": None, "manual": None, "warned_psutil": False}
+state = {"provider": None, "sim": None, "manual": None, "warned_psutil": False, "warned_missing": set()}
 
 
 async def detect_loop():
@@ -308,6 +308,9 @@ async def detect_loop():
                             state["provider"] = p
                             state["sim"] = p.sim_name()
                             print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {state['sim']}")
+                        elif key not in state["warned_missing"]:
+                            state["warned_missing"].add(key)
+                            print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {key} but its telemetry library isn't installed — see README")
                     elif not prov_key and state["sim"] != key:
                         state["sim"] = key
                         print(f"[{datetime.now().strftime('%H:%M:%S')}] detected {key} (provider coming soon)")

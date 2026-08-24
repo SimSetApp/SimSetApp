@@ -127,7 +127,7 @@ export default function LiveTelemetry() {
             <Cpu className="w-4 h-4 text-primary" />
             <h3 className="font-heading text-sm font-semibold tracking-wide">Connection</h3>
             <span className={`ml-auto flex items-center gap-1.5 text-xs font-medium ${st.tone}`}>
-              <st.icon className={`w-3.5 h-3.5 ${status === "connecting" || status === "closed" ? "animate-spin" : ""}`} />
+              <st.icon className={`w-3.5 h-3.5 ${status === "connecting" || status === "closed" || status === "searching" ? "animate-spin" : ""}`} />
               {st.label}
             </span>
           </div>
