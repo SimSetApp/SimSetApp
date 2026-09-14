@@ -856,6 +856,8 @@ class UDPProvider:
             self._started = True
         except OSError:
             self._sock = None
+            print(f"[{ts()}] could not bind UDP port {self.port} — another app may hold it. "
+                  f"Stop other dash tools or change the port with the matching flag.")
 
     async def _listen(self):
         loop = asyncio.get_event_loop()
@@ -1243,15 +1245,26 @@ async def detect_loop():
     while True:
         if state["manual"]:
             if state["provider"] is None:
-                p, err = make_provider(state["manual"])
-                if p:
-                    state["provider"] = p
-                    state["sim"] = p.sim_name()
-                    _reset_provider_state()
-                    print(f"[{ts()}] source: {state['sim']}")
-                elif err and state["manual"] not in state["warned_missing"]:
-                    state["warned_missing"].add(state["manual"])
-                    print(f"[{ts()}] {state['manual']}: {err}")
+                mkey = state["manual"]
+                if mkey in ("f1", "forza", "gt7"):
+                    # UDP sim — use the listener started in main()
+                    for _k, _d, udp in state["udp_providers"]:
+                        if _k == mkey:
+                            state["provider"] = udp
+                            state["sim"] = udp.sim_name()
+                            _reset_provider_state()
+                            print(f"[{ts()}] source: {state['sim']} (UDP — waiting for packets…)")
+                            break
+                else:
+                    p, err = make_provider(mkey)
+                    if p:
+                        state["provider"] = p
+                        state["sim"] = p.sim_name()
+                        _reset_provider_state()
+                        print(f"[{ts()}] source: {state['sim']}")
+                    elif err and mkey not in state["warned_missing"]:
+                        state["warned_missing"].add(mkey)
+                        print(f"[{ts()}] {mkey}: {err}")
         else:
             # shared-memory detection
             if _psutil is None:

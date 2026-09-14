@@ -8,23 +8,30 @@
 # Output: dist/SimSetAppBridge/SimSetAppBridge.exe
 # Double-click to run — it auto-detects your sim and starts the WebSocket.
 #
-# If you use iRacing, also `pip install irsdk` before building so it bundles.
+# Before building, install the sim libraries so they bundle:
+#   pip install pyinstaller aiohttp psutil irsdk pyaccsharedmemory pyrfactor2sharedmemory salsa20
+# (F1 and Forza use UDP — no library. Assetto Corsa and AMS2 use pure ctypes — no library.)
 
 block_cipher = None
 
-# Bundle pyaccsharedmemory so the .exe supports ACC out of the box.
+# Bundle every sim library so the .exe supports all 8 sims out of the box.
+# Libraries are optional at runtime — if one isn't installed at build time,
+# collect_submodules returns [] and that sim just isn't bundled.
 try:
     from PyInstaller.utils.hooks import collect_submodules
     acc_hidden = collect_submodules('pyaccsharedmemory')
+    rf2_hidden = collect_submodules('sharedMemoryAPI') + collect_submodules('rF2data')
 except Exception:
-    acc_hidden = []
+    acc_hidden, rf2_hidden = [], []
 
 a = Analysis(
     ['telemetry_bridge.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['psutil', 'aiohttp', 'pyaccsharedmemory'] + acc_hidden,  # add 'irsdk' here if you build with iRacing support
+    hiddenimports=['psutil', 'aiohttp', 'pyaccsharedmemory', 'irsdk',
+                   'sharedMemoryAPI', 'rF2data', 'salsa20', 'Crypto.Cipher.Salsa20']
+              + acc_hidden + rf2_hidden,
     hookspath=[],
     runtime_hooks=[],
     excludes=[],

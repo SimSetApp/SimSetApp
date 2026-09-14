@@ -27,8 +27,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install build dependencies
-        run: pip install pyinstaller aiohttp psutil pyaccsharedmemory
+      - name: Install build dependencies (all 8 sims)
+        run: pip install pyinstaller aiohttp psutil irsdk pyaccsharedmemory pyrfactor2sharedmemory salsa20
 
       - name: Build the one-file exe
         shell: bash
@@ -38,7 +38,10 @@ jobs:
           cd bridge
           pyinstaller --onefile --name SimSetAppBridge \
             --hidden-import psutil --hidden-import aiohttp \
+            --hidden-import irsdk \
             --hidden-import pyaccsharedmemory --collect-all pyaccsharedmemory \
+            --hidden-import sharedMemoryAPI --hidden-import rF2data --collect-all pyrfactor2sharedmemory \
+            --hidden-import salsa20 \
             telemetry_bridge.py --noconfirm
 
       - name: Upload build artifact
