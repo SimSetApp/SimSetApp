@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import { Maximize2, Minimize2, Sliders } from "lucide-react";
+import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
+import { useCustomLayout } from "@/hooks/useCustomLayout";
+import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
+import WidgetPicker from "@/components/live/WidgetPicker";
 import { renderWidget } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
 import { deriveCapabilities } from "@/lib/dashboardCapabilities";
@@ -23,6 +26,10 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const { config, activeId, loadVariant, update, reset } = useDashboardConfig();
   const variant = getVariant(activeId);
   const theme = variant.theme;
+  const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false);
+  const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true);
+  const [editing, setEditing] = useState(false);
+  const [pickerSlot, setPickerSlot] = useState(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -98,7 +105,24 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
 
   return (
     <div className={inKiosk ? "flex flex-col h-full gap-3" : "space-y-3"}>
-      {(!fs || inKiosk) && (
+      {editing && (!fs || inKiosk) && (
+        <div className="flex items-center justify-between gap-2 px-1">
+          <button
+            onClick={() => { resetLayout(); if (isPortrait) resetPortraitLayout(); }}
+            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> Reset to default
+          </button>
+          <span className="text-xs text-muted-foreground hidden sm:block">Tap a slot to change its widget</span>
+          <button
+            onClick={() => setEditing(false)}
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-primary text-primary-foreground"
+          >
+            <Check className="w-3.5 h-3.5" /> Done
+          </button>
+        </div>
+      )}
+      {!editing && (!fs || inKiosk) && (
         <DashVariantGallery variants={DASH_VARIANTS} activeId={activeId} onSelect={loadVariant} />
       )}
       {customize && (!fs || inKiosk) && (
@@ -129,6 +153,9 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                 <button onClick={() => setCustomize((c) => !c)} className="p-0.5 rounded transition-colors" style={{ color: customize ? accent : theme.label }} aria-label="Display options">
                   <Sliders className="w-3 h-3" />
                 </button>
+                <button onClick={() => setEditing((e) => !e)} className="p-0.5 rounded transition-colors" style={{ color: editing ? accent : theme.label }} aria-label="Edit layout">
+                  <LayoutGrid className="w-3 h-3" />
+                </button>
                 <button onClick={toggleFs} className="p-0.5 rounded transition-colors" style={{ color: theme.label }} aria-label="Fullscreen">
                   {fs ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
                 </button>
@@ -138,11 +165,19 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
             {/* Canvas */}
             <div ref={wrapRef} className="flex-1 min-h-0 w-full relative">
               {isPortrait ? (
-                <PortraitDashboard data={data} variant={variant} config={config} caps={caps} />
+                <PortraitDashboard
+                  data={data} variant={variant} config={config} caps={caps}
+                  editing={editing}
+                  getSlotType={getPortraitType}
+                  onSlotTap={(id, currentType) => setPickerSlot({ id, currentType, portrait: true })}
+                />
               ) : (
                 <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
                   {variant.layout.map((w) => {
                     const color = w.color || accent;
+                    const effectiveType = getSlotType(w.id, w.type);
+                    const isEmpty = effectiveType === "empty";
+                    const def = WIDGET_DEFS.find((d) => d.type === effectiveType);
                     return (
                       <div
                         key={w.id}
@@ -150,14 +185,27 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                         style={{
                           left: w.x, top: w.y, width: w.w, height: w.h,
                           fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
-                          border: `1px solid ${theme.panelEdge}`,
+                          border: editing ? `1px dashed ${accent}` : `1px solid ${theme.panelEdge}`,
                           background: theme.panel,
-                          boxShadow: `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
+                          boxShadow: editing ? "none" : `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
+                          cursor: editing ? "pointer" : "default",
                         }}
+                        onClick={editing ? () => setPickerSlot({ id: w.id, currentType: effectiveType }) : undefined}
                       >
-                        <div className="w-full h-full">
-                          {renderWidget(w.type, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps })}
-                        </div>
+                        {editing && (
+                          <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: theme.panel, padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
+                            {isEmpty ? "EMPTY" : def?.label || effectiveType}
+                          </div>
+                        )}
+                        {isEmpty ? (
+                          <div className="w-full h-full flex items-center justify-center" style={{ opacity: 0.5 }}>
+                            {editing && <Plus className="w-6 h-6" style={{ color: theme.label }} />}
+                          </div>
+                        ) : (
+                          <div className="w-full h-full" style={{ opacity: editing ? 0.6 : 1 }}>
+                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps })}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -180,6 +228,23 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
           </div>
         </div>
       </div>
+      <WidgetPicker
+        open={!!pickerSlot}
+        onOpenChange={(o) => { if (!o) setPickerSlot(null); }}
+        currentType={pickerSlot?.currentType}
+        onSelect={(type) => {
+          if (!pickerSlot) return;
+          if (pickerSlot.portrait) setPortraitType(pickerSlot.id, type);
+          else setSlotType(pickerSlot.id, type);
+          setPickerSlot(null);
+        }}
+        onClear={() => {
+          if (!pickerSlot) return;
+          if (pickerSlot.portrait) clearPortraitSlot(pickerSlot.id);
+          else clearSlot(pickerSlot.id);
+          setPickerSlot(null);
+        }}
+      />
     </div>
   );
 }
