@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Radio, Maximize, X } from "lucide-react";
+import { Loader2, Radio, Maximize, Minimize, X } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 
@@ -12,7 +12,21 @@ import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 export default function DashboardFullscreen() {
   const { url, status, data, detectedSim, detected, connect, demo, startDemo } = useLiveTelemetry();
   const [showPrompt, setShowPrompt] = useState(true);
+  const [isFs, setIsFs] = useState(false);
   const fsDoneRef = useRef(false);
+
+  // Track browser fullscreen state so we can show an exit button
+  useEffect(() => {
+    const onChange = () => setIsFs(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  const exitFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen?.();
+    } catch { /* ignore */ }
+  };
 
   // Auto-connect using the persisted bridge URL on mount
   useEffect(() => {
@@ -92,6 +106,17 @@ export default function DashboardFullscreen() {
           </div>
         )}
       </div>
+
+      {/* Exit-fullscreen button — visible once in browser fullscreen */}
+      {isFs && (
+        <button
+          onClick={exitFullscreen}
+          className="fixed top-4 right-4 z-50 flex items-center gap-1.5 rounded-full bg-black/80 border border-white/15 backdrop-blur px-3 py-1.5 text-xs text-foreground shadow-lg hover:bg-black/90"
+        >
+          <Minimize className="w-3.5 h-3.5" />
+          <span>Exit fullscreen</span>
+        </button>
+      )}
 
       {/* Auto-fullscreen prompt — dismissible, non-blocking */}
       {showPrompt && (
