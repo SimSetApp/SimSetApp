@@ -12,6 +12,7 @@ import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import CopyChip from "@/components/live/CopyChip";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 import BridgeSteps from "@/components/live/BridgeSteps";
+import PhonePairPanel from "@/components/live/PhonePairPanel";
 import { toast } from "sonner";
 
 function fmt(t) {
@@ -35,7 +36,6 @@ export default function LiveTelemetry() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const { url, saveUrl, status, data, lastLap, detectedSim, detected, connect, disconnect, demo, startDemo } = useLiveTelemetry();
-  const [urlInput, setUrlInput] = useState(url);
   const [autoLog, setAutoLog] = useState(false);
   const [logSetupId, setLogSetupId] = useState("");
   const sessionLogRef = useRef(null);
@@ -88,13 +88,25 @@ export default function LiveTelemetry() {
     lapTimesRef.current = [];
   }, [logSetupId, autoLog]);
 
-  // Auto-connect to the bridge on first mount
+  // Auto-connect: if a ?connect= param is present (from a scanned QR), connect to it;
+  // otherwise connect to the last saved URL.
   const autoConnectedRef = useRef(false);
   useEffect(() => {
     if (autoConnectedRef.current) return;
     autoConnectedRef.current = true;
-    connect(url);
-  }, [connect, url]);
+    const params = new URLSearchParams(window.location.search);
+    const qrUrl = params.get("connect");
+    if (qrUrl && /^ws:\/\//.test(qrUrl)) {
+      saveUrl(qrUrl);
+      connect(qrUrl);
+      // clear the param so a refresh doesn't re-trigger
+      try {
+        window.history.replaceState({}, "", window.location.pathname);
+      } catch {}
+    } else {
+      connect(url);
+    }
+  }, [connect, url, saveUrl]);
 
   const st = STATUS_META[status] || STATUS_META.idle;
   const connected = status === "connected" && data;
@@ -183,28 +195,11 @@ export default function LiveTelemetry() {
                 <div className="mt-3"><BridgeSteps /></div>
               </details>
 
-              {/* Manual IP entry — for mobile / custom bridge URL */}
-              <div className="rounded-lg border border-border bg-secondary/20 p-4">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Wifi className="w-3.5 h-3.5 text-primary" />
-                  <h4 className="font-heading text-sm font-semibold">On a phone? Enter your PC's address</h4>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3">
-                  The bridge window prints your PC's LAN IP (e.g. <code className="font-mono text-foreground">192.168.1.50</code>). Enter it here:
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    value={urlInput}
-                    onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="ws://192.168.1.50:3344/ws"
-                    className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                  />
-                  <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider shrink-0">
-                    <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
-                  </Button>
-                </div>
-                <p className="text-[11px] text-muted-foreground/70 mt-2">On the same PC, use <code className="font-mono">ws://localhost:3344/ws</code>. Your phone and PC must be on the same WiFi.</p>
-              </div>
+              {/* QR pair panel — scan to auto-connect on mobile */}
+              <PhonePairPanel
+                defaultUrl={url}
+                onManualConnect={(u) => { saveUrl(u); connect(u); }}
+              />
             </div>
           )}
         </div>
