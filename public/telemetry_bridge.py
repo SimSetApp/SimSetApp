@@ -1428,7 +1428,7 @@ def dashboard_html():
   html,body{height:100vh;height:100dvh;width:100%;overflow:hidden;background:#000;color:#e8e8e8;font-family:'Share Tech Mono',monospace}
   .fd{font-family:'Orbitron',monospace;font-variant-numeric:tabular-nums}
   .fl{font-family:'Share Tech Mono',monospace;font-variant-numeric:tabular-nums}
-  #bezel{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top,4px) env(safe-area-inset-right,4px) env(safe-area-inset-bottom,4px) env(safe-area-inset-left,4px);
+  #bezel{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top,4px) env(safe-area-inset-right,4px) env(safe-area-inset-bottom,4px) env(safe-area-inset-left,4px);
     background:linear-gradient(145deg,#1e1e1e 0%,#0a0a0a 45%,#161616 100%);
     box-shadow:inset 0 2px 3px rgba(255,255,255,.10),inset 0 -3px 6px rgba(0,0,0,.7),inset 3px 0 5px rgba(0,0,0,.35),inset -3px 0 5px rgba(0,0,0,.35)}
   #bezel-row{flex:1;display:flex;flex-direction:row;gap:4px;min-height:0;min-width:0}
@@ -1607,6 +1607,7 @@ const ro=new ResizeObserver(fit);ro.observe($('canvas-wrap'));ro.observe($('scre
 window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 window.addEventListener('resize',fit);
 window.addEventListener('visibilitychange',fit);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',fit);
 connect();
 </script>
 </body>
