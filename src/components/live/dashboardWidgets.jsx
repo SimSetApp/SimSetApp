@@ -27,12 +27,12 @@ export const WIDGET_DEFS = [
 // Smooth thermal gradient: continuous HSL interpolation across semantic stops
 // cold=blue → optimal=green → warm=yellow → hot=red → critical=deep red
 const TEMP_STOPS = [
-  [30, 217, 91, 60],
-  [70, 180, 85, 52],
-  [86, 150, 100, 50],
-  [96, 54, 100, 52],
-  [108, 0, 100, 55],
-  [130, 0, 100, 42],
+  [60, 220, 90, 58],
+  [75, 180, 85, 52],
+  [85, 140, 100, 50],
+  [95, 50, 100, 52],
+  [105, 20, 100, 54],
+  [115, 0, 100, 48],
 ];
 export function tempGradient(t, T) {
   if (t == null) return T ? T.label : "#6a6a6a";
@@ -90,6 +90,17 @@ function wearColor(w, T) {
   return T.ledRed;
 }
 
+// Tiny trend chevron — unobtrusive direction indicator next to a value.
+export function TrendArrow({ dir, color = "#8a8a8a", size = "0.65em" }) {
+  if (!dir || dir === "flat") return null;
+  return (
+    <svg viewBox="0 0 10 10" style={{ width: size, height: size, display: "inline-block", marginLeft: "0.15em", color }} aria-hidden>
+      {dir === "up" && <path d="M5 1 L9 8 L1 8 Z" fill="currentColor" />}
+      {dir === "down" && <path d="M5 9 L1 2 L9 2 Z" fill="currentColor" />}
+    </svg>
+  );
+}
+
 function Row({ label, value, lcolor, vcolor }) {
   return (
     <div className="flex justify-between items-baseline" style={{ fontSize: "1em" }}>
@@ -116,11 +127,11 @@ function Title({ children, T }) {
 }
 
 /* ── Integrated RPM bar + gear + speed (GT3 Pro / Endurance) ── */
-function RpmGear({ data, w, h, T, units }) {
+function RpmGear({ data, w, h, T, units, flash }) {
   const maxRpm = data.max_rpm || 8000;
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
-  const flashOn = shift && (Math.floor(Date.now() / 100) % 2 === 0);
+  const flashOn = shift && flash;
   const segs = 26;
   const barH = Math.max(16, h * 0.11);
   const gearFs = Math.max(44, Math.min(h * 0.42, w * 0.4));
@@ -162,11 +173,11 @@ function RpmGear({ data, w, h, T, units }) {
 }
 
 /* ── Slim standalone RPM bar (Formula Halo) ── */
-function RpmBar({ data, w, h, T }) {
+function RpmBar({ data, w, h, T, flash }) {
   const maxRpm = data.max_rpm || 8000;
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
-  const flashOn = shift && (Math.floor(Date.now() / 100) % 2 === 0);
+  const flashOn = shift && flash;
   const segs = 34;
   return (
     <div className="w-full h-full flex items-center gap-0.5 px-1">
@@ -181,12 +192,12 @@ function RpmBar({ data, w, h, T }) {
   );
 }
 
-function ShiftLights({ data, T, shape }) {
+function ShiftLights({ data, T, shape, flash }) {
   const maxRpm = data.max_rpm || 8000;
   const shiftRpm = 0.925 * maxRpm;
   const lit = Math.max(0, Math.min(15, Math.round(((data.rpm || 0) - 2000) / (shiftRpm - 2000) * 15)));
   const atRedline = (data.rpm || 0) >= shiftRpm;
-  const flashOn = atRedline && (Math.floor(Date.now() / 100) % 2 === 0);
+  const flashOn = atRedline && flash;
   const segColor = (i) => (i < 5 ? T.ledGreen : i < 10 ? T.ledYellow : T.ledRed);
   const on = (i) => i < lit && (!atRedline || flashOn);
   return (
@@ -213,7 +224,7 @@ function Speed({ data, w, h, T, units }) {
   );
 }
 
-function Tyres({ data, w, h, T, units, caps }) {
+function Tyres({ data, w, h, T, units, caps, trends }) {
   const tyres = data.tyres || {};
   const press = (p) => {
     if (p == null) return "--";
@@ -230,7 +241,7 @@ function Tyres({ data, w, h, T, units, caps }) {
         {["FL", "FR", "RL", "RR"].map((k) => {
           const t = tyres[k.toLowerCase()] || {};
           const ti = t.temp_i, tm = t.temp_m, to = t.temp_o;
-          const core = t.temp_c ?? (ti != null && tm != null && to != null ? (ti + tm + to) / 3 : null);
+          const core = t.temp_c ?? (ti != null && tm != null && to != null ? ti * 0.25 + tm * 0.5 + to * 0.25 : null);
           const tc = tempGradient(core, T);
           const brake = t.brake_temp;
           const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
@@ -242,19 +253,12 @@ function Tyres({ data, w, h, T, units, caps }) {
             }}>
               <div className="flex justify-between items-baseline">
                 <span className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
-                <span className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: tempFs * 0.72, color: tc, textShadow: bloom(tc) }}>{core != null ? Math.round(core) : "--"}°</span>
+                <span className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs * 0.72, color: tc, textShadow: bloom(tc) }}>{core != null ? Math.round(core) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></span>
               </div>
-              {/* 3-point thermal strip: smooth gradient Inner → Middle → Outer */}
-              <div className="flex gap-0.5 rounded overflow-hidden" style={{ height: Math.max(6, tempFs * 0.4) }}>
-                {[ti, tm, to].map((v, idx) => {
-                  const c = tempGradient(v, T);
-                  return (
-                    <div key={idx} className="flex-1 rounded-sm" style={{
-                      background: v != null ? `linear-gradient(90deg, ${c}, ${c}aa)` : "rgba(255,255,255,0.08)",
-                      boxShadow: v != null ? `0 0 6px ${c}88, inset 0 0 3px rgba(255,255,255,0.3)` : "none",
-                    }} />
-                  );
-                })}
+              {/* 3-point thermal strip: continuous Inner → Middle → Outer gradient */}
+              <div className="rounded overflow-hidden relative" style={{ height: Math.max(6, tempFs * 0.4), background: ti != null && tm != null && to != null ? `linear-gradient(90deg, ${tempGradient(ti, T)}, ${tempGradient(tm, T)}, ${tempGradient(to, T)})` : "rgba(255,255,255,0.08)", boxShadow: ti != null ? `0 0 6px ${tc}66, inset 0 0 3px rgba(255,255,255,0.25)` : "none" }}>
+                <span className="absolute left-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(5, tempFs * 0.28), color: "rgba(255,255,255,0.7)" }}>I</span>
+                <span className="absolute right-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(5, tempFs * 0.28), color: "rgba(255,255,255,0.7)" }}>O</span>
               </div>
               <div className="flex justify-between font-lcd" style={{ fontSize: Math.max(6, tempFs * 0.32), color: T.label }}>
                 {hasBrake && <span>BRK <span style={{ color: bc }} className="tabular-nums">{brake != null ? Math.round(brake) : "--"}°</span></span>}
@@ -298,12 +302,21 @@ function Tyres({ data, w, h, T, units, caps }) {
   );
 }
 
-function Fuel({ data, w, h, T }) {
+function Fuel({ data, w, h, T, trends }) {
   const lapsLeft = data.fuel_per_lap ? (data.fuel_litres || 0) / data.fuel_per_lap : null;
   const showBars = h >= 140;
+  const maxFuel = data.fuel_max_litres || 100;
+  const pct = Math.max(0, Math.min(100, ((data.fuel_litres || 0) / maxFuel) * 100));
+  const fuelCol = pct > 30 ? T.ledGreen : pct > 12 ? T.ledYellow : T.ledRed;
   return (
     <div className="w-full h-full p-2 flex flex-col gap-1">
-      <Title T={T}>FUEL / STRATEGY</Title>
+      <div className="flex justify-between items-baseline">
+        <Title T={T}>FUEL</Title>
+        <span className="font-digi font-bold tabular-nums flex items-center" style={{ fontSize: "1.05em", color: fuelCol }}>{pct.toFixed(0)}%<TrendArrow dir={trends?.fuel_litres} color={fuelCol} /></span>
+      </div>
+      <div className="rounded-full overflow-hidden" style={{ height: "0.9em", background: T.track, boxShadow: innerBevel(T) }}>
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(180deg, ${fuelCol}, ${fuelCol}aa)`, boxShadow: pct > 1 ? `0 0 8px ${fuelCol}aa, inset 0 1px 0 rgba(255,255,255,0.4)` : "none" }} />
+      </div>
       <Row label="REMAINING" value={`${(data.fuel_litres ?? 0).toFixed(1)}L`} lcolor={T.label} vcolor={T.text} />
       <Row label="FUEL REQ" value={data.fuel_required != null ? `${data.fuel_required.toFixed(1)}L` : "--"} lcolor={T.label} vcolor={T.text} />
       <Row label="AVG LAP" value={fmt(data.avg_lap_time)} lcolor={T.label} vcolor={T.text} />
@@ -385,7 +398,7 @@ function Gear({ data, w, h, T, shape }) {
   return <div className="w-full h-full flex items-center justify-center">{numeral}</div>;
 }
 
-function Delta({ data, w, h, T, caps }) {
+function Delta({ data, w, h, T, caps, trends }) {
   const delta = data.lap_delta;
   const tone = delta == null ? T.label : delta <= 0 ? T.ledGreen : T.ledRed;
   const deltaFs = Math.max(18, Math.min(h * 0.32, w * 0.16));
@@ -396,11 +409,11 @@ function Delta({ data, w, h, T, caps }) {
     const sectors = data.sector_times || [];
     const best = data.best_sectors || [];
     const pb = data.personal_best_sectors || [];
-    const PURPLE = "#c084fc";
+    const BEST = T.bestSector || "#00e5ff";
     const secColor = (i) => {
       const s = sectors[i];
       if (s == null) return T.label;
-      if (best[i] != null && s <= best[i]) return PURPLE;
+      if (best[i] != null && s <= best[i]) return BEST;
       if (pb[i] != null && s <= pb[i]) return T.ledGreen;
       return T.ledRed;
     };
@@ -424,11 +437,12 @@ function Delta({ data, w, h, T, caps }) {
         <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
-          <div className="font-digi font-bold tabular-nums leading-none" style={{
+          <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{
             fontSize: deltaFs, color: tone, textShadow: bloom(tone),
             transition: "color 200ms ease",
           }}>
             {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
+            <TrendArrow dir={trends?.lap_delta} color={tone} />
           </div>
         </div>
       </div>
@@ -442,11 +456,12 @@ function Delta({ data, w, h, T, caps }) {
       <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
-        <div className="font-digi font-bold tabular-nums leading-none" style={{
+        <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{
           fontSize: deltaFs, color: tone, textShadow: bloom(tone),
           transition: "color 200ms ease",
         }}>
           {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
+          <TrendArrow dir={trends?.lap_delta} color={tone} />
         </div>
       </div>
     </div>
@@ -566,25 +581,25 @@ function Inputs({ data, color, w, h, T, shape }) {
 function Status({ data, color, w, h, T }) {
   // Weighted flex: POS gets priority, TC/ABS/MAP get smaller cells
   const items = [
-    ["POS", `P${data.position || 0}`, null, 1.4],
-    ["THR", `${Math.round((data.throttle || 0) * 100)}`, T.ledGreen, 1.0],
-    ["BST", data.boost != null ? data.boost.toFixed(1) : "--", null, 1.0],
-    ["INC", `${data.incidents || 0}`, T.ledYellow, 1.0],
-    ["BBI", data.brake_bias != null ? data.brake_bias.toFixed(0) : "--", T.ledRed, 1.0],
-    ["TC1", data.tc1 != null ? data.tc1 : "--", color, 0.7],
-    ["TC2", data.tc2 != null ? data.tc2 : "--", null, 0.7],
-    ["ABS", data.abs != null ? data.abs : "--", T.blue, 0.7],
-    ["MAP", data.map != null ? data.map : "--", T.ledGreen, 0.7],
+    ["POS", `P${data.position || 0}`, null, 1.8, "1.35em"],
+    ["INC", `${data.incidents || 0}`, T.ledYellow, 1.1, "1.0em"],
+    ["BBI", data.brake_bias != null ? data.brake_bias.toFixed(0) : "--", T.ledRed, 1.0, "1.0em"],
+    ["THR", `${Math.round((data.throttle || 0) * 100)}`, T.ledGreen, 0.8, "0.85em"],
+    ["BST", data.boost != null ? data.boost.toFixed(1) : "--", null, 0.8, "0.85em"],
+    ["TC1", data.tc1 != null ? data.tc1 : "--", color, 0.7, "0.8em"],
+    ["TC2", data.tc2 != null ? data.tc2 : "--", null, 0.7, "0.8em"],
+    ["ABS", data.abs != null ? data.abs : "--", T.blue, 0.7, "0.8em"],
+    ["MAP", data.map != null ? data.map : "--", T.ledGreen, 0.7, "0.8em"],
   ];
   return (
     <div className="w-full h-full flex gap-1 p-1">
-      {items.map(([l, v, b, fl]) => (
+      {items.map(([l, v, b, fl, fs]) => (
         <div key={l} className="rounded border flex flex-col items-center justify-center" style={{
           flex: fl, borderColor: b || T.panelEdge, background: T.panel,
           boxShadow: b ? `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${b}44, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)` : `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`,
         }}>
           <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{l}</div>
-          <div className="font-digi font-bold tabular-nums" style={{ fontSize: "1.05em", color: b || T.text }}>{v}</div>
+          <div className="font-digi font-bold tabular-nums" style={{ fontSize: fs || "1em", color: b || T.text }}>{v}</div>
         </div>
       ))}
     </div>
@@ -592,19 +607,19 @@ function Status({ data, color, w, h, T }) {
 }
 
 export function renderWidget(type, ctx) {
-  const { data, color, w, h, theme, shape, units, caps } = ctx;
+  const { data, color, w, h, theme, shape, units, caps, flash, trends } = ctx;
   const T = { ...SEM, ...(theme || {}) };
   const sh = shape || "led";
   const u = units || { speed: "kmh", pressure: "psi" };
   switch (type) {
-    case "rpmGear": return <RpmGear data={data} w={w} h={h} T={T} units={u} />;
-    case "rpmBar": return <RpmBar data={data} w={w} h={h} T={T} />;
-    case "shiftLights": return <ShiftLights data={data} T={T} shape={sh} />;
+    case "rpmGear": return <RpmGear data={data} w={w} h={h} T={T} units={u} flash={flash} />;
+    case "rpmBar": return <RpmBar data={data} w={w} h={h} T={T} flash={flash} />;
+    case "shiftLights": return <ShiftLights data={data} T={T} shape={sh} flash={flash} />;
     case "speed": return <Speed data={data} w={w} h={h} T={T} units={u} />;
-    case "tyres": return <Tyres data={data} w={w} h={h} T={T} units={u} caps={caps} />;
-    case "fuel": return <Fuel data={data} w={w} h={h} T={T} />;
+    case "tyres": return <Tyres data={data} w={w} h={h} T={T} units={u} caps={caps} trends={trends} />;
+    case "fuel": return <Fuel data={data} w={w} h={h} T={T} trends={trends} />;
     case "gear": return <Gear data={data} w={w} h={h} T={T} shape={sh} />;
-    case "delta": return <Delta data={data} w={w} h={h} T={T} caps={caps} />;
+    case "delta": return <Delta data={data} w={w} h={h} T={T} caps={caps} trends={trends} />;
     case "laps": return <Laps data={data} color={color} w={w} h={h} T={T} />;
     case "cars": return <Cars data={data} w={w} h={h} T={T} />;
     case "inputs": return <Inputs data={data} color={color} w={w} h={h} T={T} shape={sh} />;

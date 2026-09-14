@@ -64,6 +64,52 @@ const FORMULA_HALO_LAYOUT = [
   { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
+const GT3_PRO_PORTRAIT = [
+  { type: "rpmBar", flex: 0.4 },
+  { type: "gear", flex: 1.5 },
+  { type: "speed", flex: 1.0 },
+  { type: "delta", flex: 1.2 },
+  { type: "tyres", flex: 2.4 },
+  { type: "fuel", flex: 1.6 },
+  { type: "laps", flex: 1.2 },
+];
+const GT3_RACE_PORTRAIT = [
+  { type: "gear", flex: 2.0 },
+  { type: "delta", flex: 1.3 },
+  { type: "speed", flex: 1.0 },
+  { type: "tyres", flex: 2.2 },
+  { type: "fuel", flex: 1.5 },
+  { type: "laps", flex: 1.2 },
+  { type: "cars", flex: 1.0 },
+];
+const GT3_ENDURANCE_PORTRAIT = [
+  { type: "rpmBar", flex: 0.4 },
+  { type: "gear", flex: 1.2 },
+  { type: "fuel", flex: 2.2 },
+  { type: "laps", flex: 1.8 },
+  { type: "tyres", flex: 2.0 },
+  { type: "delta", flex: 1.2 },
+  { type: "cars", flex: 1.0 },
+];
+const FORMULA_WHEEL_PORTRAIT = [
+  { type: "gear", flex: 2.4 },
+  { type: "speed", flex: 1.4 },
+  { type: "delta", flex: 1.2 },
+  { type: "laps", flex: 1.2 },
+  { type: "tyres", flex: 1.8 },
+  { type: "fuel", flex: 1.4 },
+  { type: "cars", flex: 0.8 },
+];
+const FORMULA_HALO_PORTRAIT = [
+  { type: "rpmBar", flex: 0.4 },
+  { type: "speed", flex: 2.0 },
+  { type: "gear", flex: 1.6 },
+  { type: "delta", flex: 1.2 },
+  { type: "laps", flex: 1.2 },
+  { type: "tyres", flex: 1.8 },
+  { type: "fuel", flex: 1.4 },
+];
+
 export const DASH_VARIANTS = [
   {
     id: "gt3-pro",
@@ -72,11 +118,11 @@ export const DASH_VARIANTS = [
     shape: "bar",
     theme: {
       isLight: false, bg: "#050505", panel: "#0d0d0d", panelEdge: "#1c1c1c",
-      text: "#f5f5f5", label: "#8a8a8a", dim: "#2a2a2a", accent: "#00ff88",
+      text: "#f5f5f5", label: "#8a8a8a", dim: "#2a2a2a", accent: "#00ff88", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
       track: "#161616", warn: "#ff9800",
     },
-    layout: GT3_PRO_LAYOUT,
+    layout: GT3_PRO_LAYOUT, portraitLayout: GT3_PRO_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -86,11 +132,11 @@ export const DASH_VARIANTS = [
     shape: "arc",
     theme: {
       isLight: false, bg: "#0a0f14", panel: "#111821", panelEdge: "#1c2a36",
-      text: "#e6f3f7", label: "#7a95a8", dim: "#2a3a48", accent: "#00d4c8",
+      text: "#e6f3f7", label: "#7a95a8", dim: "#2a3a48", accent: "#00d4c8", bestSector: "#b388ff",
       ledGreen: "#2ee6a0", ledYellow: "#ffd23f", ledRed: "#ff4d5e", shiftColor: "#ff4d5e",
       track: "#0d141b", warn: "#ff9800",
     },
-    layout: GT3_RACE_LAYOUT,
+    layout: GT3_RACE_LAYOUT, portraitLayout: GT3_RACE_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -100,11 +146,11 @@ export const DASH_VARIANTS = [
     shape: "bar",
     theme: {
       isLight: false, bg: "#060604", panel: "#0e0e0a", panelEdge: "#1f1f14",
-      text: "#f5f0e0", label: "#8a7d5a", dim: "#2a2418", accent: "#ffb020",
+      text: "#f5f0e0", label: "#8a7d5a", dim: "#2a2418", accent: "#ffb020", bestSector: "#ff6ec7",
       ledGreen: "#00ff66", ledYellow: "#ffd23f", ledRed: "#ff4d4d", shiftColor: "#ff4d4d",
       track: "#161408", warn: "#ff9800",
     },
-    layout: GT3_ENDURANCE_LAYOUT,
+    layout: GT3_ENDURANCE_LAYOUT, portraitLayout: GT3_ENDURANCE_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -114,11 +160,11 @@ export const DASH_VARIANTS = [
     shape: "ring",
     theme: {
       isLight: false, bg: "#080808", panel: "#101010", panelEdge: "#222222",
-      text: "#ffffff", label: "#8a8a8a", dim: "#2a2a2a", accent: "#ff2d2d",
+      text: "#ffffff", label: "#8a8a8a", dim: "#2a2a2a", accent: "#ff2d2d", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ffe600",
       track: "#161616", warn: "#ff9800",
     },
-    layout: FORMULA_WHEEL_LAYOUT,
+    layout: FORMULA_WHEEL_LAYOUT, portraitLayout: FORMULA_WHEEL_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -128,11 +174,11 @@ export const DASH_VARIANTS = [
     shape: "led",
     theme: {
       isLight: false, bg: "#000000", panel: "#0a0a0a", panelEdge: "#1a1a1a",
-      text: "#ffffff", label: "#7a7a7a", dim: "#222222", accent: "#ffffff",
+      text: "#ffffff", label: "#7a7a7a", dim: "#222222", accent: "#ffffff", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
       track: "#141414", warn: "#ff9800",
     },
-    layout: FORMULA_HALO_LAYOUT,
+    layout: FORMULA_HALO_LAYOUT, portraitLayout: FORMULA_HALO_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
   },
 ];

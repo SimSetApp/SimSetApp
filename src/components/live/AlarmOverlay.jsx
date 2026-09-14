@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-
 /**
  * Flashing alarm / flag banner — derived purely from frame fields.
  * Active alarms flash as a prioritised, auto-clearing banner over the dash
  * and stack when multiple. No resting clutter when everything is normal.
+ * Flash cadence is driven by the parent (rAF-based) via the `flash` prop.
  */
 
 const FUEL_LOW_LAPS = 2;
@@ -62,13 +61,7 @@ function deriveAlarms(data, caps) {
   return alarms;
 }
 
-export default function AlarmOverlay({ data, caps }) {
-  const [flash, setFlash] = useState(true);
-  useEffect(() => {
-    const id = setInterval(() => setFlash((f) => !f), 250);
-    return () => clearInterval(id);
-  }, []);
-
+export default function AlarmOverlay({ data, caps, flash }) {
   const alarms = deriveAlarms(data, caps);
   if (!alarms.length) return null;
 

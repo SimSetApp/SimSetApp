@@ -2,6 +2,9 @@ import { useRef, useState, useEffect } from "react";
 import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { useCustomLayout } from "@/hooks/useCustomLayout";
+import { useFlashToggle } from "@/hooks/useFlashToggle";
+import { useTrend } from "@/hooks/useTrend";
+import BezelLEDs from "@/components/live/BezelLEDs";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
 import WidgetPicker from "@/components/live/WidgetPicker";
 import { renderWidget, panelBevel } from "@/components/live/dashboardWidgets";
@@ -14,6 +17,7 @@ import AlarmOverlay from "@/components/live/AlarmOverlay";
 
 const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
+const TREND_KEYS = ["fuel_litres", "lap_delta", "tyres.fl.temp_c", "tyres.fr.temp_c", "tyres.rl.temp_c", "tyres.rr.temp_c"];
 
 export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const bezelRef = useRef(null);
@@ -25,6 +29,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const [isPortrait, setIsPortrait] = useState(false);
   const { config, activeId, loadVariant, update, reset } = useDashboardConfig();
   const variant = getVariant(activeId);
+  const flash = useFlashToggle(2.5);
+  const trends = useTrend(data, TREND_KEYS);
   const theme = variant.theme;
   const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false);
   const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true);
@@ -133,12 +139,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
         className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
       >
         <div className={`flex gap-2 h-full ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
-          {/* Left bezel status LEDs */}
-          <div className="flex flex-col items-center justify-center gap-2 py-3 px-1">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="w-2 h-2 rounded-full" style={{ background: theme.ledGreen, boxShadow: `0 0 6px ${theme.ledGreen}`, opacity: i === 0 ? 1 : 0.4 }} />
-            ))}
-          </div>
+          {/* Left bezel status LEDs — functional indicators */}
+          <BezelLEDs data={data} caps={caps} theme={theme} side="left" />
           {/* Screen */}
           <div className="flex-1 min-w-0 relative rounded-lg overflow-hidden dash-bezel-inner flex flex-col" style={{ background: theme.bg }}>
             {/* Header */}
@@ -168,6 +170,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                 <PortraitDashboard
                   data={data} variant={variant} config={config} caps={caps}
                   editing={editing}
+                  flash={flash} trends={trends}
                   getSlotType={getPortraitType}
                   onSlotTap={(id, currentType) => setPickerSlot({ id, currentType, portrait: true })}
                 />
@@ -210,7 +213,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                           </div>
                         ) : (
                           <div className="w-full h-full" style={{ opacity: editing ? 0.6 : 1 }}>
-                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps })}
+                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps, flash, trends })}
                           </div>
                         )}
                       </div>
@@ -221,17 +224,13 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
             </div>
 
             {/* Alarm / flag overlay — flashes over the dash when active */}
-            <AlarmOverlay data={data} caps={caps} />
+            <AlarmOverlay data={data} caps={caps} flash={flash} />
 
             {/* Glass overlay — subtle reflection and vignette (landscape only) */}
             {!isPortrait && <div className="dash-glass absolute inset-0 z-20" />}
           </div>
-          {/* Right bezel status LEDs */}
-          <div className="flex flex-col items-center justify-center gap-2 py-3 px-1">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="w-2 h-2 rounded-full" style={{ background: theme.ledGreen, boxShadow: `0 0 6px ${theme.ledGreen}`, opacity: i === 0 ? 1 : 0.4 }} />
-            ))}
-          </div>
+          {/* Right bezel status LEDs — functional indicators */}
+          <BezelLEDs data={data} caps={caps} theme={theme} side="right" />
         </div>
       </div>
       <WidgetPicker

@@ -10,7 +10,7 @@ import { PORTRAIT_LAYOUT } from "@/lib/dashboardVariants";
  * pixel height is computed from its flex weight so widget font-sizing stays
  * accurate. Supports per-variant custom widget assignment via tap-to-assign.
  */
-export default function PortraitDashboard({ data, variant, config, caps, editing, getSlotType, onSlotTap }) {
+export default function PortraitDashboard({ data, variant, config, caps, editing, flash, trends, getSlotType, onSlotTap }) {
   const ref = useRef(null);
   const [dims, setDims] = useState({ w: 360, h: 640 });
   const theme = variant.theme;
@@ -35,14 +35,15 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
     };
   }, []);
 
-  const totalFlex = PORTRAIT_LAYOUT.reduce((a, b) => a + b.flex, 0);
+  const portraitLayout = variant.portraitLayout || PORTRAIT_LAYOUT;
+  const totalFlex = portraitLayout.reduce((a, b) => a + b.flex, 0);
   const gap = 4;
-  const totalGap = gap * (PORTRAIT_LAYOUT.length - 1);
+  const totalGap = gap * (portraitLayout.length - 1);
   const availH = Math.max(0, dims.h - totalGap - 8);
 
   return (
     <div ref={ref} className="w-full h-full flex flex-col gap-1 p-1" style={{ background: theme.bg }}>
-      {PORTRAIT_LAYOUT.map((item, i) => {
+      {portraitLayout.map((item, i) => {
         const slotId = `p${i}`;
         const effectiveType = getSlotType ? getSlotType(slotId, item.type) : item.type;
         const isEmpty = effectiveType === "empty";
@@ -89,6 +90,8 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
                   shape: variant.shape,
                   units: config.units,
                   caps,
+                  flash,
+                  trends,
                 })}
               </div>
             )}

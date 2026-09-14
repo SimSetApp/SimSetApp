@@ -1,56 +1,25 @@
-function MiniShift({ theme, shape }) {
-  const seg = (i) => (i < 5 ? theme.ledGreen : i < 10 ? theme.ledYellow : theme.ledRed);
-  const cells = Array.from({ length: 12 });
-  if (shape === "ring") return null;
-  return (
-    <div className="flex gap-0.5 h-2 items-center">
-      {cells.map((_, i) => (
-        <div key={i} className="flex-1 rounded-sm" style={{ height: "80%", background: i < 7 ? seg(i) : "rgba(255,255,255,0.12)" }} />
-      ))}
-    </div>
-  );
-}
+// Faithful miniature preview of each variant's actual layout — renders the
+// real widget positions (scaled) so thumbnails are distinguishable.
 
-function MiniMock({ theme, shape }) {
-  if (shape === "ring") {
-    return (
-      <div className="w-full h-full flex items-center justify-center" style={{ background: theme.bg }}>
-        <div className="relative" style={{ width: "58%", aspectRatio: "1" }}>
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            {Array.from({ length: 24 }).map((_, i) => {
-              const frac = i / 24;
-              const ang = (frac * 360 - 90) * Math.PI / 180;
-              const lit = frac < 0.7;
-              const col = frac < 0.6 ? theme.ledGreen : frac < 0.85 ? theme.ledYellow : theme.ledRed;
-              return (
-                <line key={i} x1={50 + 44 * Math.cos(ang)} y1={50 + 44 * Math.sin(ang)}
-                  x2={50 + 48 * Math.cos(ang)} y2={50 + 48 * Math.sin(ang)}
-                  stroke={lit ? col : theme.dim} strokeWidth="2" strokeLinecap="round" />
-              );
-            })}
-            <circle cx="50" cy="50" r="40" fill="none" stroke={theme.panelEdge} strokeWidth="1" />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center font-bold font-digi leading-none" style={{ color: theme.text, fontSize: 16 }}>3</div>
-        </div>
-      </div>
-    );
-  }
+function MiniLayout({ variant }) {
+  const { layout, theme } = variant;
   return (
-    <div className="w-full h-full p-1.5 flex flex-col gap-1" style={{ background: theme.bg }}>
-      <MiniShift theme={theme} shape={shape} />
-      <div className="flex-1 flex gap-1">
-        <div className="flex-1 rounded flex flex-col justify-center px-1" style={{ background: theme.panel, border: `1px solid ${theme.panelEdge}` }}>
-          <div className="font-digi leading-none" style={{ color: theme.label, fontSize: 5 }}>TYR</div>
-          <div className="font-digi font-bold leading-none" style={{ color: theme.ledGreen, fontSize: 8 }}>82°</div>
-        </div>
-        <div className="flex-[1.4] rounded flex items-center justify-center" style={{ background: theme.panel, border: `1px solid ${theme.panelEdge}` }}>
-          <span className="font-bold font-digi leading-none" style={{ color: theme.text, fontSize: 19 }}>3</span>
-        </div>
-        <div className="flex-1 rounded flex flex-col justify-center px-1" style={{ background: theme.panel, border: `1px solid ${theme.panelEdge}` }}>
-          <div className="font-digi leading-none" style={{ color: theme.label, fontSize: 5 }}>LAP</div>
-          <div className="font-digi font-bold leading-none" style={{ color: theme.accent, fontSize: 8 }}>1:58</div>
-        </div>
-      </div>
+    <div className="w-full h-full relative overflow-hidden" style={{ background: theme.bg }}>
+      {layout.map((w) => (
+        <div
+          key={w.id}
+          className="absolute rounded-sm"
+          style={{
+            left: `${(w.x / 1000) * 100}%`,
+            top: `${(w.y / 560) * 100}%`,
+            width: `${(w.w / 1000) * 100}%`,
+            height: `${(w.h / 560) * 100}%`,
+            background: theme.panel,
+            border: `1px solid ${theme.panelEdge}`,
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -74,7 +43,7 @@ export default function DashVariantGallery({ variants, activeId, onSelect }) {
               border: "2px solid #1a1a1a",
               boxShadow: "inset 0 1px 2px rgba(255,255,255,0.08), inset 0 -1px 3px rgba(0,0,0,0.5)",
             }}>
-              <MiniMock theme={v.theme} shape={v.shape} />
+              <MiniLayout variant={v} />
             </div>
             <div className="text-[10px] font-heading font-medium text-center py-1 text-foreground truncate px-1">{v.name}</div>
           </button>
