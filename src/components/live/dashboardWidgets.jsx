@@ -1,11 +1,13 @@
 export const SEM = {
   green: "#00ff66", yellow: "#ffe600", red: "#ff1a1a",
   blue: "#3b82f6", amber: "#ff9800", label: "#6a6a6a",
-  text: "#ffffff", panel: "#0a0a0a", border: "#262626", track: "#161616",
+  text: "#ffffff", panel: "#0a0a0a", panelEdge: "#1a1a1a", dim: "#2a2a2a",
+  border: "#262626", track: "#161616", warn: "#ff9800",
 };
 
 export const WIDGET_DEFS = [
   { type: "shiftLights", label: "Shift Lights", w: 960, h: 36 },
+  { type: "speed", label: "Speed", w: 300, h: 200 },
   { type: "tyres", label: "Tyres", w: 300, h: 300 },
   { type: "fuel", label: "Fuel / Temp", w: 300, h: 180 },
   { type: "gear", label: "Gear", w: 300, h: 200 },
@@ -52,16 +54,16 @@ function Bar({ label, value, color, T }) {
   return (
     <div>
       <div className="flex justify-between" style={{ fontSize: "0.9em", color: T.label }}>
-        <span>{label}</span><span>{Math.round(v * 100)}%</span>
+        <span>{label}</span><span className="tabular-nums">{Math.round(v * 100)}%</span>
       </div>
-      <div className="rounded-full overflow-hidden" style={{ height: "0.55em", background: T.track }}>
-        <div className="h-full rounded-full" style={{ width: `${v * 100}%`, background: color, boxShadow: v > 0.05 ? `0 0 5px ${color}` : "none" }} />
+      <div className="rounded-full overflow-hidden" style={{ height: "0.6em", background: T.track }}>
+        <div className="h-full rounded-full" style={{ width: `${v * 100}%`, background: color, boxShadow: v > 0.05 ? `0 0 6px ${color}` : "none" }} />
       </div>
     </div>
   );
 }
 function Title({ children, T }) {
-  return <div style={{ fontSize: "0.8em", color: T.label, letterSpacing: "0.12em" }}>{children}</div>;
+  return <div style={{ fontSize: "0.8em", color: T.label, letterSpacing: "0.14em" }}>{children}</div>;
 }
 
 function ShiftLights({ data, T, shape }) {
@@ -96,6 +98,15 @@ function ShiftLights({ data, T, shape }) {
       </div>
     );
   }
+  if (shape === "ring") {
+    return (
+      <div className="w-full h-full flex items-center justify-between px-1">
+        {Array.from({ length: 15 }).map((_, i) => (
+          <div key={i} className="flex-1 rounded-full" style={{ height: "55%", aspectRatio: "1", background: on(i) ? segColor(i) : "rgba(255,255,255,0.07)", boxShadow: on(i) ? `0 0 8px ${segColor(i)}` : "none", opacity: on(i) ? 1 : 0.5 }} />
+        ))}
+      </div>
+    );
+  }
   if (shape === "dial") {
     return (
       <div className="w-full h-full flex items-center justify-between px-1">
@@ -109,25 +120,39 @@ function ShiftLights({ data, T, shape }) {
   return (
     <div className="w-full h-full flex items-center justify-between px-1">
       {Array.from({ length: 15 }).map((_, i) => (
-        <div key={i} className="rounded-full aspect-square" style={{ height: "100%", background: on(i) ? segColor(i) : "rgba(255,255,255,0.07)", boxShadow: on(i) ? `0 0 12px ${segColor(i)}, inset 0 0 4px rgba(255,255,255,0.5)` : "none", opacity: on(i) ? 1 : 0.55 }} />
+        <div key={i} className="rounded-full aspect-square" style={{ height: "100%", background: on(i) ? segColor(i) : "rgba(255,255,255,0.07)", boxShadow: on(i) ? `0 0 14px ${segColor(i)}, inset 0 0 4px rgba(255,255,255,0.5)` : "none", opacity: on(i) ? 1 : 0.55 }} />
       ))}
     </div>
   );
 }
 
-function Tyres({ data, T }) {
+function Speed({ data, h, T, units }) {
+  const v = units.speed === "mph" ? Math.round((data.speed_kmh || 0) * 0.621371) : Math.round(data.speed_kmh || 0);
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="font-bold tabular-nums leading-none" style={{ fontSize: `${h * 0.46}px`, color: T.text, textShadow: `0 0 24px ${T.text}55` }}>{v}</div>
+      <div style={{ fontSize: "0.8em", color: T.label, letterSpacing: "0.25em" }}>{units.speed === "mph" ? "MPH" : "KM/H"}</div>
+    </div>
+  );
+}
+
+function Tyres({ data, T, units }) {
   const tyres = data.tyres || {};
+  const press = (p) => {
+    if (p == null) return "--";
+    return units.pressure === "bar" ? (p * 0.0689476).toFixed(1) : p.toFixed(1);
+  };
   return (
     <div className="w-full h-full grid grid-cols-2 gap-1 p-1">
       {["FL", "FR", "RL", "RR"].map((k) => {
         const t = tyres[k.toLowerCase()];
-        const temp = t?.temp_c, press = t?.pressure_psi, wear = t?.wear_pct;
+        const temp = t?.temp_c, pressVal = t?.pressure_psi, wear = t?.wear_pct;
         return (
-          <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{ borderColor: T.border, background: `linear-gradient(135deg, ${tempColor(temp, T)}22, transparent)` }}>
+          <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{ borderColor: T.panelEdge, background: `linear-gradient(135deg, ${tempColor(temp, T)}22, transparent)` }}>
             <div style={{ fontSize: "0.8em", color: T.label, letterSpacing: "0.1em" }}>{k}</div>
-            <div className="font-bold tabular-nums" style={{ fontSize: "2.2em", lineHeight: 1, color: tempColor(temp, T) }}>{temp != null ? Math.round(temp) : "--"}°</div>
-            <div style={{ fontSize: "0.78em", color: T.label }}>PRS <span style={{ color: T.text }}>{press != null ? press.toFixed(1) : "--"}</span></div>
-            <div style={{ fontSize: "0.78em", color: T.label }}>WR <span style={{ color: wearColor(wear, T) }}>{wear != null ? Math.round(wear) : "--"}%</span></div>
+            <div className="font-bold tabular-nums" style={{ fontSize: "2.2em", lineHeight: 1, color: tempColor(temp, T), textShadow: `0 0 12px ${tempColor(temp, T)}55` }}>{temp != null ? Math.round(temp) : "--"}°</div>
+            <div style={{ fontSize: "0.78em", color: T.label }}>PRS <span style={{ color: T.text }} className="tabular-nums">{press(pressVal)}</span></div>
+            <div style={{ fontSize: "0.78em", color: T.label }}>WR <span style={{ color: wearColor(wear, T) }} className="tabular-nums">{wear != null ? Math.round(wear) : "--"}%</span></div>
           </div>
         );
       })}
@@ -156,15 +181,38 @@ function Gear({ data, h, T, shape }) {
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
   const numeral = (
-    <span className="font-bold tabular-nums" style={{ fontSize: `${h * 0.6}px`, lineHeight: 0.8, color: data.gear > 0 ? T.text : T.amber, textShadow: shift ? `0 0 30px ${T.shiftColor}` : "none" }}>
+    <span className="font-bold tabular-nums relative z-10" style={{ fontSize: `${h * 0.5}px`, lineHeight: 0.8, color: data.gear > 0 ? T.text : T.amber, textShadow: shift ? `0 0 30px ${T.shiftColor}` : `0 0 16px ${T.text}44` }}>
       {data.gear > 0 ? data.gear : "N"}
     </span>
   );
+
+  if (shape === "ring") {
+    const segs = 32;
+    return (
+      <div className="w-full h-full flex items-center justify-center relative">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+          {Array.from({ length: segs }).map((_, i) => {
+            const frac = i / segs;
+            const lit = rpmPct >= frac;
+            const ang = (frac * 360 - 90) * Math.PI / 180;
+            const x1 = 50 + 43 * Math.cos(ang);
+            const y1 = 50 + 43 * Math.sin(ang);
+            const x2 = 50 + 48 * Math.cos(ang);
+            const y2 = 50 + 48 * Math.sin(ang);
+            const col = frac < 0.6 ? T.ledGreen : frac < 0.85 ? T.ledYellow : T.ledRed;
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={lit ? col : T.dim} strokeWidth="2.5" strokeLinecap="round" style={lit ? { filter: `drop-shadow(0 0 2px ${col})` } : {}} />;
+          })}
+          <circle cx="50" cy="50" r="40" fill="none" stroke={T.panelEdge} strokeWidth="1" />
+        </svg>
+        {numeral}
+      </div>
+    );
+  }
   if (shape === "arc" || shape === "dial") {
     return (
       <div className="w-full h-full flex items-center justify-center relative">
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <circle cx="50" cy="50" r="46" fill="none" stroke={T.border} strokeWidth="2" />
+          <circle cx="50" cy="50" r="46" fill="none" stroke={T.panelEdge} strokeWidth="2" />
           <circle cx="50" cy="50" r="46" fill="none" stroke={T.accent} strokeWidth="3"
             strokeDasharray={`${2 * Math.PI * 46 * rpmPct} ${2 * Math.PI * 46}`} strokeLinecap="round" transform="rotate(-90 50 50)" style={{ filter: `drop-shadow(0 0 4px ${T.accent})` }} />
         </svg>
@@ -184,7 +232,7 @@ function Delta({ data, T }) {
       <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
       <div className="flex-1 flex flex-col items-center justify-center">
         <div style={{ fontSize: "0.85em", color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
-        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "4em", color: tone }}>
+        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "4em", color: tone, textShadow: `0 0 16px ${tone}55` }}>
           {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
         </div>
       </div>
@@ -208,11 +256,11 @@ function Cars({ data, T }) {
     <div className="w-full h-full p-1.5 flex flex-col gap-1.5 justify-center">
       <div>
         <Title T={T}>CAR AHEAD</Title>
-        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: T.ledGreen }}>{gap(data.car_ahead_gap)}</div>
+        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: T.ledGreen, textShadow: `0 0 12px ${T.ledGreen}44` }}>{gap(data.car_ahead_gap)}</div>
       </div>
       <div>
         <Title T={T}>CAR BEHIND</Title>
-        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: T.ledRed }}>{gap(data.car_behind_gap)}</div>
+        <div className="font-bold tabular-nums leading-none" style={{ fontSize: "1.9em", color: T.ledRed, textShadow: `0 0 12px ${T.ledRed}44` }}>{gap(data.car_behind_gap)}</div>
       </div>
     </div>
   );
@@ -229,12 +277,12 @@ function DialInputs({ data, T }) {
         <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
           <svg viewBox="0 0 100 50" className="w-full h-full">
             <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={T.track} strokeWidth="6" />
-            <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={color} strokeWidth="6" strokeDasharray={`${circ * value} ${circ}`} strokeLinecap="round" />
+            <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={color} strokeWidth="6" strokeDasharray={`${circ * value} ${circ}`} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 3px ${color})` }} />
             <line x1="50" y1="50" x2={x2} y2={y2} stroke={T.text} strokeWidth="2" />
             <circle cx="50" cy="50" r="2.5" fill={T.text} />
           </svg>
         </div>
-        <div style={{ fontSize: "0.7em", color: T.label }}>{label} {Math.round((value ?? 0) * 100)}%</div>
+        <div style={{ fontSize: "0.7em", color: T.label }}>{label} <span className="tabular-nums">{Math.round((value ?? 0) * 100)}%</span></div>
       </div>
     );
   };
@@ -245,10 +293,10 @@ function DialInputs({ data, T }) {
         <Gauge label="BRK" value={data.brake ?? 0} color={T.ledRed} />
       </div>
       <div>
-        <div className="flex justify-between" style={{ fontSize: "0.8em", color: T.label }}><span>STR</span><span>{(data.steer ?? 0).toFixed(2)}</span></div>
+        <div className="flex justify-between" style={{ fontSize: "0.8em", color: T.label }}><span>STR</span><span className="tabular-nums">{(data.steer ?? 0).toFixed(2)}</span></div>
         <div className="relative rounded-full" style={{ height: "0.6em", background: T.track }}>
-          <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.border }} />
-          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: T.accent }} />
+          <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.panelEdge }} />
+          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: T.accent, boxShadow: `0 0 6px ${T.accent}` }} />
         </div>
       </div>
     </div>
@@ -263,10 +311,10 @@ function Inputs({ data, color, T, shape }) {
       <Bar label="THR" value={data.throttle} color={thrColor} T={T} />
       <Bar label="BRK" value={data.brake} color={T.ledRed} T={T} />
       <div>
-        <div className="flex justify-between" style={{ fontSize: "0.9em", color: T.label }}><span>STR</span><span>{(data.steer ?? 0).toFixed(2)}</span></div>
+        <div className="flex justify-between" style={{ fontSize: "0.9em", color: T.label }}><span>STR</span><span className="tabular-nums">{(data.steer ?? 0).toFixed(2)}</span></div>
         <div className="relative rounded-full" style={{ height: "0.6em", background: T.track }}>
-          <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.border }} />
-          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: color || T.accent }} />
+          <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.panelEdge }} />
+          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: color || T.accent, boxShadow: `0 0 6px ${color || T.accent}` }} />
         </div>
       </div>
     </div>
@@ -288,7 +336,7 @@ function Status({ data, color, T }) {
   return (
     <div className="w-full h-full flex gap-1 p-1">
       {items.map(([l, v, b]) => (
-        <div key={l} className="flex-1 rounded border flex flex-col items-center justify-center" style={{ borderColor: b || T.border, background: T.panel }}>
+        <div key={l} className="flex-1 rounded border flex flex-col items-center justify-center" style={{ borderColor: b || T.panelEdge, background: T.panel }}>
           <div style={{ fontSize: "0.7em", color: T.label, letterSpacing: "0.1em" }}>{l}</div>
           <div className="font-bold tabular-nums" style={{ fontSize: "1.1em", color: b || T.text }}>{v}</div>
         </div>
@@ -298,12 +346,14 @@ function Status({ data, color, T }) {
 }
 
 export function renderWidget(type, ctx) {
-  const { data, color, h, theme, shape } = ctx;
+  const { data, color, h, theme, shape, units } = ctx;
   const T = { ...SEM, ...(theme || {}) };
   const sh = shape || "led";
+  const u = units || { speed: "kmh", pressure: "psi" };
   switch (type) {
     case "shiftLights": return <ShiftLights data={data} T={T} shape={sh} />;
-    case "tyres": return <Tyres data={data} T={T} />;
+    case "speed": return <Speed data={data} h={h} T={T} units={u} />;
+    case "tyres": return <Tyres data={data} T={T} units={u} />;
     case "fuel": return <Fuel data={data} T={T} />;
     case "gear": return <Gear data={data} h={h} T={T} shape={sh} />;
     case "delta": return <Delta data={data} T={T} />;

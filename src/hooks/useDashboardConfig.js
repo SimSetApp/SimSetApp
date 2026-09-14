@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
 
 const ACTIVE_KEY = "simsetapp-dash-active";
@@ -13,12 +12,11 @@ function loadSaved(variantId) {
       const p = JSON.parse(raw);
       return {
         accent: p.accent ?? variant.theme.accent,
-        scale: p.scale ?? 1,
-        widgets: p.widgets && p.widgets.length ? p.widgets : variant.layout,
+        units: { ...variant.units, ...(p.units || {}) },
       };
     }
   } catch { /* ignore */ }
-  return { accent: variant.theme.accent, scale: 1, widgets: variant.layout };
+  return { accent: variant.theme.accent, units: { ...variant.units } };
 }
 
 export function useDashboardConfig() {
@@ -38,25 +36,9 @@ export function useDashboardConfig() {
   }, [config, activeId]);
 
   const update = useCallback((patch) => setConfig((c) => ({ ...c, ...patch })), []);
-  const updateWidget = useCallback((id, patch) =>
-    setConfig((c) => ({ ...c, widgets: c.widgets.map((w) => (w.id === id ? { ...w, ...patch } : w)) })), []);
-  const addWidget = useCallback((type) => {
-    const def = WIDGET_DEFS.find((d) => d.type === type);
-    if (!def) return;
-    setConfig((c) => ({
-      ...c,
-      widgets: [...c.widgets, { id: `w_${Date.now()}`, type, x: 120, y: 120, w: def.w, h: def.h, color: null }],
-    }));
-  }, []);
-  const removeWidget = useCallback((id) =>
-    setConfig((c) => ({ ...c, widgets: c.widgets.filter((w) => w.id !== id) })), []);
-  const resetLayout = useCallback(() => {
-    const variant = getVariant(activeId);
-    setConfig((c) => ({ ...c, widgets: variant.layout }));
-  }, [activeId]);
   const reset = useCallback(() => {
     const variant = getVariant(activeId);
-    setConfig({ accent: variant.theme.accent, scale: 1, widgets: variant.layout });
+    setConfig({ accent: variant.theme.accent, units: { ...variant.units } });
   }, [activeId]);
   const loadVariant = useCallback((id) => {
     if (!DASH_VARIANTS.some((v) => v.id === id)) return;
@@ -64,5 +46,5 @@ export function useDashboardConfig() {
     setConfig(loadSaved(id));
   }, []);
 
-  return { config, activeId, loadVariant, update, updateWidget, addWidget, removeWidget, resetLayout, reset };
+  return { config, activeId, loadVariant, update, reset };
 }
