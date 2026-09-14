@@ -1425,7 +1425,7 @@ def dashboard_html():
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;width:100%;overflow:hidden;background:#000;color:#e8e8e8;font-family:'Share Tech Mono',monospace}
+  html,body{height:100vh;height:100dvh;width:100%;overflow:hidden;background:#000;color:#e8e8e8;font-family:'Share Tech Mono',monospace}
   .fd{font-family:'Orbitron',monospace;font-variant-numeric:tabular-nums}
   .fl{font-family:'Share Tech Mono',monospace;font-variant-numeric:tabular-nums}
   #bezel{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top,4px) env(safe-area-inset-right,4px) env(safe-area-inset-bottom,4px) env(safe-area-inset-left,4px);
@@ -1602,10 +1602,11 @@ function connect(){
   ws.onerror=()=>{try{ws.close();}catch(ex){}};
 }
 
-buildLeds();buildLayout();buildSwitcher();fit();showSwitcher();
+buildLeds();buildLayout();buildSwitcher();requestAnimationFrame(fit);showSwitcher();
 const ro=new ResizeObserver(fit);ro.observe($('canvas-wrap'));ro.observe($('screen'));
 window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 window.addEventListener('resize',fit);
+window.addEventListener('visibilitychange',fit);
 connect();
 </script>
 </body>

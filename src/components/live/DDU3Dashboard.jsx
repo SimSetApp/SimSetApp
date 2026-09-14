@@ -31,16 +31,27 @@ export default function DDU3Dashboard({ data, demo }) {
   }, []);
   useEffect(() => {
     const measure = () => {
-      if (!wrapRef.current) return;
+      if (!wrapRef.current || !bezelRef.current) return;
+      const bezelRect = bezelRef.current.getBoundingClientRect();
       const w = wrapRef.current.clientWidth;
-      const availH = fs ? window.innerHeight - 90 : Infinity;
+      const header = wrapRef.current.previousElementSibling;
+      const headerH = header ? header.offsetHeight : 0;
+      // Fit both axes: available height = viewport bottom minus bezel top minus padding/header
+      const availH = window.innerHeight - bezelRect.top - 12 - headerH - 4;
       setScale(Math.max(0.2, Math.min(w / CW, availH / CH)));
     };
-    measure();
-    const ro = new ResizeObserver(measure);
+    const raf = () => requestAnimationFrame(measure);
+    raf();
+    const ro = new ResizeObserver(raf);
     if (wrapRef.current) ro.observe(wrapRef.current);
-    return () => ro.disconnect();
-  }, [fs]);
+    window.addEventListener("resize", raf);
+    window.addEventListener("scroll", raf, true);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", raf);
+      window.removeEventListener("scroll", raf, true);
+    };
+  }, [fs, customize]);
 
   const toggleFs = async () => {
     try {
