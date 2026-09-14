@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { useCustomLayout } from "@/hooks/useCustomLayout";
-import { useFlashToggle } from "@/hooks/useFlashToggle";
+import { FlashProvider } from "@/lib/flashContext";
 import { useTrend } from "@/hooks/useTrend";
 import BezelLEDs from "@/components/live/BezelLEDs";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
@@ -19,7 +19,7 @@ const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
 const TREND_KEYS = ["fuel_litres", "lap_delta", "tyres.fl.temp_c", "tyres.fr.temp_c", "tyres.rl.temp_c", "tyres.rr.temp_c"];
 
-export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
+export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace = "" }) {
   const bezelRef = useRef(null);
   const wrapRef = useRef(null);
   const [fs, setFs] = useState(false);
@@ -27,13 +27,12 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const [scale, setScale] = useState(0.76);
   const [now, setNow] = useState(new Date());
   const [isPortrait, setIsPortrait] = useState(false);
-  const { config, activeId, loadVariant, update, reset } = useDashboardConfig();
+  const { config, activeId, loadVariant, update, reset } = useDashboardConfig(namespace);
   const variant = getVariant(activeId);
-  const flash = useFlashToggle(2.5);
   const trends = useTrend(data, TREND_KEYS);
   const theme = variant.theme;
-  const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false);
-  const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true);
+  const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false, namespace);
+  const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true, namespace);
   const [editing, setEditing] = useState(false);
   const [pickerSlot, setPickerSlot] = useState(null);
 
@@ -77,7 +76,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
       window.removeEventListener("orientationchange", raf);
       window.removeEventListener("scroll", raf, true);
     };
-  }, [fs, customize]);
+  }, [fs, customize, isPortrait]);
 
   const toggleFs = async () => {
     if (inKiosk) {
@@ -134,6 +133,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
       {customize && (!fs || inKiosk) && (
         <DashboardCustomizer config={config} update={update} reset={reset} />
       )}
+      <FlashProvider>
       <div
         ref={bezelRef}
         className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
@@ -147,8 +147,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
             <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: theme.panelEdge, color: theme.text }}>
               <div className="flex items-center gap-2.5">
                 <span className="tabular-nums" style={{ color: theme.text }}>{clock}</span>
-                <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "0.0"}°</span></span>
-                <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }}>{data.track_temp != null ? data.track_temp.toFixed(1) : "0.0"}°</span></span>
+                <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "--"}°</span></span>
+                <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }}>{data.track_temp != null ? data.track_temp.toFixed(1) : "--"}°</span></span>
               </div>
               <div className="flex items-center gap-2">
                 {demo && <span style={{ color: theme.warn }}>DEMO</span>}
@@ -170,7 +170,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                 <PortraitDashboard
                   data={data} variant={variant} config={config} caps={caps}
                   editing={editing}
-                  flash={flash} trends={trends}
+                  trends={trends}
                   getSlotType={getPortraitType}
                   onSlotTap={(id, currentType) => setPickerSlot({ id, currentType, portrait: true })}
                 />
@@ -213,7 +213,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                           </div>
                         ) : (
                           <div className="w-full h-full" style={{ opacity: editing ? 0.6 : 1 }}>
-                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps, flash, trends })}
+                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps, trends })}
                           </div>
                         )}
                       </div>
@@ -224,7 +224,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
             </div>
 
             {/* Alarm / flag overlay — flashes over the dash when active */}
-            <AlarmOverlay data={data} caps={caps} flash={flash} />
+            <AlarmOverlay data={data} caps={caps} />
 
             {/* Glass overlay — subtle reflection and vignette (landscape only) */}
             {!isPortrait && <div className="dash-glass absolute inset-0 z-20" />}
@@ -233,6 +233,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
           <BezelLEDs data={data} caps={caps} theme={theme} side="right" />
         </div>
       </div>
+      </FlashProvider>
       <WidgetPicker
         open={!!pickerSlot}
         onOpenChange={(o) => { if (!o) setPickerSlot(null); }}

@@ -31,10 +31,14 @@ export default function DashboardFullscreen() {
     } catch { /* ignore */ }
   };
 
-  // Auto-connect using the persisted bridge URL on mount
+  // Auto-connect once on mount (not on every URL state change)
+  const mountedRef = useRef(false);
   useEffect(() => {
+    if (mountedRef.current) return;
+    mountedRef.current = true;
     connect(url);
-  }, [connect, url]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Enter browser fullscreen on the first user gesture (browsers require one)
   useEffect(() => {
@@ -58,7 +62,7 @@ export default function DashboardFullscreen() {
     };
   }, []);
 
-  const connected = status === "connected" && data;
+  const connected = (status === "connected" || status === "stale") && data;
 
   return (
     <div className="fixed inset-0 bg-black flex flex-col overflow-hidden">
@@ -73,7 +77,7 @@ export default function DashboardFullscreen() {
         <span className="flex items-center gap-1.5">
           {status === "searching" && <Loader2 className="w-3 h-3 animate-spin text-amber-400" />}
           <span className={connected ? "text-green-400" : "text-muted-foreground"}>
-            {connected ? "Live" : status === "searching" ? "waiting" : status}
+            {connected ? (status === "stale" ? "stale" : "Live") : status === "searching" ? "waiting" : status === "failed" ? "failed" : status}
           </span>
         </span>
       </div>
@@ -82,7 +86,7 @@ export default function DashboardFullscreen() {
       <div className="flex-1 min-h-0 flex items-center justify-center p-2">
         {connected ? (
           <div className="w-full h-full max-w-[1600px]">
-            <DDU3Dashboard data={data} demo={demo} inKiosk />
+            <DDU3Dashboard data={data} demo={demo} inKiosk namespace="kiosk" />
           </div>
         ) : (
           <div className="text-center text-muted-foreground px-6">

@@ -10,7 +10,7 @@ import { PORTRAIT_LAYOUT } from "@/lib/dashboardVariants";
  * pixel height is computed from its flex weight so widget font-sizing stays
  * accurate. Supports per-variant custom widget assignment via tap-to-assign.
  */
-export default function PortraitDashboard({ data, variant, config, caps, editing, flash, trends, getSlotType, onSlotTap }) {
+export default function PortraitDashboard({ data, variant, config, caps, editing, trends, getSlotType, onSlotTap }) {
   const ref = useRef(null);
   const [dims, setDims] = useState({ w: 360, h: 640 });
   const theme = variant.theme;
@@ -90,7 +90,6 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
                   shape: variant.shape,
                   units: config.units,
                   caps,
-                  flash,
                   trends,
                 })}
               </div>

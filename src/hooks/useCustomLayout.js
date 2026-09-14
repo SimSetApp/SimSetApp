@@ -1,26 +1,27 @@
 import { useState, useEffect, useCallback } from "react";
 
-const layoutKey = (variantId, portrait) =>
-  `simsetapp-dashLayout-${variantId}${portrait ? "-portrait" : ""}`;
+const layoutKey = (variantId, portrait, namespace = "") =>
+  `simsetapp-dashLayout-${variantId}${portrait ? "-portrait" : ""}${namespace ? `-${namespace}` : ""}`;
 
 /**
  * Per-variant custom widget layouts. Stores only the `type` override per slot
  * (keyed by slot id) — positions and sizes stay fixed from the variant default,
  * so layouts always remain aligned. Portrait uses a separate key so landscape
- * and portrait arrangements can differ independently.
+ * and portrait arrangements can differ independently. An optional `namespace`
+ * isolates kiosk/fullscreen dashboards from the main page.
  */
-export function useCustomLayout(variantId, isPortrait) {
+export function useCustomLayout(variantId, isPortrait, namespace = "") {
   const [overrides, setOverrides] = useState({});
 
-  // Load when variant or orientation changes
+  // Load when variant, orientation, or namespace changes
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(layoutKey(variantId, isPortrait));
+      const raw = localStorage.getItem(layoutKey(variantId, isPortrait, namespace));
       setOverrides(raw ? JSON.parse(raw) : {});
     } catch {
       setOverrides({});
     }
-  }, [variantId, isPortrait]);
+  }, [variantId, isPortrait, namespace]);
 
   // Persist only on explicit user actions (not on load) — avoids race where
   // switching variants would overwrite the new variant's stored layout with
@@ -28,14 +29,14 @@ export function useCustomLayout(variantId, isPortrait) {
   const persist = useCallback((next) => {
     setOverrides(next);
     try {
-      localStorage.setItem(layoutKey(variantId, isPortrait), JSON.stringify(next));
+      localStorage.setItem(layoutKey(variantId, isPortrait, namespace), JSON.stringify(next));
     } catch { /* ignore */ }
-  }, [variantId, isPortrait]);
+  }, [variantId, isPortrait, namespace]);
 
   const getSlotType = useCallback((slotId, defaultType) => {
     const o = overrides[slotId];
     if (o === "empty") return "empty";
-    return o || defaultType;
+    return o ?? defaultType;
   }, [overrides]);
 
   const setSlotType = useCallback((slotId, type) => {
@@ -47,11 +48,11 @@ export function useCustomLayout(variantId, isPortrait) {
   }, [overrides, persist]);
 
   const resetLayout = useCallback(() => {
-    persist({});
+    setOverrides({});
     try {
-      localStorage.removeItem(layoutKey(variantId, isPortrait));
+      localStorage.removeItem(layoutKey(variantId, isPortrait, namespace));
     } catch { /* ignore */ }
-  }, [persist, variantId, isPortrait]);
+  }, [variantId, isPortrait, namespace]);
 
   return { getSlotType, setSlotType, clearSlot, resetLayout };
 }

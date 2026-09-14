@@ -14,14 +14,7 @@ import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 import BridgeSteps from "@/components/live/BridgeSteps";
 import PhonePairPanel from "@/components/live/PhonePairPanel";
 import { toast } from "sonner";
-
-function fmt(t) {
-  if (t == null || isNaN(t)) return "--:--.---";
-  const m = Math.floor(t / 60);
-  const s = Math.floor(t % 60);
-  const ms = Math.round((t % 1) * 1000);
-  return `${m}:${String(s).padStart(2, "0")}.${String(ms).padStart(3, "0")}`;
-}
+import { fmt } from "@/lib/formatTime";
 
 const STATUS_META = {
   idle: { label: "Not connected", tone: "text-muted-foreground", icon: WifiOff, dot: "bg-muted-foreground" },
@@ -29,7 +22,9 @@ const STATUS_META = {
   searching: { label: "Looking for sim…", tone: "text-amber-400", icon: Loader2, dot: "bg-amber-400" },
   connected: { label: "Live", tone: "text-green-400", icon: Wifi, dot: "bg-green-400" },
   error: { label: "Connection error", tone: "text-red-400", icon: WifiOff, dot: "bg-red-400" },
+  stale: { label: "Stale — no data", tone: "text-amber-400", icon: WifiOff, dot: "bg-amber-400" },
   closed: { label: "Reconnecting…", tone: "text-amber-400", icon: Loader2, dot: "bg-amber-400" },
+  failed: { label: "Connection failed", tone: "text-red-400", icon: WifiOff, dot: "bg-red-400" },
 };
 
 export default function LiveTelemetry() {
@@ -37,6 +32,7 @@ export default function LiveTelemetry() {
   const queryClient = useQueryClient();
   const { url, saveUrl, status, data, lastLap, detectedSim, detected, connect, disconnect, demo, startDemo } = useLiveTelemetry();
   const [autoLog, setAutoLog] = useState(false);
+  const [logError, setLogError] = useState(null);
   const [logSetupId, setLogSetupId] = useState("");
   const sessionLogRef = useRef(null);
   const lapTimesRef = useRef([]);
@@ -76,8 +72,9 @@ export default function LiveTelemetry() {
           toast.success("Session logging started");
         }
         queryClient.invalidateQueries({ queryKey: ["session-logs"] });
-      } catch {
-        /* best-effort logging */
+      } catch (e) {
+        setLogError("Failed to save lap data");
+        toast.error("Lap log failed — check connection");
       }
     })();
   }, [lastLap, autoLog, logSetupId, isAuthenticated, queryClient]);
@@ -88,6 +85,15 @@ export default function LiveTelemetry() {
     lapTimesRef.current = [];
   }, [logSetupId, autoLog]);
 
+  // Auto-end session on disconnect
+  useEffect(() => {
+    if ((status === "idle" || status === "failed") && sessionLogRef.current) {
+      sessionLogRef.current = null;
+      lapTimesRef.current = [];
+      if (autoLog) toast.info("Session ended — disconnected");
+    }
+  }, [status, autoLog]);
+
   // Auto-connect to the last saved bridge URL (mobile now opens the bridge's
   // own HTTP dashboard directly, so no deep-link param is needed here).
   useEffect(() => {
@@ -95,7 +101,7 @@ export default function LiveTelemetry() {
   }, [connect, url]);
 
   const st = STATUS_META[status] || STATUS_META.idle;
-  const connected = status === "connected" && data;
+  const connected = (status === "connected" || status === "stale") && data;
 
   return (
     <div className="min-h-screen bg-background">
@@ -112,10 +118,10 @@ export default function LiveTelemetry() {
             <p className="text-sm text-muted-foreground">Real-time dashboard streamed from the local bridge.</p>
           </div>
           {connected && (
-            <Badge variant="outline" className="gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${st.dot} animate-pulse`} />
-              {demo ? "Demo data" : data?.sim || "Live"}
-            </Badge>
+          <Badge variant="outline" className="gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${st.dot} ${status === "stale" ? "" : "animate-pulse"}`} />
+            {demo ? "Demo data" : status === "stale" ? "Stale" : data?.sim || "Live"}
+          </Badge>
           )}
         </div>
 
@@ -133,7 +139,7 @@ export default function LiveTelemetry() {
           {connected ? (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                {demo ? "Streaming demo data" : `Connected to ${data?.sim || "bridge"}`}
+                {demo ? "Streaming demo data" : status === "stale" ? "Stale — no data received" : `Connected to ${data?.sim || "bridge"}`}
               </span>
               <Button variant="outline" onClick={disconnect} className="font-heading text-xs tracking-wider">
                 <WifiOff className="w-3.5 h-3.5 mr-1.5" /> Disconnect
@@ -202,12 +208,28 @@ export default function LiveTelemetry() {
                   <h4 className="font-heading text-sm font-semibold tracking-wide flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-primary" /> Auto-log laps
                   </h4>
-                  <button
-                    onClick={() => setAutoLog((v) => !v)}
-                    className={`relative h-6 w-11 rounded-full transition-colors ${autoLog ? "bg-primary" : "bg-muted"}`}
-                  >
-                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${autoLog ? "translate-x-5" : "translate-x-0.5"}`} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {autoLog && sessionLogRef.current && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          sessionLogRef.current = null;
+                          lapTimesRef.current = [];
+                          toast.success("Session ended");
+                        }}
+                        className="font-heading text-xs tracking-wider h-6 px-2"
+                      >
+                        End Session
+                      </Button>
+                    )}
+                    <button
+                      onClick={() => setAutoLog((v) => !v)}
+                      className={`relative h-6 w-11 rounded-full transition-colors ${autoLog ? "bg-primary" : "bg-muted"}`}
+                    >
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${autoLog ? "translate-x-5" : "translate-x-0.5"}`} />
+                    </button>
+                  </div>
                 </div>
                 {autoLog && (
                   <select
@@ -220,6 +242,9 @@ export default function LiveTelemetry() {
                       <option key={s.id} value={s.id}>{s.title} — {s.car}</option>
                     ))}
                   </select>
+                )}
+                {logError && (
+                  <p className="text-xs text-destructive mt-2">{logError}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">
                   When on, each completed lap is written to your session history against the chosen setup.
@@ -268,9 +293,13 @@ export default function LiveTelemetry() {
             <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
               <Radio className="w-7 h-7 text-primary" />
             </div>
-            <h3 className="font-heading text-lg font-semibold mb-1">Live Telemetry</h3>
+            <h3 className="font-heading text-lg font-semibold mb-1">
+              {status === "failed" ? "Connection failed" : "Live Telemetry"}
+            </h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
-              See speed, RPM, tyres, fuel and lap times in real time. Connect your bridge or try the demo.
+              {status === "failed"
+                ? "Could not reach the bridge after several attempts. Check it's running and try again."
+                : "See speed, RPM, tyres, fuel and lap times in real time. Connect your bridge or try the demo."}
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <Button onClick={() => connect()} className="font-heading text-xs tracking-wider">
