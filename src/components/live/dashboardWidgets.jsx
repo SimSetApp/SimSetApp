@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export const SEM = {
   green: "#00ff66", yellow: "#ffe600", red: "#ff1a1a",
   blue: "#3b82f6", amber: "#ff9800", label: "#6a6a6a",
@@ -20,20 +22,63 @@ export const WIDGET_DEFS = [
   { type: "status", label: "Status Bar", w: 960, h: 48 },
 ];
 
+/* ── Visual helpers (shared across all widgets) ── */
+
+// Smooth thermal gradient: continuous HSL interpolation across semantic stops
+// cold=blue → optimal=green → warm=yellow → hot=red → critical=deep red
+const TEMP_STOPS = [
+  [30, 217, 91, 60],
+  [70, 180, 85, 52],
+  [86, 150, 100, 50],
+  [96, 54, 100, 52],
+  [108, 0, 100, 55],
+  [130, 0, 100, 42],
+];
+export function tempGradient(t, T) {
+  if (t == null) return T ? T.label : "#6a6a6a";
+  if (t <= TEMP_STOPS[0][0]) { const s = TEMP_STOPS[0]; return `hsl(${s[1]}, ${s[2]}%, ${s[3]}%)`; }
+  if (t >= TEMP_STOPS[TEMP_STOPS.length - 1][0]) { const s = TEMP_STOPS[TEMP_STOPS.length - 1]; return `hsl(${s[1]}, ${s[2]}%, ${s[3]}%)`; }
+  for (let i = 0; i < TEMP_STOPS.length - 1; i++) {
+    if (t >= TEMP_STOPS[i][0] && t < TEMP_STOPS[i + 1][0]) {
+      const f = (t - TEMP_STOPS[i][0]) / (TEMP_STOPS[i + 1][0] - TEMP_STOPS[i][0]);
+      const h = TEMP_STOPS[i][1] + (TEMP_STOPS[i + 1][1] - TEMP_STOPS[i][1]) * f;
+      const s = TEMP_STOPS[i][2] + (TEMP_STOPS[i + 1][2] - TEMP_STOPS[i][2]) * f;
+      const l = TEMP_STOPS[i][3] + (TEMP_STOPS[i + 1][3] - TEMP_STOPS[i][3]) * f;
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+  }
+  return "hsl(0, 100%, 50%)";
+}
+
+// Layered bloom: tight inner glow + mid halo + far scatter
+export function bloom(color, intense = false) {
+  if (intense) {
+    return `0 0 10px ${color}, 0 0 30px ${color}aa, 0 0 60px ${color}66, 0 0 90px ${color}44`;
+  }
+  return `0 0 10px ${color}cc, 0 0 30px ${color}66, 0 0 60px ${color}33`;
+}
+
+// Panel bevel: top inner highlight + border + bottom inner shadow (recessed glass)
+export function panelBevel(theme) {
+  return `inset 0 1px 0 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${theme.panelEdge}55, inset 0 -1px 3px rgba(0,0,0,0.5), inset 0 2px 5px rgba(0,0,0,0.35)`;
+}
+
+// Soft LED segment style: radial-gradient fill + layered glow (physical LED look)
+function ledSeg(col, on) {
+  if (!on) return { background: "rgba(255,255,255,0.06)", boxShadow: "none", opacity: 0.5 };
+  return {
+    background: `radial-gradient(circle, ${col} 0%, ${col}cc 55%, ${col}66 100%)`,
+    boxShadow: `0 0 14px ${col}aa, 0 0 6px ${col}, inset 0 0 4px rgba(255,255,255,0.5)`,
+    opacity: 1,
+  };
+}
+
 function fmt(t) {
   if (t == null || isNaN(t)) return "--:--.---";
   const m = Math.floor(t / 60);
   const s = Math.floor(t % 60);
   const ms = Math.round((t % 1) * 1000);
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}.${String(ms).padStart(3, "0")}`;
-}
-function tempColor(t, T) {
-  if (t == null) return T.label;
-  if (t < 70) return T.blue;
-  if (t < 86) return T.ledGreen;
-  if (t < 96) return T.ledYellow;
-  if (t < 108) return T.amber;
-  return T.ledRed;
 }
 function wearColor(w, T) {
   if (w == null) return T.label;
@@ -79,6 +124,8 @@ function RpmGear({ data, w, h, T, units }) {
   const gearFs = Math.max(44, Math.min(h * 0.42, w * 0.4));
   const speedFs = Math.max(13, h * 0.1);
   const dispSpeed = units.speed === "mph" ? Math.round((data.speed_kmh || 0) * 0.621371) : Math.round(data.speed_kmh || 0);
+  const gearColor = data.gear > 0 ? T.text : T.amber;
+  const gearGlow = shift ? bloom(T.shiftColor, true) : bloom(gearColor);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-2">
       <div className="w-full flex gap-0.5" style={{ height: barH }}>
@@ -87,27 +134,22 @@ function RpmGear({ data, w, h, T, units }) {
           const lit = rpmPct >= frac + 1 / segs * 0.5;
           const col = frac < 0.6 ? T.ledGreen : frac < 0.85 ? T.ledYellow : T.ledRed;
           const on = lit && (!shift || flashOn);
-          return (
-            <div key={i} className="flex-1 rounded-sm" style={{
-              background: on ? col : "rgba(255,255,255,0.06)",
-              boxShadow: on ? `0 0 8px ${col}, inset 0 0 4px rgba(255,255,255,0.4)` : "none",
-              opacity: on ? 1 : 0.5,
-            }} />
-          );
+          return <div key={i} className="flex-1 rounded-sm" style={ledSeg(col, on)} />;
         })}
       </div>
-      <div className="font-digi font-bold tabular-nums leading-none" style={{
-        fontSize: gearFs, color: data.gear > 0 ? T.text : T.amber,
-        textShadow: shift
-          ? `0 0 30px ${T.shiftColor}, 0 0 60px ${T.shiftColor}88, 0 0 90px ${T.shiftColor}44`
-          : `0 0 20px ${T.text}66, 0 0 40px ${T.text}22`,
-      }}>
+      <motion.div
+        key={data.gear}
+        initial={{ scale: 1 }}
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ duration: 0.12, ease: "easeOut" }}
+        className="font-digi font-bold tabular-nums leading-none"
+        style={{ fontSize: gearFs, color: gearColor, textShadow: gearGlow }}
+      >
         {data.gear > 0 ? data.gear : "N"}
-      </div>
+      </motion.div>
       <div className="flex items-baseline gap-1.5">
         <span className="font-digi font-bold tabular-nums leading-none" style={{
-          fontSize: speedFs * 1.5, color: T.text,
-          textShadow: `0 0 14px ${T.text}55`,
+          fontSize: speedFs * 1.5, color: T.text, textShadow: bloom(T.text),
         }}>{dispSpeed}</span>
         <span className="font-digi" style={{ fontSize: speedFs, color: T.label, letterSpacing: "0.2em" }}>
           {units.speed === "mph" ? "MPH" : "KM/H"}
@@ -131,14 +173,7 @@ function RpmBar({ data, w, h, T }) {
         const lit = rpmPct >= frac + 1 / segs * 0.5;
         const col = frac < 0.6 ? T.ledGreen : frac < 0.85 ? T.ledYellow : T.ledRed;
         const on = lit && (!shift || flashOn);
-        return (
-          <div key={i} className="flex-1 rounded-full" style={{
-            height: "78%",
-            background: on ? col : "rgba(255,255,255,0.06)",
-            boxShadow: on ? `0 0 10px ${col}, inset 0 0 4px rgba(255,255,255,0.5)` : "none",
-            opacity: on ? 1 : 0.5,
-          }} />
-        );
+        return <div key={i} className="flex-1 rounded-full" style={{ ...ledSeg(col, on), height: "78%" }} />;
       })}
     </div>
   );
@@ -155,7 +190,7 @@ function ShiftLights({ data, T, shape }) {
   return (
     <div className="w-full h-full flex items-center justify-between px-1">
       {Array.from({ length: 15 }).map((_, i) => (
-        <div key={i} className="rounded-full aspect-square" style={{ height: "100%", background: on(i) ? segColor(i) : "rgba(255,255,255,0.07)", boxShadow: on(i) ? `0 0 14px ${segColor(i)}, inset 0 0 4px rgba(255,255,255,0.5)` : "none", opacity: on(i) ? 1 : 0.55 }} />
+        <div key={i} className="rounded-full aspect-square" style={{ ...ledSeg(segColor(i), on(i)), height: "100%" }} />
       ))}
     </div>
   );
@@ -167,8 +202,7 @@ function Speed({ data, w, h, T, units }) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="font-digi font-bold tabular-nums leading-none" style={{
-        fontSize: fs, color: T.text,
-        textShadow: `0 0 24px ${T.text}66, 0 0 48px ${T.text}22`,
+        fontSize: fs, color: T.text, textShadow: bloom(T.text),
       }}>{v}</div>
       <div className="font-digi" style={{ fontSize: Math.max(9, h * 0.07), color: T.label, letterSpacing: "0.25em" }}>
         {units.speed === "mph" ? "MPH" : "KM/H"}
@@ -195,7 +229,7 @@ function Tyres({ data, w, h, T, units, caps }) {
           const t = tyres[k.toLowerCase()] || {};
           const ti = t.temp_i, tm = t.temp_m, to = t.temp_o;
           const core = t.temp_c ?? (ti != null && tm != null && to != null ? (ti + tm + to) / 3 : null);
-          const tc = tempColor(core, T);
+          const tc = tempGradient(core, T);
           const brake = t.brake_temp;
           const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
           return (
@@ -205,16 +239,16 @@ function Tyres({ data, w, h, T, units, caps }) {
             }}>
               <div className="flex justify-between items-baseline">
                 <span className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
-                <span className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: tempFs * 0.72, color: tc, textShadow: `0 0 10px ${tc}77` }}>{core != null ? Math.round(core) : "--"}°</span>
+                <span className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: tempFs * 0.72, color: tc, textShadow: bloom(tc) }}>{core != null ? Math.round(core) : "--"}°</span>
               </div>
-              {/* 3-point thermal strip: Inner | Middle | Outer */}
+              {/* 3-point thermal strip: smooth gradient Inner → Middle → Outer */}
               <div className="flex gap-0.5 rounded overflow-hidden" style={{ height: Math.max(6, tempFs * 0.4) }}>
                 {[ti, tm, to].map((v, idx) => {
-                  const c = tempColor(v, T);
+                  const c = tempGradient(v, T);
                   return (
                     <div key={idx} className="flex-1 rounded-sm" style={{
-                      background: v != null ? c : "rgba(255,255,255,0.08)",
-                      boxShadow: v != null ? `0 0 6px ${c}88` : "none",
+                      background: v != null ? `linear-gradient(90deg, ${c}, ${c}aa)` : "rgba(255,255,255,0.08)",
+                      boxShadow: v != null ? `0 0 6px ${c}88, inset 0 0 3px rgba(255,255,255,0.3)` : "none",
                     }} />
                   );
                 })}
@@ -230,14 +264,14 @@ function Tyres({ data, w, h, T, units, caps }) {
     );
   }
 
-  // Single core-temp view (existing)
+  // Single core-temp view
   const showDetail = h > 150;
   return (
     <div className="w-full h-full grid grid-cols-2 gap-1 p-1.5">
       {["FL", "FR", "RL", "RR"].map((k) => {
         const t = tyres[k.toLowerCase()];
         const temp = t?.temp_c, pressVal = t?.pressure_psi, wear = t?.wear_pct;
-        const tc = tempColor(temp, T);
+        const tc = tempGradient(temp, T);
         return (
           <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{
             borderColor: T.panelEdge,
@@ -245,8 +279,7 @@ function Tyres({ data, w, h, T, units, caps }) {
           }}>
             <div className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.38), color: T.label, letterSpacing: "0.1em" }}>{k}</div>
             <div className="font-digi font-bold tabular-nums leading-none" style={{
-              fontSize: tempFs, color: tc,
-              textShadow: `0 0 12px ${tc}77, 0 0 24px ${tc}33`,
+              fontSize: tempFs, color: tc, textShadow: bloom(tc),
             }}>{temp != null ? Math.round(temp) : "--"}°</div>
             {showDetail && (
               <>
@@ -287,16 +320,19 @@ function Gear({ data, w, h, T, shape }) {
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
   const gearFs = Math.max(48, Math.min(h * 0.42, w * 0.42));
+  const gearColor = data.gear > 0 ? T.text : T.amber;
+  const gearGlow = shift ? bloom(T.shiftColor, true) : bloom(gearColor);
   const numeral = (
-    <span className="font-digi font-bold tabular-nums relative z-10" style={{
-      fontSize: gearFs, lineHeight: 0.8,
-      color: data.gear > 0 ? T.text : T.amber,
-      textShadow: shift
-        ? `0 0 30px ${T.shiftColor}, 0 0 60px ${T.shiftColor}88, 0 0 90px ${T.shiftColor}44`
-        : `0 0 20px ${T.text}66, 0 0 40px ${T.text}22`,
-    }}>
+    <motion.span
+      key={data.gear}
+      initial={{ scale: 1 }}
+      animate={{ scale: [1, 1.08, 1] }}
+      transition={{ duration: 0.12, ease: "easeOut" }}
+      className="font-digi font-bold tabular-nums relative z-10"
+      style={{ fontSize: gearFs, lineHeight: 0.8, color: gearColor, textShadow: gearGlow }}
+    >
       {data.gear > 0 ? data.gear : "N"}
-    </span>
+    </motion.span>
   );
 
   if (shape === "ring") {
@@ -360,9 +396,9 @@ function Delta({ data, w, h, T, caps }) {
     const secColor = (i) => {
       const s = sectors[i];
       if (s == null) return T.label;
-      if (best[i] != null && s <= best[i]) return PURPLE;       // overall best
-      if (pb[i] != null && s <= pb[i]) return T.ledGreen;       // personal best
-      return T.ledRed;                                           // slower
+      if (best[i] != null && s <= best[i]) return PURPLE;
+      if (pb[i] != null && s <= pb[i]) return T.ledGreen;
+      return T.ledRed;
     };
     const secFs = Math.max(11, Math.min(h * 0.12, w * 0.07));
     return (
@@ -373,7 +409,7 @@ function Delta({ data, w, h, T, caps }) {
             return (
               <div key={lbl} className="rounded border text-center py-0.5" style={{ borderColor: `${c}55`, background: `${c}11` }}>
                 <div className="font-digi" style={{ fontSize: Math.max(7, secFs * 0.5), color: T.label, letterSpacing: "0.1em" }}>{lbl}</div>
-                <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c, textShadow: `0 0 8px ${c}77` }}>
+                <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c, textShadow: bloom(c) }}>
                   {sectors[i] != null ? fmt(sectors[i]) : "--"}
                 </div>
               </div>
@@ -385,8 +421,8 @@ function Delta({ data, w, h, T, caps }) {
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
           <div className="font-digi font-bold tabular-nums leading-none" style={{
-            fontSize: deltaFs, color: tone,
-            textShadow: `0 0 16px ${tone}88, 0 0 32px ${tone}44`,
+            fontSize: deltaFs, color: tone, textShadow: bloom(tone),
+            transition: "color 200ms ease",
           }}>
             {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
           </div>
@@ -395,7 +431,7 @@ function Delta({ data, w, h, T, caps }) {
     );
   }
 
-  // Single lap delta (existing)
+  // Single lap delta
   return (
     <div className="w-full h-full p-2 flex flex-col">
       <Row label="LAST" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
@@ -403,8 +439,8 @@ function Delta({ data, w, h, T, caps }) {
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
         <div className="font-digi font-bold tabular-nums leading-none" style={{
-          fontSize: deltaFs, color: tone,
-          textShadow: `0 0 16px ${tone}88, 0 0 32px ${tone}44`,
+          fontSize: deltaFs, color: tone, textShadow: bloom(tone),
+          transition: "color 200ms ease",
         }}>
           {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
         </div>
@@ -424,10 +460,14 @@ function Laps({ data, color, w, h, T }) {
           <Row label="TIME REM" value={data.time_remaining != null ? `${Math.floor(data.time_remaining / 60)}:${String(Math.floor(data.time_remaining % 60)).padStart(2, "0")}` : "--:--"} lcolor={T.label} vcolor={T.text} />
           <div className="flex-1 flex flex-col items-center justify-center">
             <div className="font-digi" style={{ fontSize: Math.max(8, curFs * 0.3), color: T.label, letterSpacing: "0.15em" }}>CURRENT LAP</div>
-            <div className="font-digi font-bold tabular-nums leading-none" style={{
-              fontSize: curFs, color,
-              textShadow: `0 0 14px ${color}77`,
-            }}>{fmt(data.current_lap_time)}</div>
+            <motion.div
+              key={data.lap}
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="font-digi font-bold tabular-nums leading-none"
+              style={{ fontSize: curFs, color, textShadow: bloom(color) }}
+            >{fmt(data.current_lap_time)}</motion.div>
           </div>
         </>
       ) : (
@@ -449,15 +489,13 @@ function Cars({ data, w, h, T }) {
       <div>
         <Title T={T}>CAR AHEAD</Title>
         <div className="font-digi font-bold tabular-nums leading-none" style={{
-          fontSize: fs, color: T.ledGreen,
-          textShadow: `0 0 12px ${T.ledGreen}77, 0 0 24px ${T.ledGreen}33`,
+          fontSize: fs, color: T.ledGreen, textShadow: bloom(T.ledGreen),
         }}>{gap(data.car_ahead_gap)}</div>
       </div>
       <div>
         <Title T={T}>CAR BEHIND</Title>
         <div className="font-digi font-bold tabular-nums leading-none" style={{
-          fontSize: fs, color: T.ledRed,
-          textShadow: `0 0 12px ${T.ledRed}77, 0 0 24px ${T.ledRed}33`,
+          fontSize: fs, color: T.ledRed, textShadow: bloom(T.ledRed),
         }}>{gap(data.car_behind_gap)}</div>
       </div>
     </div>
@@ -522,23 +560,24 @@ function Inputs({ data, color, w, h, T, shape }) {
 }
 
 function Status({ data, color, w, h, T }) {
+  // Weighted flex: POS gets priority, TC/ABS/MAP get smaller cells
   const items = [
-    ["POS", `P${data.position || 0}`, null],
-    ["THR", `${Math.round((data.throttle || 0) * 100)}`, T.ledGreen],
-    ["BST", data.boost != null ? data.boost.toFixed(1) : "--", null],
-    ["INC", `${data.incidents || 0}`, T.ledYellow],
-    ["BBI", data.brake_bias != null ? data.brake_bias.toFixed(0) : "--", T.ledRed],
-    ["TC1", data.tc1 != null ? data.tc1 : "--", color],
-    ["TC2", data.tc2 != null ? data.tc2 : "--", null],
-    ["ABS", data.abs != null ? data.abs : "--", T.blue],
-    ["MAP", data.map != null ? data.map : "--", T.ledGreen],
+    ["POS", `P${data.position || 0}`, null, 1.4],
+    ["THR", `${Math.round((data.throttle || 0) * 100)}`, T.ledGreen, 1.0],
+    ["BST", data.boost != null ? data.boost.toFixed(1) : "--", null, 1.0],
+    ["INC", `${data.incidents || 0}`, T.ledYellow, 1.0],
+    ["BBI", data.brake_bias != null ? data.brake_bias.toFixed(0) : "--", T.ledRed, 1.0],
+    ["TC1", data.tc1 != null ? data.tc1 : "--", color, 0.7],
+    ["TC2", data.tc2 != null ? data.tc2 : "--", null, 0.7],
+    ["ABS", data.abs != null ? data.abs : "--", T.blue, 0.7],
+    ["MAP", data.map != null ? data.map : "--", T.ledGreen, 0.7],
   ];
   return (
     <div className="w-full h-full flex gap-1 p-1">
-      {items.map(([l, v, b]) => (
-        <div key={l} className="flex-1 rounded border flex flex-col items-center justify-center" style={{
-          borderColor: b || T.panelEdge, background: T.panel,
-          boxShadow: b ? `inset 0 0 0 1px ${b}33` : "none",
+      {items.map(([l, v, b, fl]) => (
+        <div key={l} className="rounded border flex flex-col items-center justify-center" style={{
+          flex: fl, borderColor: b || T.panelEdge, background: T.panel,
+          boxShadow: b ? `inset 0 0 0 1px ${b}33, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.04)",
         }}>
           <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{l}</div>
           <div className="font-digi font-bold tabular-nums" style={{ fontSize: "1.05em", color: b || T.text }}>{v}</div>

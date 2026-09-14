@@ -4,7 +4,7 @@ import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { useCustomLayout } from "@/hooks/useCustomLayout";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
 import WidgetPicker from "@/components/live/WidgetPicker";
-import { renderWidget } from "@/components/live/dashboardWidgets";
+import { renderWidget, panelBevel } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
 import { deriveCapabilities } from "@/lib/dashboardCapabilities";
 import DashboardCustomizer from "@/components/live/DashboardCustomizer";
@@ -187,7 +187,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                           fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
                           border: editing ? `1px dashed ${accent}` : `1px solid ${theme.panelEdge}`,
                           background: theme.panel,
-                          boxShadow: editing ? "none" : `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
+                          boxShadow: editing ? "none" : panelBevel(theme),
                           cursor: editing ? "pointer" : "default",
                         }}
                         onClick={editing ? () => setPickerSlot({ id: w.id, currentType: effectiveType }) : undefined}
@@ -198,8 +198,15 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
                           </div>
                         )}
                         {isEmpty ? (
-                          <div className="w-full h-full flex items-center justify-center" style={{ opacity: 0.5 }}>
-                            {editing && <Plus className="w-6 h-6" style={{ color: theme.label }} />}
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5" style={{ opacity: 0.4 }}>
+                            {editing && (
+                              <>
+                                <div className="rounded-full p-2" style={{ border: `1px dashed ${theme.label}`, opacity: 0.6 }}>
+                                  <Plus className="w-4 h-4" style={{ color: theme.label }} />
+                                </div>
+                                <span className="font-digi" style={{ fontSize: 8, color: theme.label, letterSpacing: "0.1em" }}>TAP TO ASSIGN</span>
+                              </>
+                            )}
                           </div>
                         ) : (
                           <div className="w-full h-full" style={{ opacity: editing ? 0.6 : 1 }}>

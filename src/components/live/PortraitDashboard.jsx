@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { renderWidget, WIDGET_DEFS } from "@/components/live/dashboardWidgets";
+import { renderWidget, WIDGET_DEFS, panelBevel } from "@/components/live/dashboardWidgets";
 import { PORTRAIT_LAYOUT } from "@/lib/dashboardVariants";
 
 /**
@@ -57,7 +57,7 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
               minHeight: 0,
               border: editing ? `1px dashed ${accent}` : `1px solid ${theme.panelEdge}`,
               background: theme.panel,
-              boxShadow: editing ? "none" : `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
+              boxShadow: editing ? "none" : panelBevel(theme),
               cursor: editing ? "pointer" : "default",
             }}
             onClick={editing && onSlotTap ? () => onSlotTap(slotId, effectiveType) : undefined}
@@ -68,8 +68,15 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
               </div>
             )}
             {isEmpty ? (
-              <div className="w-full h-full flex items-center justify-center" style={{ opacity: 0.5 }}>
-                {editing && <Plus className="w-6 h-6" style={{ color: theme.label }} />}
+              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5" style={{ opacity: 0.4 }}>
+                {editing && (
+                  <>
+                    <div className="rounded-full p-2" style={{ border: `1px dashed ${theme.label}`, opacity: 0.6 }}>
+                      <Plus className="w-4 h-4" style={{ color: theme.label }} />
+                    </div>
+                    <span className="font-digi" style={{ fontSize: 8, color: theme.label, letterSpacing: "0.1em" }}>TAP TO ASSIGN</span>
+                  </>
+                )}
               </div>
             ) : (
               <div className="w-full h-full" style={{ fontSize: `${Math.max(10, Math.min(20, itemH * 0.06))}px`, opacity: editing ? 0.6 : 1 }}>
