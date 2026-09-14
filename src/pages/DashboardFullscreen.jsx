@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Radio, Maximize, Minimize, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Radio, Maximize, Minimize, X, ArrowLeft } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 
@@ -14,6 +15,7 @@ export default function DashboardFullscreen() {
   const [showPrompt, setShowPrompt] = useState(true);
   const [isFs, setIsFs] = useState(false);
   const fsDoneRef = useRef(false);
+  const navigate = useNavigate();
 
   // Track browser fullscreen state so we can show an exit button
   useEffect(() => {
@@ -22,9 +24,10 @@ export default function DashboardFullscreen() {
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  const exitFullscreen = async () => {
+  const toggleFullscreen = async () => {
     try {
-      if (document.fullscreenElement) await document.exitFullscreen?.();
+      if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+      else await document.exitFullscreen?.();
     } catch { /* ignore */ }
   };
 
@@ -107,16 +110,23 @@ export default function DashboardFullscreen() {
         )}
       </div>
 
-      {/* Exit-fullscreen button — visible once in browser fullscreen */}
-      {isFs && (
+      {/* Floating controls — always visible */}
+      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
         <button
-          onClick={exitFullscreen}
-          className="fixed top-4 right-4 z-50 flex items-center gap-1.5 rounded-full bg-black/80 border border-white/15 backdrop-blur px-3 py-1.5 text-xs text-foreground shadow-lg hover:bg-black/90"
+          onClick={() => navigate("/live-telemetry")}
+          className="flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 backdrop-blur px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-white/20 transition-colors"
         >
-          <Minimize className="w-3.5 h-3.5" />
-          <span>Exit fullscreen</span>
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to app</span>
         </button>
-      )}
+        <button
+          onClick={toggleFullscreen}
+          className="flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 backdrop-blur px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-white/20 transition-colors"
+        >
+          {isFs ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+          <span>{isFs ? "Exit fullscreen" : "Fullscreen"}</span>
+        </button>
+      </div>
 
       {/* Auto-fullscreen prompt — dismissible, non-blocking */}
       {showPrompt && (
