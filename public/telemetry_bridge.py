@@ -471,9 +471,15 @@ class ACCProvider:
             "air_temp": round(getattr(ph, "air_temp", 0) or 0, 1) or None,
             "track_temp": round(getattr(ph, "road_temp", 0) or 0, 1) or None,
             "tc1": getattr(g, "tc_level", None),
+            "tc2": getattr(g, "tc_cut_level", None),
             "abs": getattr(g, "abs_level", None),
-            "map": getattr(g, "engine_map", None),
-            "brake_bias": round(getattr(ph, "brake_bias", 0) or 0, 1) or None,
+            "map": (lambda m: int(m) + 1 if m is not None else None)(getattr(g, "engine_map", None)),
+            "brake_bias": (lambda bb: round(bb * 100, 1) if bb and bb <= 1.5 else (round(bb, 1) if bb else None))(getattr(ph, "brake_bias", 0) or 0),
+            "boost": round(getattr(ph, "turbo_boost", 0) or 0, 2) or None,
+            "lap_delta": (lambda d, p: round(d / 1000.0, 3) * (1 if p else -1) if d else None)(getattr(g, "delta_lap_time", 0) or 0, getattr(g, "is_delta_positive", False)),
+            "car_ahead_gap": (lambda v: round(v / 1000.0, 3) if v and v > 0 else None)(getattr(g, "gap_ahead", 0) or 0),
+            "car_behind_gap": (lambda v: round(v / 1000.0, 3) if v and v > 0 else None)(getattr(g, "gap_behind", 0) or 0),
+            "time_remaining": round(getattr(g, "session_time_left", 0) or 0, 1) or None,
             "tyres": tyres,
         })
         return f
@@ -1579,7 +1585,7 @@ function buildSwitcher(){
   const s=$('switcher');s.innerHTML='';
   for(const v of VARIANTS){const chip=document.createElement('button');chip.className='chip'+(v.id===active.id?' active':'');chip.innerHTML='<span class="dot" style="background:'+v.theme.accent+';color:'+v.theme.accent+'"></span><span>'+v.name+'</span>';chip.onclick=()=>{active=VARIANTS.find(x=>x.id===v.id);localStorage.setItem('dashVariant',v.id);buildLayout();buildSwitcher();fit();if(lastData)renderFrame(lastData);showSwitcher();};s.appendChild(chip);}
 }
-function fit(){const wrap=$('canvas-wrap');if(!wrap)return;const aw=wrap.clientWidth,ah=wrap.clientHeight;if(!aw||!ah)return;const sc=Math.max(0.1,Math.min(aw/1000,ah/560));$('canvas').style.transform='translate(-50%,-50%) scale('+sc+')';}
+function fit(){const wrap=$('canvas-wrap');if(!wrap)return;let aw=wrap.clientWidth,ah=wrap.clientHeight;if(!ah){const scr=$('screen');if(scr){ah=scr.clientHeight;const hdr=$('header');if(hdr)ah-=hdr.offsetHeight;}}if(!ah||ah<0)ah=(window.visualViewport?window.visualViewport.height:window.innerHeight)-40;if(!aw)aw=window.innerWidth-8;if(!aw||!ah)return;const sc=Math.max(0.1,Math.min(aw/1000,ah/560));$('canvas').style.transform='translate(-50%,-50%) scale('+sc+')';}
 function buildLeds(){for(const id of ['leds-l','leds-r']){const c=$(id);c.innerHTML='';for(let i=0;i<4;i++){const d=document.createElement('div');d.className='led-dot'+(i===0?'':' dim');c.appendChild(d);}}}
 function clock(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
 setInterval(()=>{$('h-clock').textContent=clock();},1000);
