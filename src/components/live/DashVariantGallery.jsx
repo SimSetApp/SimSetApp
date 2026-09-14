@@ -1,29 +1,11 @@
 function MiniShift({ theme, shape }) {
   const seg = (i) => (i < 5 ? theme.ledGreen : i < 10 ? theme.ledYellow : theme.ledRed);
-  const cells = Array.from({ length: 9 });
-  if (shape === "arc") {
-    return (
-      <div className="flex gap-0.5 h-2.5 items-center justify-center">
-        {cells.map((_, i) => (
-          <div key={i} className="rounded-full" style={{ width: 4, height: 4, background: i < 6 ? seg(i) : "rgba(255,255,255,0.14)" }} />
-        ))}
-      </div>
-    );
-  }
-  if (shape === "ring") {
-    return (
-      <div className="flex gap-0.5 h-2.5 items-end">
-        {cells.map((_, i) => (
-          <div key={i} className="flex-1 rounded-sm" style={{ height: "70%", background: i < 6 ? seg(i) : "rgba(255,255,255,0.12)" }} />
-        ))}
-      </div>
-    );
-  }
-  // led — round dots
+  const cells = Array.from({ length: 12 });
+  if (shape === "ring") return null;
   return (
-    <div className="flex gap-0.5 h-2.5 items-center">
+    <div className="flex gap-0.5 h-2 items-center">
       {cells.map((_, i) => (
-        <div key={i} className="flex-1 rounded-full" style={{ aspectRatio: "1", height: "80%", background: i < 6 ? seg(i) : "rgba(255,255,255,0.14)" }} />
+        <div key={i} className="flex-1 rounded-sm" style={{ height: "80%", background: i < 7 ? seg(i) : "rgba(255,255,255,0.12)" }} />
       ))}
     </div>
   );
@@ -33,12 +15,22 @@ function MiniMock({ theme, shape }) {
   if (shape === "ring") {
     return (
       <div className="w-full h-full flex items-center justify-center" style={{ background: theme.bg }}>
-        <div className="relative" style={{ width: "62%", aspectRatio: "1" }}>
+        <div className="relative" style={{ width: "58%", aspectRatio: "1" }}>
           <svg viewBox="0 0 100 100" className="w-full h-full">
-            <circle cx="50" cy="50" r="44" fill="none" stroke={theme.panelEdge} strokeWidth="4" />
-            <circle cx="50" cy="50" r="44" fill="none" stroke={theme.accent} strokeWidth="4" strokeDasharray="200 360" strokeLinecap="round" transform="rotate(-90 50 50)" style={{ filter: `drop-shadow(0 0 2px ${theme.accent})` }} />
+            {Array.from({ length: 24 }).map((_, i) => {
+              const frac = i / 24;
+              const ang = (frac * 360 - 90) * Math.PI / 180;
+              const lit = frac < 0.7;
+              const col = frac < 0.6 ? theme.ledGreen : frac < 0.85 ? theme.ledYellow : theme.ledRed;
+              return (
+                <line key={i} x1={50 + 44 * Math.cos(ang)} y1={50 + 44 * Math.sin(ang)}
+                  x2={50 + 48 * Math.cos(ang)} y2={50 + 48 * Math.sin(ang)}
+                  stroke={lit ? col : theme.dim} strokeWidth="2" strokeLinecap="round" />
+              );
+            })}
+            <circle cx="50" cy="50" r="40" fill="none" stroke={theme.panelEdge} strokeWidth="1" />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center font-bold font-digi leading-none" style={{ color: theme.text, fontSize: 17 }}>3</div>
+          <div className="absolute inset-0 flex items-center justify-center font-bold font-digi leading-none" style={{ color: theme.text, fontSize: 16 }}>3</div>
         </div>
       </div>
     );
@@ -77,7 +69,11 @@ export default function DashVariantGallery({ variants, activeId, onSelect }) {
             aria-label={`Select ${v.name}`}
             aria-pressed={active}
           >
-            <div className="rounded-lg overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+            <div className="rounded-lg overflow-hidden m-0.5" style={{
+              aspectRatio: "16 / 9",
+              border: "2px solid #1a1a1a",
+              boxShadow: "inset 0 1px 2px rgba(255,255,255,0.08), inset 0 -1px 3px rgba(0,0,0,0.5)",
+            }}>
               <MiniMock theme={v.theme} shape={v.shape} />
             </div>
             <div className="text-[10px] font-heading font-medium text-center py-1 text-foreground truncate px-1">{v.name}</div>

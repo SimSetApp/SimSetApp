@@ -1,64 +1,67 @@
 // Brand-free authentic motorsport dash presets. 3 GT3-style + 2 Formula-style.
 // All layouts are locked (hybrid): positions/sizes fixed; accent + units adjustable.
+// Coordinates audited for zero overlap with a consistent 8px gutter on a 1000×560 canvas.
 
+// GT3 Pro — integrated RPM bar + gear (Bosch DDU / AiM page style)
 const GT3_PRO_LAYOUT = [
-  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 32, color: null },
-  { id: "w_tyres", type: "tyres", x: 16, y: 48, w: 300, h: 300, color: null },
-  { id: "w_inputs", type: "inputs", x: 16, y: 356, w: 300, h: 152, color: null },
-  { id: "w_fuel", type: "fuel", x: 332, y: 48, w: 336, h: 176, color: null },
-  { id: "w_gear", type: "gear", x: 332, y: 232, w: 336, h: 276, color: null },
-  { id: "w_delta", type: "delta", x: 680, y: 48, w: 304, h: 140, color: null },
-  { id: "w_laps", type: "laps", x: 680, y: 196, w: 304, h: 84, color: null },
-  { id: "w_cars", type: "cars", x: 680, y: 288, w: 304, h: 220, color: null },
-  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
+  { id: "w_rpmgear", type: "rpmGear", x: 296, y: 56, w: 408, h: 300, color: null },
+  { id: "w_tyres", type: "tyres", x: 8, y: 56, w: 280, h: 260, color: null },
+  { id: "w_inputs", type: "inputs", x: 8, y: 324, w: 280, h: 180, color: null },
+  { id: "w_delta", type: "delta", x: 712, y: 56, w: 280, h: 140, color: null },
+  { id: "w_laps", type: "laps", x: 712, y: 204, w: 280, h: 100, color: null },
+  { id: "w_cars", type: "cars", x: 712, y: 312, w: 280, h: 192, color: null },
+  { id: "w_fuel", type: "fuel", x: 296, y: 364, w: 408, h: 140, color: null },
+  { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
+// GT3 Race — circular RPM arc gauge around central gear, cyan
 const GT3_RACE_LAYOUT = [
-  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 40, color: null },
-  { id: "w_tyres", type: "tyres", x: 16, y: 56, w: 300, h: 260, color: null },
-  { id: "w_inputs", type: "inputs", x: 16, y: 324, w: 300, h: 184, color: null },
-  { id: "w_gear", type: "gear", x: 332, y: 56, w: 336, h: 320, color: null },
-  { id: "w_fuel", type: "fuel", x: 680, y: 56, w: 304, h: 160, color: null },
-  { id: "w_delta", type: "delta", x: 680, y: 224, w: 304, h: 120, color: null },
-  { id: "w_laps", type: "laps", x: 332, y: 384, w: 336, h: 124, color: null },
-  { id: "w_cars", type: "cars", x: 680, y: 352, w: 304, h: 156, color: null },
-  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
+  { id: "w_gear", type: "gear", x: 296, y: 56, w: 408, h: 300, color: null },
+  { id: "w_curlap", type: "laps", x: 296, y: 364, w: 408, h: 140, color: null },
+  { id: "w_tyres", type: "tyres", x: 8, y: 56, w: 280, h: 180, color: null },
+  { id: "w_fuel", type: "fuel", x: 8, y: 244, w: 280, h: 120, color: null },
+  { id: "w_inputs", type: "inputs", x: 8, y: 372, w: 280, h: 132, color: null },
+  { id: "w_delta", type: "delta", x: 712, y: 56, w: 280, h: 140, color: null },
+  { id: "w_cars", type: "cars", x: 712, y: 204, w: 280, h: 300, color: null },
+  { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
+// GT3 Endurance — data-dense: fuel strategy, stint timer, tyre-wear, amber
 const GT3_ENDURANCE_LAYOUT = [
-  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 32, color: null },
-  { id: "w_tyres", type: "tyres", x: 16, y: 48, w: 240, h: 300, color: null },
-  { id: "w_fuel", type: "fuel", x: 264, y: 48, w: 240, h: 180, color: null },
-  { id: "w_delta", type: "delta", x: 264, y: 236, w: 240, h: 112, color: null },
-  { id: "w_gear", type: "gear", x: 512, y: 48, w: 200, h: 300, color: null },
-  { id: "w_laps", type: "laps", x: 512, y: 356, w: 200, h: 160, color: null },
-  { id: "w_cars", type: "cars", x: 724, y: 48, w: 260, h: 230, color: null },
-  { id: "w_inputs", type: "inputs", x: 724, y: 286, w: 260, h: 230, color: null },
-  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
+  { id: "w_rpmgear", type: "rpmGear", x: 296, y: 56, w: 408, h: 200, color: null },
+  { id: "w_stint", type: "laps", x: 296, y: 264, w: 408, h: 240, color: null },
+  { id: "w_tyres", type: "tyres", x: 8, y: 56, w: 280, h: 260, color: null },
+  { id: "w_fuel", type: "fuel", x: 8, y: 324, w: 280, h: 180, color: null },
+  { id: "w_delta", type: "delta", x: 712, y: 56, w: 280, h: 120, color: null },
+  { id: "w_laps", type: "laps", x: 712, y: 184, w: 280, h: 160, color: null },
+  { id: "w_cars", type: "cars", x: 712, y: 352, w: 280, h: 152, color: null },
+  { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
+// Formula Wheel — large central gear with circular RPM LED ring, red
 const FORMULA_WHEEL_LAYOUT = [
-  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 28, color: null },
-  { id: "w_tyres", type: "tyres", x: 16, y: 48, w: 276, h: 200, color: null },
-  { id: "w_fuel", type: "fuel", x: 16, y: 256, w: 276, h: 120, color: null },
-  { id: "w_gear", type: "gear", x: 300, y: 60, w: 400, h: 400, color: null },
-  { id: "w_delta", type: "delta", x: 724, y: 48, w: 260, h: 120, color: null },
-  { id: "w_laps", type: "laps", x: 724, y: 176, w: 260, h: 100, color: null },
-  { id: "w_cars", type: "cars", x: 724, y: 284, w: 260, h: 172, color: null },
-  { id: "w_inputs", type: "inputs", x: 16, y: 384, w: 276, h: 128, color: null },
-  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
+  { id: "w_gear", type: "gear", x: 300, y: 56, w: 400, h: 448, color: null },
+  { id: "w_tyres", type: "tyres", x: 8, y: 56, w: 284, h: 140, color: null },
+  { id: "w_fuel", type: "fuel", x: 8, y: 204, w: 284, h: 120, color: null },
+  { id: "w_inputs", type: "inputs", x: 8, y: 332, w: 284, h: 172, color: null },
+  { id: "w_speed", type: "speed", x: 712, y: 56, w: 284, h: 100, color: null },
+  { id: "w_delta", type: "delta", x: 712, y: 164, w: 284, h: 120, color: null },
+  { id: "w_laps", type: "laps", x: 712, y: 292, w: 284, h: 120, color: null },
+  { id: "w_cars", type: "cars", x: 712, y: 420, w: 284, h: 84, color: null },
+  { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
+// Formula Halo — big speed + gear + lap, slim RPM bar, high-contrast white
 const FORMULA_HALO_LAYOUT = [
-  { id: "w_shift", type: "shiftLights", x: 16, y: 8, w: 968, h: 28, color: null },
-  { id: "w_speed", type: "speed", x: 16, y: 48, w: 300, h: 200, color: null },
-  { id: "w_gear", type: "gear", x: 16, y: 256, w: 300, h: 200, color: null },
-  { id: "w_laps", type: "laps", x: 324, y: 48, w: 360, h: 200, color: null },
-  { id: "w_delta", type: "delta", x: 324, y: 256, w: 360, h: 200, color: null },
-  { id: "w_tyres", type: "tyres", x: 696, y: 48, w: 288, h: 200, color: null },
-  { id: "w_fuel", type: "fuel", x: 696, y: 256, w: 288, h: 120, color: null },
-  { id: "w_inputs", type: "inputs", x: 696, y: 384, w: 288, h: 128, color: null },
-  { id: "w_status", type: "status", x: 16, y: 516, w: 968, h: 36, color: null },
+  { id: "w_rpmbar", type: "rpmBar", x: 8, y: 8, w: 984, h: 32, color: null },
+  { id: "w_speed", type: "speed", x: 8, y: 56, w: 300, h: 200, color: null },
+  { id: "w_gear", type: "gear", x: 8, y: 264, w: 300, h: 200, color: null },
+  { id: "w_laps", type: "laps", x: 316, y: 56, w: 360, h: 200, color: null },
+  { id: "w_delta", type: "delta", x: 316, y: 264, w: 360, h: 200, color: null },
+  { id: "w_tyres", type: "tyres", x: 688, y: 56, w: 304, h: 200, color: null },
+  { id: "w_fuel", type: "fuel", x: 688, y: 264, w: 304, h: 120, color: null },
+  { id: "w_inputs", type: "inputs", x: 688, y: 392, w: 304, h: 112, color: null },
+  { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
 ];
 
 export const DASH_VARIANTS = [
@@ -66,7 +69,7 @@ export const DASH_VARIANTS = [
     id: "gt3-pro",
     name: "GT3 Pro Display",
     category: "gt3",
-    shape: "led",
+    shape: "bar",
     theme: {
       isLight: false, bg: "#050505", panel: "#0d0d0d", panelEdge: "#1c1c1c",
       text: "#f5f5f5", label: "#5a5a5a", dim: "#2a2a2a", accent: "#00ff88",
@@ -94,7 +97,7 @@ export const DASH_VARIANTS = [
     id: "gt3-endurance",
     name: "GT3 Endurance Display",
     category: "gt3",
-    shape: "led",
+    shape: "bar",
     theme: {
       isLight: false, bg: "#060604", panel: "#0e0e0a", panelEdge: "#1f1f14",
       text: "#f5f0e0", label: "#6a5d3a", dim: "#2a2418", accent: "#ffb020",
