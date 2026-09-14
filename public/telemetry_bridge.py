@@ -462,7 +462,7 @@ class ACCProvider:
             "speed_kmh": round(getattr(ph, "speed_kmh", 0) or 0, 1),
             "rpm": int(getattr(ph, "rpm", 0) or 0),
             "max_rpm": int(getattr(st, "max_rpm", 8000) or 8000),
-            "gear": int(getattr(ph, "gear", 0) or 0),
+            "gear": (lambda r: -1 if r <= 0 else (0 if r == 1 else r - 1))(int(getattr(ph, "gear", 0) or 0)),
             "throttle": round(getattr(ph, "gas", 0) or 0, 2),
             "brake": round(getattr(ph, "brake", 0) or 0, 2),
             "steer": round(getattr(ph, "steer_angle", 0) or 0, 2),
@@ -540,7 +540,7 @@ class AssettoCorsaProvider:
             "speed_kmh": round(_b(p.speedKmh, 0, 600), 1) if _b(p.speedKmh, 0, 600) is not None else 0,
             "rpm": int(_b(p.rpms, 0, 20000) or 0),
             "max_rpm": 8000,
-            "gear": int(p.gear),
+            "gear": (lambda r: -1 if r <= 0 else (0 if r == 1 else r - 1))(int(p.gear)),
             "throttle": round(_b(p.gas, 0, 1.1) or 0, 2),
             "brake": round(_b(p.brake, 0, 1.1) or 0, 2),
             "steer": round(max(-1.0, min(1.0, p.steerAngle)), 2),
@@ -1426,6 +1426,10 @@ def dashboard_html():
   #dash{max-width:520px;margin:0 auto;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
   .top-bar{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.08em;color:#888;border-bottom:1px solid #1a1a1a;padding-bottom:8px}
   #pos{color:#22c55e}
+  #conn{font-size:10px;padding:1px 6px;border-radius:4px;border:1px solid #333;color:#888;letter-spacing:.06em}
+  #conn.live{color:#22c55e;border-color:#22c55e}
+  #conn.connecting{color:#eab308;border-color:#eab308}
+  #conn.failed{color:#ef4444;border-color:#ef4444}
   .main-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
   .gear{font-family:'Orbitron';font-weight:900;font-size:84px;line-height:1;color:#fff;text-shadow:0 0 18px rgba(255,255,255,.35);min-width:90px;text-align:center}
   .speed{font-family:'Orbitron';font-weight:700;text-align:right}
@@ -1453,6 +1457,8 @@ def dashboard_html():
   .tyre .pos{font-size:10px;color:#777;letter-spacing:.1em}
   .tyre .temp{font-family:'Orbitron';font-weight:700;font-size:22px;line-height:1.1}
   .tyre .wear{font-size:11px;color:#888;margin-top:2px}
+  .strip{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;text-align:center;font-size:10px;color:#777;border:1px solid #1a1a1a;border-radius:8px;padding:8px 4px;background:#0a0a0a}
+  .strip span{display:block;font-family:'Orbitron';font-weight:700;font-size:14px;color:#ddd;margin-top:2px}
   .bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center;font-size:11px;color:#777;border-top:1px solid #1a1a1a;padding-top:10px}
   .bottom span{display:block;font-family:'Orbitron';font-weight:700;font-size:16px;color:#fff;margin-top:2px}
   #delta.pos{color:#22c55e}#delta.neg{color:#ef4444}
@@ -1466,7 +1472,7 @@ def dashboard_html():
 </head>
 <body>
 <div id="dash">
-  <div class="top-bar"><span id="sim">&mdash;</span><span id="track">&mdash;</span><span id="pos">P&mdash;</span></div>
+  <div class="top-bar"><span id="sim">&mdash;</span><span id="track">&mdash;</span><span id="conn">CONNECTING</span><span id="pos">P&mdash;</span></div>
   <div class="main-row">
     <div class="gear"><span id="gear">N</span></div>
     <div class="speed"><span id="speed">0</span><small>km/h</small></div>
@@ -1481,6 +1487,7 @@ def dashboard_html():
     <div class="bar"><label>BRK</label><div class="track"><div id="brk"></div></div></div>
   </div>
   <div class="tyres" id="tyres"></div>
+  <div class="strip" id="strip"></div>
   <div class="bottom">
     <div>LAP<span id="lap">&mdash;</span></div>
     <div>LAST<span id="last">&mdash;</span></div>
@@ -1497,19 +1504,21 @@ def dashboard_html():
 <script>
 const $=id=>document.getElementById(id);
 const NLEDS=10;
-let ws=null,waitingEl=$('waiting'),dashEl=$('dash');
+let ws=null,waitingEl=$('waiting'),dashEl=$('dash'),failCount=0,wsUrl='ws://'+location.host+'/ws';
 function fmt(t){if(t==null||isNaN(t))return'--:--.---';const m=Math.floor(t/60),s=Math.floor(t%60),ms=Math.round((t%1)*1000);return m+':'+String(s).padStart(2,'0')+'.'+String(ms).padStart(3,'0');}
 function tyreColor(t){if(t==null)return'#555';if(t<70)return'#3b82f6';if(t<82)return'#22c55e';if(t<92)return'#eab308';if(t<100)return'#f59e0b';return'#ef4444';}
 function renderLeds(rpm,max){const r=max?rpm/max:0;let h='';for(let i=1;i<=NLEDS;i++){const on=r>=i/NLEDS;const c=i<=5?'#22c55e':i<=7?'#eab308':i<=9?'#f59e0b':'#ef4444';const flash=r>=0.95&&i>=10;h+='<div class="led '+(on?'on':'')+' '+(flash?'flash':'')+'" style="--c:'+c+'"></div>';}$('leds').innerHTML=h;}
 function renderTyres(ty){const order=['fl','fr','rl','rr'];const labels=['FL','FR','RL','RR'];let h='';for(let i=0;i<4;i++){const k=order[i];const t=ty&&ty[k];const temp=t?t.temp_c:null;const wear=t?t.wear_pct:null;const col=tyreColor(temp);h+='<div class="tyre"><div class="pos">'+labels[i]+'</div><div class="temp" style="color:'+col+'">'+(temp!=null?Math.round(temp)+'°C':'--')+'</div><div class="wear">'+(wear!=null?'Wear '+Math.round(wear)+'%':'')+'</div></div>';}$('tyres').innerHTML=h;}
+function renderStrip(d){const f=[['AIR',d.air_temp!=null?d.air_temp.toFixed(1)+'°':'--'],['TRK',d.track_temp!=null?d.track_temp.toFixed(1)+'°':'--'],['TC',d.tc1!=null?d.tc1:'--'],['ABS',d.abs!=null?d.abs:'--'],['MAP',d.map!=null?d.map:'--'],['BBIAS',d.brake_bias!=null?d.brake_bias.toFixed(0)+'%':'--']];$('strip').innerHTML=f.map(x=>'<div>'+x[0]+'<span>'+x[1]+'</span></div>').join('');}
+function connStatus(s){const el=$('conn');el.textContent=s;el.className=s.toLowerCase().replace(/[^a-z]/g,'');}
 function render(d){
   $('sim').textContent=d.sim||'—';$('track').textContent=d.track||'—';$('pos').textContent=d.position?('P'+d.position):'P—';
-  $('gear').textContent=d.gear!=null?(d.gear==0?'N':d.gear):'N';
+  $('gear').textContent=d.gear!=null?(d.gear<0?'R':(d.gear==0?'N':d.gear)):'N';
   $('speed').textContent=d.speed_kmh!=null?Math.round(d.speed_kmh):'0';
   const max=d.max_rpm||8000;$('rpm').textContent=d.rpm||0;$('maxrpm').textContent=max;
   const r=max?(d.rpm||0)/max:0;$('rpm-fill').style.width=(Math.min(1,r)*100)+'%';renderLeds(d.rpm||0,max);
   $('thr').style.width=((d.throttle||0)*100)+'%';$('brk').style.width=((d.brake||0)*100)+'%';
-  renderTyres(d.tyres);
+  renderTyres(d.tyres);renderStrip(d);connStatus('LIVE');
   $('lap').textContent=(d.lap||'—')+'/'+(d.total_laps||'—');
   $('last').textContent=d.last_lap_time!=null?fmt(d.last_lap_time):'—';
   $('best').textContent=d.best_lap_time!=null?fmt(d.best_lap_time):'—';
@@ -1517,12 +1526,13 @@ function render(d){
   $('fuel').textContent=d.fuel_litres!=null?Math.round(d.fuel_litres)+'L':'—';
   waitingEl.classList.add('hidden');dashEl.classList.remove('hidden');
 }
-function showWaiting(msg){$('waiting').querySelector('h2').textContent=msg||'Waiting for your sim…';waitingEl.classList.remove('hidden');dashEl.classList.add('hidden');}
+function showWaiting(msg){$('waiting').innerHTML='<div class="pulse"></div><h2>'+(msg||'Waiting for your sim…')+'</h2><p>Launch your sim and start a session — the dashboard lights up automatically.</p>';connStatus('CONNECTING');waitingEl.classList.remove('hidden');dashEl.classList.add('hidden');}
+function showFailed(){connStatus('FAILED');$('waiting').innerHTML='<h2 style="color:#ef4444">Can\'t reach the bridge</h2><p style="margin-bottom:14px">Target: <code style="color:#eab308">'+wsUrl+'</code></p><div style="text-align:left;max-width:340px;margin:0 auto;font-size:13px;color:#999;line-height:1.8"><div>1. Is the bridge running on your PC?</div><div>2. Is this phone on the same WiFi as the PC?</div><div>3. Does Windows Firewall allow inbound TCP '+location.port+'?</div><div>4. Is the IP in the URL correct for your PC?</div></div><p style="margin-top:16px;color:#666;font-size:12px">Retrying in background…</p>';waitingEl.classList.remove('hidden');dashEl.classList.add('hidden');}
 function connect(){
-  try{ws=new WebSocket('ws://'+location.host+'/ws');}catch(e){setTimeout(connect,2000);return;}
+  try{ws=new WebSocket(wsUrl);}catch(e){failCount++;if(failCount>=3)showFailed();setTimeout(connect,2000);return;}
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data);}catch{return;}if(m.type==='telemetry')render(m);else if(m.type==='status'){if(m.detected)showWaiting((m.sim||'Sim')+' detected — start a session');else showWaiting();}};
-  ws.onopen=()=>showWaiting('Connected — waiting for your sim…');
-  ws.onclose=()=>{showWaiting('Reconnecting…');setTimeout(connect,2000);};
+  ws.onopen=()=>{failCount=0;connStatus('CONNECTING');showWaiting('Connected — waiting for your sim…');};
+  ws.onclose=()=>{failCount++;if(failCount>=3)showFailed();else{connStatus('CONNECTING');showWaiting('Reconnecting…');}setTimeout(connect,2000);};
   ws.onerror=()=>{try{ws.close();}catch{}};
 }
 connect();
@@ -1607,7 +1617,7 @@ async def main():
     print(f" Rate       : {args.hz} Hz")
     ips = lan_ips()
     print(" LAN IP(s)  : " + ", ".join(ips))
-    print(" On a phone, connect to:  ws://" + ips[0] + f":{args.port}/ws")
+    print(" On a phone, open:  http://" + ips[0] + f":{args.port}/")
     print("-" * 64)
     print(" Supported: iRacing, ACC, Assetto Corsa, rFactor 2, Le Mans Ultimate,")
     print(" Automobilista 2 (shared memory) + F1, Forza, Gran Turismo 7 (UDP)")
