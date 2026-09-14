@@ -9,7 +9,7 @@ import DashVariantGallery from "@/components/live/DashVariantGallery";
 const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
 
-export default function DDU3Dashboard({ data, demo }) {
+export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const bezelRef = useRef(null);
   const wrapRef = useRef(null);
   const [fs, setFs] = useState(false);
@@ -53,6 +53,25 @@ export default function DDU3Dashboard({ data, demo }) {
   }, [fs, customize]);
 
   const toggleFs = async () => {
+    if (inKiosk) {
+      // Inside the pop-out window: toggle browser fullscreen of the whole document
+      try {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+        else await document.exitFullscreen?.();
+      } catch { /* ignore */ }
+      return;
+    }
+    const isDesktop =
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: fine)").matches &&
+      window.innerWidth >= 900;
+    if (isDesktop) {
+      // Desktop: pop the dashboard out into a separate OS window
+      const w = window.open("/dashboard-fullscreen", "simsetapp-dash", "width=1280,height=720");
+      if (w) w.focus();
+      return;
+    }
+    // Mobile: same-tab bezel fullscreen (existing behaviour)
     try {
       if (!document.fullscreenElement) await bezelRef.current?.requestFullscreen?.();
       else await document.exitFullscreen?.();
@@ -64,15 +83,15 @@ export default function DDU3Dashboard({ data, demo }) {
 
   return (
     <div className="space-y-3">
-      {!fs && (
+      {(!fs || inKiosk) && (
         <DashVariantGallery variants={DASH_VARIANTS} activeId={activeId} onSelect={loadVariant} />
       )}
-      {customize && !fs && (
+      {customize && (!fs || inKiosk) && (
         <DashboardCustomizer config={config} update={update} reset={reset} />
       )}
       <div
         ref={bezelRef}
-        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : "w-full p-2.5"}`}
+        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : "w-full p-2.5"}`}
       >
         <div className={`flex gap-2 ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
           {/* Left bezel status LEDs */}
