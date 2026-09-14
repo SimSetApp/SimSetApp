@@ -88,25 +88,11 @@ export default function LiveTelemetry() {
     lapTimesRef.current = [];
   }, [logSetupId, autoLog]);
 
-  // Auto-connect: if a ?connect= param is present (from a scanned QR), connect to it;
-  // otherwise connect to the last saved URL.
-  const autoConnectedRef = useRef(false);
+  // Auto-connect to the last saved bridge URL (mobile now opens the bridge's
+  // own HTTP dashboard directly, so no deep-link param is needed here).
   useEffect(() => {
-    if (autoConnectedRef.current) return;
-    autoConnectedRef.current = true;
-    const params = new URLSearchParams(window.location.search);
-    const qrUrl = params.get("connect");
-    if (qrUrl && /^ws:\/\//.test(qrUrl)) {
-      saveUrl(qrUrl);
-      connect(qrUrl);
-      // clear the param so a refresh doesn't re-trigger
-      try {
-        window.history.replaceState({}, "", window.location.pathname);
-      } catch {}
-    } else {
-      connect(url);
-    }
-  }, [connect, url, saveUrl]);
+    connect(url);
+  }, [connect, url]);
 
   const st = STATUS_META[status] || STATUS_META.idle;
   const connected = status === "connected" && data;

@@ -20,15 +20,12 @@ export default function PhonePairPanel({ defaultUrl = "", onManualConnect }) {
   const [showManual, setShowManual] = useState(false);
   const [manualUrl, setManualUrl] = useState(defaultUrl || "ws://localhost:3344/ws");
 
-  const wsUrl = useMemo(() => {
+  // Mobile opens the bridge's own HTTP dashboard (same origin as the ws://
+  // socket) so the connection isn't blocked by HTTPS→ws:// mixed-content rules.
+  const dashUrl = useMemo(() => {
     if (!ip) return "";
-    return `ws://${ip}:${port || DEFAULT_PORT}/ws`;
+    return `http://${ip}:${port || DEFAULT_PORT}/`;
   }, [ip, port]);
-
-  const deepLink = useMemo(() => {
-    if (!wsUrl) return "";
-    return `${window.location.origin}/live-telemetry?connect=${encodeURIComponent(wsUrl)}`;
-  }, [wsUrl]);
 
   const ipValid = /^\d{1,3}(\.\d{1,3}){3}$/.test(ip) || /^[a-z0-9.-]+$/i.test(ip);
 
@@ -60,13 +57,13 @@ export default function PhonePairPanel({ defaultUrl = "", onManualConnect }) {
         </div>
       </div>
 
-      {ipValid && wsUrl ? (
+      {ipValid && dashUrl ? (
         <div className="flex flex-col items-center gap-2 py-2">
           <div className="rounded-xl bg-white p-3 shadow-sm">
-            <QRCodeSVG value={deepLink} size={180} level="M" includeMargin={false} />
+            <QRCodeSVG value={dashUrl} size={180} level="M" includeMargin={false} />
           </div>
           <p className="text-xs text-muted-foreground text-center">
-            Scan with your phone camera — it opens the app and connects automatically.
+            Scan with your phone camera to open the dashboard.
           </p>
           <p className="text-[11px] text-muted-foreground/70 text-center">
             Phone and PC must be on the same WiFi.

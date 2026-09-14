@@ -1411,10 +1411,128 @@ async def handle_websocket(request):
     return ws
 
 
+def dashboard_html():
+    return r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SimSetApp Live Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:#060606;color:#e8e8e8;font-family:'Share Tech Mono',monospace;overflow-x:hidden}
+  #dash{max-width:520px;margin:0 auto;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
+  .top-bar{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.08em;color:#888;border-bottom:1px solid #1a1a1a;padding-bottom:8px}
+  #pos{color:#22c55e}
+  .main-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .gear{font-family:'Orbitron';font-weight:900;font-size:84px;line-height:1;color:#fff;text-shadow:0 0 18px rgba(255,255,255,.35);min-width:90px;text-align:center}
+  .speed{font-family:'Orbitron';font-weight:700;text-align:right}
+  #speed{font-size:64px;line-height:1;color:#fff;text-shadow:0 0 16px rgba(120,200,255,.4)}
+  .speed small{font-size:14px;color:#888;font-family:'Share Tech Mono';font-weight:400;margin-left:4px}
+  .rpm-wrap{display:flex;flex-direction:column;gap:6px}
+  .leds{display:flex;gap:3px}
+  .led{flex:1;height:14px;border-radius:3px;background:#1a1a1a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);transition:background .05s,box-shadow .05s}
+  .led.on{background:var(--c);box-shadow:0 0 10px var(--c),inset 0 0 4px rgba(255,255,255,.4)}
+  .led.flash{animation:flash .18s steps(2) infinite}
+  @keyframes flash{50%{background:#1a1a1a;box-shadow:none}}
+  .rpm-bar{height:10px;border-radius:5px;background:#111;overflow:hidden;border:1px solid #222}
+  #rpm-fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#eab308,#f59e0b,#ef4444);transition:width .05s}
+  .rpm-num{display:flex;justify-content:space-between;font-size:13px;color:#aaa}
+  #rpm{color:#fff;font-family:'Orbitron';font-weight:700}
+  .inputs{display:flex;flex-direction:column;gap:7px}
+  .bar{display:flex;align-items:center;gap:8px}
+  .bar label{width:34px;font-size:11px;color:#888}
+  .track{flex:1;height:14px;border-radius:7px;background:#111;overflow:hidden;border:1px solid #222}
+  #thr,#brk{height:100%;width:0;transition:width .05s}
+  #thr{background:linear-gradient(90deg,#16a34a,#4ade80)}
+  #brk{background:linear-gradient(90deg,#b91c1c,#f87171)}
+  .tyres{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .tyre{border:1px solid #222;border-radius:8px;padding:8px 10px;background:#0c0c0c}
+  .tyre .pos{font-size:10px;color:#777;letter-spacing:.1em}
+  .tyre .temp{font-family:'Orbitron';font-weight:700;font-size:22px;line-height:1.1}
+  .tyre .wear{font-size:11px;color:#888;margin-top:2px}
+  .bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center;font-size:11px;color:#777;border-top:1px solid #1a1a1a;padding-top:10px}
+  .bottom span{display:block;font-family:'Orbitron';font-weight:700;font-size:16px;color:#fff;margin-top:2px}
+  #delta.pos{color:#22c55e}#delta.neg{color:#ef4444}
+  #waiting{position:fixed;inset:0;background:rgba(6,6,6,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:10}
+  #waiting h2{font-family:'Orbitron';font-weight:700;font-size:22px;color:#ccc;margin:18px 0 8px}
+  #waiting p{color:#777;font-size:14px;max-width:300px}
+  .pulse{width:54px;height:54px;border-radius:50%;border:2px solid #22c55e;box-shadow:0 0 24px rgba(34,197,94,.5);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(.85);opacity:.5}50%{transform:scale(1.1);opacity:1}}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="dash">
+  <div class="top-bar"><span id="sim">&mdash;</span><span id="track">&mdash;</span><span id="pos">P&mdash;</span></div>
+  <div class="main-row">
+    <div class="gear"><span id="gear">N</span></div>
+    <div class="speed"><span id="speed">0</span><small>km/h</small></div>
+  </div>
+  <div class="rpm-wrap">
+    <div class="leds" id="leds"></div>
+    <div class="rpm-bar"><div id="rpm-fill"></div></div>
+    <div class="rpm-num"><span>RPM</span><span><span id="rpm">0</span> / <span id="maxrpm">8000</span></span></div>
+  </div>
+  <div class="inputs">
+    <div class="bar"><label>THR</label><div class="track"><div id="thr"></div></div></div>
+    <div class="bar"><label>BRK</label><div class="track"><div id="brk"></div></div></div>
+  </div>
+  <div class="tyres" id="tyres"></div>
+  <div class="bottom">
+    <div>LAP<span id="lap">&mdash;</span></div>
+    <div>LAST<span id="last">&mdash;</span></div>
+    <div>BEST<span id="best">&mdash;</span></div>
+    <div>DELTA<span id="delta">&mdash;</span></div>
+    <div>FUEL<span id="fuel">&mdash;</span></div>
+  </div>
+</div>
+<div id="waiting">
+  <div class="pulse"></div>
+  <h2>Waiting for your sim&hellip;</h2>
+  <p>Launch your sim and start a session &mdash; the dashboard lights up automatically.</p>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const NLEDS=10;
+let ws=null,waitingEl=$('waiting'),dashEl=$('dash');
+function fmt(t){if(t==null||isNaN(t))return'--:--.---';const m=Math.floor(t/60),s=Math.floor(t%60),ms=Math.round((t%1)*1000);return m+':'+String(s).padStart(2,'0')+'.'+String(ms).padStart(3,'0');}
+function tyreColor(t){if(t==null)return'#555';if(t<70)return'#3b82f6';if(t<82)return'#22c55e';if(t<92)return'#eab308';if(t<100)return'#f59e0b';return'#ef4444';}
+function renderLeds(rpm,max){const r=max?rpm/max:0;let h='';for(let i=1;i<=NLEDS;i++){const on=r>=i/NLEDS;const c=i<=5?'#22c55e':i<=7?'#eab308':i<=9?'#f59e0b':'#ef4444';const flash=r>=0.95&&i>=10;h+='<div class="led '+(on?'on':'')+' '+(flash?'flash':'')+'" style="--c:'+c+'"></div>';}$('leds').innerHTML=h;}
+function renderTyres(ty){const order=['fl','fr','rl','rr'];const labels=['FL','FR','RL','RR'];let h='';for(let i=0;i<4;i++){const k=order[i];const t=ty&&ty[k];const temp=t?t.temp_c:null;const wear=t?t.wear_pct:null;const col=tyreColor(temp);h+='<div class="tyre"><div class="pos">'+labels[i]+'</div><div class="temp" style="color:'+col+'">'+(temp!=null?Math.round(temp)+'°C':'--')+'</div><div class="wear">'+(wear!=null?'Wear '+Math.round(wear)+'%':'')+'</div></div>';}$('tyres').innerHTML=h;}
+function render(d){
+  $('sim').textContent=d.sim||'—';$('track').textContent=d.track||'—';$('pos').textContent=d.position?('P'+d.position):'P—';
+  $('gear').textContent=d.gear!=null?(d.gear==0?'N':d.gear):'N';
+  $('speed').textContent=d.speed_kmh!=null?Math.round(d.speed_kmh):'0';
+  const max=d.max_rpm||8000;$('rpm').textContent=d.rpm||0;$('maxrpm').textContent=max;
+  const r=max?(d.rpm||0)/max:0;$('rpm-fill').style.width=(Math.min(1,r)*100)+'%';renderLeds(d.rpm||0,max);
+  $('thr').style.width=((d.throttle||0)*100)+'%';$('brk').style.width=((d.brake||0)*100)+'%';
+  renderTyres(d.tyres);
+  $('lap').textContent=(d.lap||'—')+'/'+(d.total_laps||'—');
+  $('last').textContent=d.last_lap_time!=null?fmt(d.last_lap_time):'—';
+  $('best').textContent=d.best_lap_time!=null?fmt(d.best_lap_time):'—';
+  const dl=$('delta');dl.textContent=d.lap_delta!=null?(d.lap_delta>=0?'+':'')+d.lap_delta.toFixed(3):'—';dl.className=d.lap_delta!=null?(d.lap_delta<0?'pos':'neg'):'';
+  $('fuel').textContent=d.fuel_litres!=null?Math.round(d.fuel_litres)+'L':'—';
+  waitingEl.classList.add('hidden');dashEl.classList.remove('hidden');
+}
+function showWaiting(msg){$('waiting').querySelector('h2').textContent=msg||'Waiting for your sim…';waitingEl.classList.remove('hidden');dashEl.classList.add('hidden');}
+function connect(){
+  try{ws=new WebSocket('ws://'+location.host+'/ws');}catch(e){setTimeout(connect,2000);return;}
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data);}catch{return;}if(m.type==='telemetry')render(m);else if(m.type==='status'){if(m.detected)showWaiting((m.sim||'Sim')+' detected — start a session');else showWaiting();}};
+  ws.onopen=()=>showWaiting('Connected — waiting for your sim…');
+  ws.onclose=()=>{showWaiting('Reconnecting…');setTimeout(connect,2000);};
+  ws.onerror=()=>{try{ws.close();}catch{}};
+}
+connect();
+</script>
+</body>
+</html>"""
+
+
 async def handle_root(request):
-    if request.headers.get("Upgrade", "").lower() == "websocket":
-        return await handle_websocket(request)
-    return await handle_health(request)
+    return web.Response(text=dashboard_html(), content_type="text/html")
 
 
 def build_app():
