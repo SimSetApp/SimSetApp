@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Radio, Maximize, Minimize, X, ArrowLeft } from "lucide-react";
+import { Loader2, Radio, Maximize, Minimize, X, ArrowLeft, Play } from "lucide-react";
 import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 
@@ -81,7 +81,7 @@ export default function DashboardFullscreen() {
       {/* Dashboard or waiting state */}
       <div className="flex-1 min-h-0 flex items-center justify-center p-2">
         {connected ? (
-          <div className="w-full max-w-5xl">
+          <div className="w-full h-full max-w-[1600px]">
             <DDU3Dashboard data={data} demo={demo} inKiosk />
           </div>
         ) : (
@@ -101,11 +101,13 @@ export default function DashboardFullscreen() {
                 ? "Start a session to go live."
                 : "The bridge connects automatically when your sim starts a session."}
             </p>
-            {status === "idle" && (
-              <button onClick={() => startDemo()} className="mt-4 text-xs text-primary underline">
-                Try demo data
-              </button>
-            )}
+            <button
+              onClick={() => startDemo()}
+              className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Play className="w-3.5 h-3.5" />
+              Try demo data
+            </button>
           </div>
         )}
       </div>

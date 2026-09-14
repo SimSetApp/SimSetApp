@@ -82,7 +82,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const clock = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
   return (
-    <div className="space-y-3">
+    <div className={inKiosk ? "flex flex-col h-full gap-3" : "space-y-3"}>
       {(!fs || inKiosk) && (
         <DashVariantGallery variants={DASH_VARIANTS} activeId={activeId} onSelect={loadVariant} />
       )}
@@ -91,9 +91,9 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
       )}
       <div
         ref={bezelRef}
-        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : "w-full p-2.5"}`}
+        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : "w-full p-2.5 aspect-[16/9]"}`}
       >
-        <div className={`flex gap-2 ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
+        <div className={`flex gap-2 h-full ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
           {/* Left bezel status LEDs */}
           <div className="flex flex-col items-center justify-center gap-2 py-3 px-1">
             {[0, 1, 2, 3].map((i) => (
