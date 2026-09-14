@@ -183,21 +183,28 @@ export default function LiveTelemetry() {
                 <div className="mt-3"><BridgeSteps /></div>
               </details>
 
-              {/* Advanced URL */}
-              <details className="text-xs">
-                <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">Advanced: bridge URL</summary>
-                <div className="flex gap-2 mt-2">
+              {/* Manual IP entry — for mobile / custom bridge URL */}
+              <div className="rounded-lg border border-border bg-secondary/20 p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Wifi className="w-3.5 h-3.5 text-primary" />
+                  <h4 className="font-heading text-sm font-semibold">On a phone? Enter your PC's address</h4>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  The bridge window prints your PC's LAN IP (e.g. <code className="font-mono text-foreground">192.168.1.50</code>). Enter it here:
+                </p>
+                <div className="flex gap-2">
                   <input
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
-                    placeholder="ws://localhost:3344/ws"
+                    placeholder="ws://192.168.1.50:3344/ws"
                     className="flex-1 h-9 rounded-lg border border-border bg-secondary text-sm px-3 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
                   />
-                  <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider">
+                  <Button onClick={() => { saveUrl(urlInput); connect(urlInput); }} className="font-heading text-xs tracking-wider shrink-0">
                     <Wifi className="w-3.5 h-3.5 mr-1.5" /> Connect
                   </Button>
                 </div>
-              </details>
+                <p className="text-[11px] text-muted-foreground/70 mt-2">On the same PC, use <code className="font-mono">ws://localhost:3344/ws</code>. Your phone and PC must be on the same WiFi.</p>
+              </div>
             </div>
           )}
         </div>

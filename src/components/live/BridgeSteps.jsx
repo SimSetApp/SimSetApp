@@ -53,6 +53,33 @@ export default function BridgeSteps() {
         </div>
       </div>
 
+      {/* Supported sims */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h4 className="font-heading text-sm font-semibold mb-1">Supported sims</h4>
+        <p className="text-xs text-muted-foreground mb-3">The bridge auto-detects whichever one is running. Most need one setting switched on in-game.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            { name: "iRacing", mech: "Shared memory", setup: "Set irsdkEnableMem=1 in app.ini", gotcha: "Install: pip install irsdk" },
+            { name: "ACC", mech: "Shared memory", setup: "Enable Shared Memory in Options", gotcha: "Telemetry streams only in a live session" },
+            { name: "Assetto Corsa", mech: "Shared memory", setup: "No setting needed", gotcha: "Run bridge as admin if AC runs as admin" },
+            { name: "rFactor 2 / LMU", mech: "Shared memory", setup: "Install the rF2 SM plugin", gotcha: "pip install pyrfactor2sharedmemory" },
+            { name: "Automobilista 2", mech: "Shared memory", setup: "Set Shared Memory = 'Project CARS 2'", gotcha: "System settings, then restart" },
+            { name: "F1 2023 / 2024", mech: "UDP · port 20777", setup: "Enable UDP Telemetry in game", gotcha: "Only one app can hold the UDP port" },
+            { name: "Forza FM / FH", mech: "UDP · port 5300", setup: "Enable Data Out = 'Dash'", gotcha: "Windows Store build: allow loopback" },
+            { name: "Gran Turismo 7", mech: "UDP · port 33740", setup: "Run with --gt7-ps5-ip <PS5-IP>", gotcha: "PS5 sends to the PC that heartbeats it" },
+          ].map((s) => (
+            <div key={s.name} className="rounded-md border border-border bg-secondary/30 p-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-foreground">{s.name}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">{s.mech}</span>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{s.setup}</p>
+              <p className="text-[10px] text-muted-foreground/70 mt-0.5">{s.gotcha}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Fallback: run from Python */}
       <details className="text-xs">
         <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none font-medium">Run from Python instead (any computer)</summary>
@@ -83,7 +110,7 @@ export default function BridgeSteps() {
             <CopyChip text="pip install aiohttp psutil" />
             <div className="flex items-start gap-1.5 rounded-lg bg-secondary/40 border border-border p-2">
               <Info className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install aiohttp psutil</code>. For <strong className="text-foreground">iRacing</strong> add <code className="font-mono">pip install irsdk</code>; for <strong className="text-foreground">ACC</strong> add <code className="font-mono">pip install pyaccsharedmemory</code> and enable Shared Memory in ACC Options.</p>
+              <p>If <code className="font-mono">pip</code> isn't found, try <code className="font-mono">python -m pip install aiohttp psutil</code>. Then add the library for your sim(s): <code className="font-mono">pip install irsdk pyaccsharedmemory pyrfactor2sharedmemory</code> (iRacing, ACC, rFactor 2/LMU). Assetto Corsa and AMS2 need no extra library. For <strong className="text-foreground">GT7</strong> add <code className="font-mono">pip install salsa20</code> and run with <code className="font-mono">--gt7-ps5-ip &lt;your-PS5-IP&gt;</code>. F1 and Forza use UDP — just enable telemetry in-game, no library needed.</p>
             </div>
           </Step>
 
