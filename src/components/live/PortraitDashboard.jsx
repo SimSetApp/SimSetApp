@@ -9,6 +9,9 @@ import { PORTRAIT_LAYOUT } from "@/lib/dashboardVariants";
  * vertical stack that reflows to fill the screen at full size. Each item's
  * pixel height is computed from its flex weight so widget font-sizing stays
  * accurate. Supports per-variant custom widget assignment via tap-to-assign.
+ *
+ * Slot IDs include the default widget type so overrides don't cross-contaminate
+ * between variants that happen to share a positional index.
  */
 export default function PortraitDashboard({ data, variant, config, caps, editing, trends, getSlotType, onSlotTap }) {
   const ref = useRef(null);
@@ -44,14 +47,15 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
   return (
     <div ref={ref} className="w-full h-full flex flex-col gap-1 p-1" style={{ background: theme.bg }}>
       {portraitLayout.map((item, i) => {
-        const slotId = `p${i}`;
+        // Include default type in slot ID to prevent cross-variant contamination
+        const slotId = `p${i}_${item.type}`;
         const effectiveType = getSlotType ? getSlotType(slotId, item.type) : item.type;
         const isEmpty = effectiveType === "empty";
         const def = WIDGET_DEFS.find((d) => d.type === effectiveType);
         const itemH = (availH * item.flex) / totalFlex;
         return (
           <div
-            key={i}
+            key={slotId}
             className="rounded-lg overflow-hidden relative"
             style={{
               flex: `${item.flex} 1 0`,
@@ -80,7 +84,7 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
                 )}
               </div>
             ) : (
-              <div className="w-full h-full" style={{ fontSize: `${Math.max(10, Math.min(20, itemH * 0.06))}px`, opacity: editing ? 0.6 : 1 }}>
+              <div className="w-full h-full" style={{ fontSize: `${Math.max(10, Math.min(20, itemH * 0.06))}px` }}>
                 {renderWidget(effectiveType, {
                   data,
                   color: accent,

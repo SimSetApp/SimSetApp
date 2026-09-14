@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Radio, Maximize, Minimize, X, ArrowLeft, Play } from "lucide-react";
-import { useLiveTelemetry } from "@/hooks/useLiveTelemetry";
+import { useSharedTelemetry } from "@/hooks/useSharedTelemetry";
 import DDU3Dashboard from "@/components/live/DDU3Dashboard";
 
 /**
@@ -11,7 +11,7 @@ import DDU3Dashboard from "@/components/live/DDU3Dashboard";
  * first user gesture (a browser requirement). No app chrome.
  */
 export default function DashboardFullscreen() {
-  const { url, status, data, detectedSim, detected, connect, demo, startDemo } = useLiveTelemetry();
+  const { url, status, data, detectedSim, detected, connect, demo, startDemo } = useSharedTelemetry();
   const [showPrompt, setShowPrompt] = useState(true);
   const [isFs, setIsFs] = useState(false);
   const fsDoneRef = useRef(false);
@@ -31,14 +31,8 @@ export default function DashboardFullscreen() {
     } catch { /* ignore */ }
   };
 
-  // Auto-connect once on mount (not on every URL state change)
-  const mountedRef = useRef(false);
-  useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-    connect(url);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Connection is handled by useSharedTelemetry — either mirrors the main
+  // page's broadcast or falls back to its own connection. No double-connect here.
 
   // Enter browser fullscreen on the first user gesture (browsers require one)
   useEffect(() => {
@@ -86,7 +80,7 @@ export default function DashboardFullscreen() {
       <div className="flex-1 min-h-0 flex items-center justify-center p-2">
         {connected ? (
           <div className="w-full h-full max-w-[1600px]">
-            <DDU3Dashboard data={data} demo={demo} inKiosk namespace="kiosk" />
+            <DDU3Dashboard data={data} demo={demo} inKiosk namespace="kiosk" stale={status === "stale"} />
           </div>
         ) : (
           <div className="text-center text-muted-foreground px-6">

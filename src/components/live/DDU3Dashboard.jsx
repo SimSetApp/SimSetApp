@@ -1,15 +1,15 @@
-import { useRef, useState, useEffect } from "react";
-import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check } from "lucide-react";
+import { useRef, useState, useEffect, memo } from "react";
+import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check, AlertTriangle } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { useCustomLayout } from "@/hooks/useCustomLayout";
 import { FlashProvider } from "@/lib/flashContext";
 import { useTrend } from "@/hooks/useTrend";
+import { useCapabilities } from "@/lib/dashboardCapabilities";
 import BezelLEDs from "@/components/live/BezelLEDs";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
 import WidgetPicker from "@/components/live/WidgetPicker";
 import { renderWidget, panelBevel } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
-import { deriveCapabilities } from "@/lib/dashboardCapabilities";
 import DashboardCustomizer from "@/components/live/DashboardCustomizer";
 import DashVariantGallery from "@/components/live/DashVariantGallery";
 import PortraitDashboard from "@/components/live/PortraitDashboard";
@@ -19,27 +19,39 @@ const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
 const TREND_KEYS = ["fuel_litres", "lap_delta", "tyres.fl.temp_c", "tyres.fr.temp_c", "tyres.rl.temp_c", "tyres.rr.temp_c"];
 
-export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace = "" }) {
+// Isolated clock — its 1Hz setNow tick re-renders only this component, not
+// the entire dashboard canvas + all widgets on top of the 20fps telemetry.
+function DashClock({ theme }) {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span className="tabular-nums" style={{ color: theme.text }}>
+      {pad(now.getHours())}:{pad(now.getMinutes())}:{pad(now.getSeconds())}
+    </span>
+  );
+}
+
+function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale = false }) {
   const bezelRef = useRef(null);
   const wrapRef = useRef(null);
+  const rafRef = useRef(null);
   const [fs, setFs] = useState(false);
   const [customize, setCustomize] = useState(false);
   const [scale, setScale] = useState(0.76);
-  const [now, setNow] = useState(new Date());
   const [isPortrait, setIsPortrait] = useState(false);
   const { config, activeId, loadVariant, update, reset } = useDashboardConfig(namespace);
   const variant = getVariant(activeId);
   const trends = useTrend(data, TREND_KEYS);
+  const caps = useCapabilities(data);
   const theme = variant.theme;
   const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false, namespace);
   const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true, namespace);
   const [editing, setEditing] = useState(false);
   const [pickerSlot, setPickerSlot] = useState(null);
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
   useEffect(() => {
     const h = () => setFs(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", h);
@@ -63,24 +75,21 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
       if (!w || !h) return;
       setScale(Math.max(0.1, Math.min(w / CW, h / CH)));
     };
-    const raf = () => requestAnimationFrame(measure);
-    raf();
-    const ro = new ResizeObserver(raf);
+    // Cancel any pending rAF on cleanup (P9) — no document-level scroll listener (P2)
+    const ro = new ResizeObserver(measure);
     if (wrapRef.current) ro.observe(wrapRef.current);
-    window.addEventListener("resize", raf);
-    window.addEventListener("orientationchange", raf);
-    window.addEventListener("scroll", raf, true);
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", raf);
-      window.removeEventListener("orientationchange", raf);
-      window.removeEventListener("scroll", raf, true);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("orientationchange", measure);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [fs, customize, isPortrait]);
 
   const toggleFs = async () => {
     if (inKiosk) {
-      // Inside the pop-out window: toggle browser fullscreen of the whole document
       try {
         if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
         else await document.exitFullscreen?.();
@@ -92,12 +101,10 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
       window.matchMedia("(pointer: fine)").matches &&
       window.innerWidth >= 900;
     if (isDesktop) {
-      // Desktop: pop the dashboard out into a separate OS window
       const w = window.open("/dashboard-fullscreen", "simsetapp-dash", "width=1280,height=720");
       if (w) w.focus();
       return;
     }
-    // Mobile: same-tab bezel fullscreen (existing behaviour)
     try {
       if (!document.fullscreenElement) await bezelRef.current?.requestFullscreen?.();
       else await document.exitFullscreen?.();
@@ -105,8 +112,6 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
   };
 
   const accent = config.accent;
-  const caps = deriveCapabilities(data);
-  const clock = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
   return (
     <div className={inKiosk ? "flex flex-col h-full gap-3" : "space-y-3"}>
@@ -136,17 +141,21 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
       <FlashProvider>
       <div
         ref={bezelRef}
-        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
+        className={`dash-bezel font-digi select-none overflow-hidden rounded-xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
       >
         <div className={`flex gap-2 h-full ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
           {/* Left bezel status LEDs — functional indicators */}
           <BezelLEDs data={data} caps={caps} theme={theme} side="left" />
           {/* Screen */}
           <div className="flex-1 min-w-0 relative rounded-lg overflow-hidden dash-bezel-inner flex flex-col" style={{ background: theme.bg }}>
-            {/* Header */}
+            {/* Glass overlay — BEHIND widgets (z-0) so the specular sheen shows
+                only in gaps between panels, never washing over telemetry numerals */}
+            <div className="dash-glass absolute inset-0 z-0" />
+
+            {/* Header — above glass */}
             <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: theme.panelEdge, color: theme.text }}>
               <div className="flex items-center gap-2.5">
-                <span className="tabular-nums" style={{ color: theme.text }}>{clock}</span>
+                <DashClock theme={theme} />
                 <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "--"}°</span></span>
                 <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }}>{data.track_temp != null ? data.track_temp.toFixed(1) : "--"}°</span></span>
               </div>
@@ -164,8 +173,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
               </div>
             </div>
 
-            {/* Canvas */}
-            <div ref={wrapRef} className="flex-1 min-h-0 w-full relative">
+            {/* Canvas — above glass */}
+            <div ref={wrapRef} className="flex-1 min-h-0 w-full relative z-10">
               {isPortrait ? (
                 <PortraitDashboard
                   data={data} variant={variant} config={config} caps={caps}
@@ -212,7 +221,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
                             )}
                           </div>
                         ) : (
-                          <div className="w-full h-full" style={{ opacity: editing ? 0.6 : 1 }}>
+                          // Editing mode: full opacity, dashed border + label only (no dim)
+                          <div className="w-full h-full">
                             {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps, trends })}
                           </div>
                         )}
@@ -226,8 +236,15 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
             {/* Alarm / flag overlay — flashes over the dash when active */}
             <AlarmOverlay data={data} caps={caps} />
 
-            {/* Glass overlay — subtle reflection and vignette (landscape only) */}
-            {!isPortrait && <div className="dash-glass absolute inset-0 z-20" />}
+            {/* Stale-data watermark — dim + warning so frozen frames don't look live */}
+            {stale && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none" style={{ background: "rgba(0,0,0,0.45)" }}>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: "rgba(0,0,0,0.7)", border: "1px solid rgba(255,152,0,0.5)" }}>
+                  <AlertTriangle className="w-4 h-4" style={{ color: "#ff9800" }} />
+                  <span className="font-digi text-xs tracking-widest" style={{ color: "#ff9800" }}>STALE — NO DATA</span>
+                </div>
+              </div>
+            )}
           </div>
           {/* Right bezel status LEDs — functional indicators */}
           <BezelLEDs data={data} caps={caps} theme={theme} side="right" />
@@ -254,3 +271,6 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false, namespace =
     </div>
   );
 }
+
+const DDU3Dashboard = memo(DDU3DashboardInner);
+export default DDU3Dashboard;

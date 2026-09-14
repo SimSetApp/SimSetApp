@@ -15,12 +15,13 @@ const GT3_PRO_LAYOUT = [
 ];
 
 // GT3 Race — circular RPM arc gauge around central gear, cyan
+// Fuel slot enlarged to 140px so all 6 rows breathe; inputs trimmed to compensate.
 const GT3_RACE_LAYOUT = [
   { id: "w_gear", type: "gear", x: 296, y: 56, w: 408, h: 300, color: null },
   { id: "w_curlap", type: "laps", x: 296, y: 364, w: 408, h: 140, color: null },
   { id: "w_tyres", type: "tyres", x: 8, y: 56, w: 280, h: 180, color: null },
-  { id: "w_fuel", type: "fuel", x: 8, y: 244, w: 280, h: 120, color: null },
-  { id: "w_inputs", type: "inputs", x: 8, y: 372, w: 280, h: 132, color: null },
+  { id: "w_fuel", type: "fuel", x: 8, y: 244, w: 280, h: 140, color: null },
+  { id: "w_inputs", type: "inputs", x: 8, y: 392, w: 280, h: 112, color: null },
   { id: "w_delta", type: "delta", x: 712, y: 56, w: 280, h: 140, color: null },
   { id: "w_cars", type: "cars", x: 712, y: 204, w: 280, h: 300, color: null },
   { id: "w_status", type: "status", x: 8, y: 512, w: 984, h: 40, color: null },
@@ -120,7 +121,7 @@ export const DASH_VARIANTS = [
       isLight: false, bg: "#050505", panel: "#0d0d0d", panelEdge: "#1c1c1c",
       text: "#f5f5f5", label: "#8a8a8a", dim: "#2a2a2a", accent: "#00ff88", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
-      track: "#161616", warn: "#ff9800",
+      absColor: "#4a9eff", track: "#161616", warn: "#ff9800",
     },
     layout: GT3_PRO_LAYOUT, portraitLayout: GT3_PRO_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
@@ -134,7 +135,7 @@ export const DASH_VARIANTS = [
       isLight: false, bg: "#0a0f14", panel: "#111821", panelEdge: "#1c2a36",
       text: "#e6f3f7", label: "#7a95a8", dim: "#2a3a48", accent: "#00d4c8", bestSector: "#b388ff",
       ledGreen: "#2ee6a0", ledYellow: "#ffd23f", ledRed: "#ff4d5e", shiftColor: "#ff4d5e",
-      track: "#0d141b", warn: "#ff9800",
+      absColor: "#4a9eff", track: "#0d141b", warn: "#ff9800",
     },
     layout: GT3_RACE_LAYOUT, portraitLayout: GT3_RACE_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
@@ -148,7 +149,7 @@ export const DASH_VARIANTS = [
       isLight: false, bg: "#060604", panel: "#0e0e0a", panelEdge: "#1f1f14",
       text: "#f5f0e0", label: "#8a7d5a", dim: "#2a2418", accent: "#ffb020", bestSector: "#ff6ec7",
       ledGreen: "#00ff66", ledYellow: "#ffd23f", ledRed: "#ff4d4d", shiftColor: "#ff4d4d",
-      track: "#161408", warn: "#ff9800",
+      absColor: "#4a9eff", track: "#161408", warn: "#ff9800",
     },
     layout: GT3_ENDURANCE_LAYOUT, portraitLayout: GT3_ENDURANCE_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
@@ -162,7 +163,7 @@ export const DASH_VARIANTS = [
       isLight: false, bg: "#080808", panel: "#101010", panelEdge: "#222222",
       text: "#ffffff", label: "#8a8a8a", dim: "#2a2a2a", accent: "#ff2d2d", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ffe600",
-      track: "#161616", warn: "#ff9800",
+      absColor: "#4a9eff", track: "#161616", warn: "#ff9800",
     },
     layout: FORMULA_WHEEL_LAYOUT, portraitLayout: FORMULA_WHEEL_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
@@ -176,7 +177,7 @@ export const DASH_VARIANTS = [
       isLight: false, bg: "#000000", panel: "#0a0a0a", panelEdge: "#1a1a1a",
       text: "#ffffff", label: "#7a7a7a", dim: "#222222", accent: "#ffffff", bestSector: "#00e5ff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
-      track: "#141414", warn: "#ff9800",
+      absColor: "#4a9eff", track: "#141414", warn: "#ff9800",
     },
     layout: FORMULA_HALO_LAYOUT, portraitLayout: FORMULA_HALO_PORTRAIT,
     units: { speed: "kmh", pressure: "psi" },
@@ -196,7 +197,13 @@ export const PORTRAIT_LAYOUT = [
   { type: "laps", flex: 1.3 },
 ];
 
+// Memoized variant lookup — returns a stable reference per id so consumers
+// don't get a new object every call.
+const variantCache = {};
 export function getVariant(id) {
+  if (variantCache[id]) return variantCache[id];
   const v = DASH_VARIANTS.find((v) => v.id === id) || DASH_VARIANTS[0];
-  return { ...v, portraitLayout: v.portraitLayout || PORTRAIT_LAYOUT };
+  const result = { ...v, portraitLayout: v.portraitLayout || PORTRAIT_LAYOUT };
+  variantCache[id] = result;
+  return result;
 }

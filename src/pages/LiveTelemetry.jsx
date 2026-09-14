@@ -94,12 +94,7 @@ export default function LiveTelemetry() {
     }
   }, [status, autoLog]);
 
-  // Auto-connect to the last saved bridge URL (mobile now opens the bridge's
-  // own HTTP dashboard directly, so no deep-link param is needed here).
-  useEffect(() => {
-    connect(url);
-  }, [connect, url]);
-
+  // useLiveTelemetry auto-connects once on mount — no duplicate connect here.
   const st = STATUS_META[status] || STATUS_META.idle;
   const connected = (status === "connected" || status === "stale") && data;
 
@@ -199,7 +194,7 @@ export default function LiveTelemetry() {
         {/* Dashboard */}
         {connected ? (
           <div className="space-y-4">
-            <DDU3Dashboard data={data} demo={demo} />
+            <DDU3Dashboard data={data} demo={demo} stale={status === "stale"} />
 
             {/* Auto-log */}
             {isAuthenticated && (

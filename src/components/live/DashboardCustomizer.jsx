@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { Sliders, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ACCENTS = ["#00e5ff", "#00ff66", "#ff1a1a", "#ffe600", "#ff9800", "#a855f7", "#ec4899", "#3b82f6", "#ffffff"];
 
-export default function DashboardCustomizer({ config, update, reset }) {
+function DashboardCustomizerInner({ config, update, reset }) {
   const UnitToggle = ({ field, opts }) => (
     <div className="flex gap-1">
       {opts.map((o) => (
@@ -23,7 +24,8 @@ export default function DashboardCustomizer({ config, update, reset }) {
   );
 
   return (
-    <div className="glass rounded-xl p-4 space-y-4">
+    // Plain card — no .glass class, so no hover-lift side effect on this panel
+    <div className="rounded-xl border border-border bg-secondary/40 p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 font-heading font-semibold text-sm">
           <Sliders className="w-4 h-4" /> Display Options
@@ -63,3 +65,6 @@ export default function DashboardCustomizer({ config, update, reset }) {
     </div>
   );
 }
+
+const DashboardCustomizer = memo(DashboardCustomizerInner);
+export default DashboardCustomizer;

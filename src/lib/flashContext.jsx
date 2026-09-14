@@ -3,9 +3,13 @@ import { useFlashToggle } from "@/hooks/useFlashToggle";
 
 /**
  * Flash isolation: the toggle re-renders only the components that actually
- * need to flash (shift lights, alarm banner, bezel shift LED) — not the
- * entire dashboard 5×/sec. DDU3Dashboard wraps its content in <FlashProvider>
- * but does NOT consume the context, so it stays calm between data frames.
+ * consume useFlash() — shift lights, alarm banner, bezel shift LED. The
+ * provider wraps the dashboard but DDU3Dashboard itself does NOT consume the
+ * context, so it stays calm between data frames.
+ *
+ * Consumers that only need to flash when active (AlarmOverlay, bezel shift LED)
+ * are split into outer/inner components so the outer returns null before
+ * subscribing when idle — no 5Hz re-renders when nothing is flashing.
  */
 
 export const FlashContext = createContext(true);

@@ -4,6 +4,7 @@ const DEFAULT_URL = "ws://localhost:3344/ws";
 const STORAGE_KEY = "simsetapp-telemetry-url";
 const STALE_MS = 5000;
 const MAX_RECONNECT = 5;
+const BC_CHANNEL = "simsetapp-telemetry";
 
 /**
  * Client-side mock telemetry generator — mirrors the Python bridge's mock mode
@@ -65,6 +66,8 @@ function makeMockState() {
     flagState: null,
     waterTemp: 90,
     oilTemp: 105,
+    finished: false,
+    finishedTimer: 0,
   };
 }
 
@@ -77,7 +80,8 @@ function mockTick(s) {
 
   // Yellow flag: reduce target speed by 30% during the yellow lap
   const yellowActive = s.lap === MOCK_YELLOW_LAP;
-  s.flagState = yellowActive ? "yellow" : null;
+  // Checkered flag during the finished phase before the demo restarts
+  s.flagState = s.finished ? "checkered" : (yellowActive ? "yellow" : null);
 
   if (s.inPit) {
     s.pitTimer -= dt;
@@ -189,11 +193,23 @@ function mockTick(s) {
     for (const k in s.tyres) s.tyres[k].wear_pct = Math.min(100, s.tyres[k].wear_pct + MOCK_TYRE_WEAR[k]);
     if (s.lap === 6 && s.position > 1) s.position -= 1;
     if (s.lap === MOCK_PIT_LAP + 1) { s.inPit = true; s.pitTimer = 3.5; }
-    if (s.lap > MOCK_TOTAL_LAPS) {
-      s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
-      s.lapTimes = []; s.raceElapsed = 0;
-      s.bestSectors = [null, null, null]; s.personalBestSectors = [null, null, null];
-      for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; s.tyres[k].brake_temp = 80; }
+    if (s.lap > MOCK_TOTAL_LAPS && !s.finished) {
+      s.finished = true;
+      s.finishedTimer = 4;
+    }
+    // Brief FINISHED state — checkered flag waves, car slows, then restart
+    if (s.finished) {
+      s.finishedTimer -= dt;
+      s.speed = Math.max(0, s.speed - 20 * dt);
+      s.throttle = 0;
+      s.brake = s.speed > 5 ? 0.2 : 0;
+      if (s.finishedTimer <= 0) {
+        s.finished = false;
+        s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
+        s.lapTimes = []; s.raceElapsed = 0;
+        s.bestSectors = [null, null, null]; s.personalBestSectors = [null, null, null];
+        for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; s.tyres[k].brake_temp = 80; }
+      }
     }
     lapTime = 0;
   }
@@ -284,7 +300,7 @@ function mockTick(s) {
  * an infinite spinner. Disconnect clears data/lastLap/prevLap to prevent
  * phantom lap logging and frozen displays.
  */
-export function useLiveTelemetry() {
+export function useLiveTelemetry(autoConnect = true) {
   const [url, setUrl] = useState(() => localStorage.getItem(STORAGE_KEY) || DEFAULT_URL);
   const [status, setStatus] = useState("idle"); // idle | connecting | connected | stale | searching | error | closed | failed
   const [data, setData] = useState(null);
@@ -303,6 +319,16 @@ export function useLiveTelemetry() {
   const statusRef = useRef(status);
   const reconnectAttemptsRef = useRef(0);
   const mountedRef = useRef(false);
+  const bcRef = useRef(null);
+
+  // Broadcast each frame so the pop-out fullscreen dashboard can mirror this
+  // connection instead of opening a second WebSocket to the bridge.
+  const broadcast = useCallback((frame) => {
+    if (!bcRef.current) {
+      try { bcRef.current = new BroadcastChannel(BC_CHANNEL); } catch { return; }
+    }
+    try { bcRef.current.postMessage(frame); } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => { urlRef.current = url; }, [url]);
   useEffect(() => { statusRef.current = status; }, [status]);
@@ -328,6 +354,7 @@ export function useLiveTelemetry() {
       if (!mockStateRef.current) return;
       const frame = mockTick(mockStateRef.current);
       setData(frame);
+      broadcast(frame);
       lastDataAtRef.current = Date.now();
       if (frame.last_lap_time != null) setLastLap({ ...frame });
     }, 50);
@@ -361,6 +388,7 @@ export function useLiveTelemetry() {
           const msg = JSON.parse(ev.data);
           if (msg.type === "telemetry") {
             setData(msg);
+            broadcast(msg);
             setStatus("connected");
             reconnectAttemptsRef.current = 0;
             lastDataAtRef.current = Date.now();
@@ -422,11 +450,13 @@ export function useLiveTelemetry() {
     setUrl(newUrl);
   }, []);
 
-  // Auto-connect once on mount (not on every URL state change)
+  // Auto-connect once on mount (not on every URL state change).
+  // Skipped when autoConnect=false — used by useSharedTelemetry to avoid a
+  // second WebSocket when the main page is already broadcasting.
   useEffect(() => {
     if (mountedRef.current) return;
     mountedRef.current = true;
-    connect(urlRef.current);
+    if (autoConnect) connect(urlRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -448,6 +478,7 @@ export function useLiveTelemetry() {
       if (wsRef.current) {
         try { wsRef.current.close(); } catch {}
       }
+      if (bcRef.current) { try { bcRef.current.close(); } catch {} bcRef.current = null; }
     };
   }, []);
 
