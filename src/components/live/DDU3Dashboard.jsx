@@ -3,8 +3,11 @@ import { Maximize2, Minimize2, Sliders } from "lucide-react";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { renderWidget } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
+import { deriveCapabilities } from "@/lib/dashboardCapabilities";
 import DashboardCustomizer from "@/components/live/DashboardCustomizer";
 import DashVariantGallery from "@/components/live/DashVariantGallery";
+import PortraitDashboard from "@/components/live/PortraitDashboard";
+import AlarmOverlay from "@/components/live/AlarmOverlay";
 
 const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
@@ -16,6 +19,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   const [customize, setCustomize] = useState(false);
   const [scale, setScale] = useState(0.76);
   const [now, setNow] = useState(new Date());
+  const [isPortrait, setIsPortrait] = useState(false);
   const { config, activeId, loadVariant, update, reset } = useDashboardConfig();
   const variant = getVariant(activeId);
   const theme = variant.theme;
@@ -28,6 +32,16 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
     const h = () => setFs(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", h);
     return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
+  useEffect(() => {
+    const detect = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    detect();
+    window.addEventListener("resize", detect);
+    window.addEventListener("orientationchange", detect);
+    return () => {
+      window.removeEventListener("resize", detect);
+      window.removeEventListener("orientationchange", detect);
+    };
   }, []);
   useEffect(() => {
     const measure = () => {
@@ -79,6 +93,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
   };
 
   const accent = config.accent;
+  const caps = deriveCapabilities(data);
   const clock = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
   return (
@@ -91,7 +106,7 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
       )}
       <div
         ref={bezelRef}
-        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : "w-full p-2.5 aspect-[16/9]"}`}
+        className={`dash-bezel font-digi select-none overflow-hidden rounded-2xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
       >
         <div className={`flex gap-2 h-full ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
           {/* Left bezel status LEDs */}
@@ -122,33 +137,40 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
 
             {/* Canvas */}
             <div ref={wrapRef} className="flex-1 min-h-0 w-full relative">
-              <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
-                {variant.layout.map((w) => {
-                  const color = w.color || accent;
-                  return (
-                    <div
-                      key={w.id}
-                      className="absolute rounded-lg overflow-hidden"
-                      style={{
-                        left: w.x, top: w.y, width: w.w, height: w.h,
-                        fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
-                        border: `1px solid ${theme.panelEdge}`,
-                        background: theme.panel,
-                        boxShadow: `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
-                      }}
-                    >
-                      <div className="w-full h-full">
-                        {renderWidget(w.type, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units })}
+              {isPortrait ? (
+                <PortraitDashboard data={data} variant={variant} config={config} caps={caps} />
+              ) : (
+                <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
+                  {variant.layout.map((w) => {
+                    const color = w.color || accent;
+                    return (
+                      <div
+                        key={w.id}
+                        className="absolute rounded-lg overflow-hidden"
+                        style={{
+                          left: w.x, top: w.y, width: w.w, height: w.h,
+                          fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
+                          border: `1px solid ${theme.panelEdge}`,
+                          background: theme.panel,
+                          boxShadow: `inset 0 0 0 1px ${theme.panelEdge}55, inset 0 1px 2px rgba(0,0,0,0.4)`,
+                        }}
+                      >
+                        <div className="w-full h-full">
+                          {renderWidget(w.type, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps })}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {/* Glass overlay — reflection, scanlines, pixel grid, vignette */}
-            <div className="dash-glass absolute inset-0 z-20" />
-            <div className="dash-pixel-grid absolute inset-0 z-20" />
+            {/* Alarm / flag overlay — flashes over the dash when active */}
+            <AlarmOverlay data={data} caps={caps} />
+
+            {/* Glass overlay — reflection, scanlines, pixel grid, vignette (landscape only) */}
+            {!isPortrait && <div className="dash-glass absolute inset-0 z-20" />}
+            {!isPortrait && <div className="dash-pixel-grid absolute inset-0 z-20" />}
           </div>
           {/* Right bezel status LEDs */}
           <div className="flex flex-col items-center justify-center gap-2 py-3 px-1">

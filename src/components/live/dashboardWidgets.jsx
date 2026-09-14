@@ -177,13 +177,60 @@ function Speed({ data, w, h, T, units }) {
   );
 }
 
-function Tyres({ data, w, h, T, units }) {
+function Tyres({ data, w, h, T, units, caps }) {
   const tyres = data.tyres || {};
   const press = (p) => {
     if (p == null) return "--";
     return units.pressure === "bar" ? (p * 0.0689476).toFixed(1) : p.toFixed(1);
   };
   const tempFs = Math.max(13, Math.min(h * 0.15, w * 0.11));
+  const has3Point = caps?.tyre_3point;
+  const hasBrake = caps?.brake_temps;
+
+  // 3-point thermal view (sim-native only): I/M/O strip + brake disc temp
+  if (has3Point) {
+    return (
+      <div className="w-full h-full grid grid-cols-2 gap-1 p-1.5">
+        {["FL", "FR", "RL", "RR"].map((k) => {
+          const t = tyres[k.toLowerCase()] || {};
+          const ti = t.temp_i, tm = t.temp_m, to = t.temp_o;
+          const core = t.temp_c ?? (ti != null && tm != null && to != null ? (ti + tm + to) / 3 : null);
+          const tc = tempColor(core, T);
+          const brake = t.brake_temp;
+          const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
+          return (
+            <div key={k} className="rounded border p-1 flex flex-col gap-0.5 justify-center" style={{
+              borderColor: T.panelEdge,
+              background: `linear-gradient(135deg, ${tc}18, transparent)`,
+            }}>
+              <div className="flex justify-between items-baseline">
+                <span className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
+                <span className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: tempFs * 0.72, color: tc, textShadow: `0 0 10px ${tc}77` }}>{core != null ? Math.round(core) : "--"}°</span>
+              </div>
+              {/* 3-point thermal strip: Inner | Middle | Outer */}
+              <div className="flex gap-0.5 rounded overflow-hidden" style={{ height: Math.max(6, tempFs * 0.4) }}>
+                {[ti, tm, to].map((v, idx) => {
+                  const c = tempColor(v, T);
+                  return (
+                    <div key={idx} className="flex-1 rounded-sm" style={{
+                      background: v != null ? c : "rgba(255,255,255,0.08)",
+                      boxShadow: v != null ? `0 0 6px ${c}88` : "none",
+                    }} />
+                  );
+                })}
+              </div>
+              <div className="flex justify-between font-lcd" style={{ fontSize: Math.max(6, tempFs * 0.32), color: T.label }}>
+                {hasBrake && <span>BRK <span style={{ color: bc }} className="tabular-nums">{brake != null ? Math.round(brake) : "--"}°</span></span>}
+                <span>PRS <span style={{ color: T.text }} className="tabular-nums">{press(t.pressure_psi)}</span></span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Single core-temp view (existing)
   const showDetail = h > 150;
   return (
     <div className="w-full h-full grid grid-cols-2 gap-1 p-1.5">
@@ -298,10 +345,57 @@ function Gear({ data, w, h, T, shape }) {
   return <div className="w-full h-full flex items-center justify-center">{numeral}</div>;
 }
 
-function Delta({ data, w, h, T }) {
+function Delta({ data, w, h, T, caps }) {
   const delta = data.lap_delta;
   const tone = delta == null ? T.label : delta <= 0 ? T.ledGreen : T.ledRed;
   const deltaFs = Math.max(18, Math.min(h * 0.32, w * 0.16));
+  const hasSectors = caps?.sectors;
+
+  // Sector deltas (sim-native only): S1/S2/S3 coloured purple/green/red
+  if (hasSectors) {
+    const sectors = data.sector_times || [];
+    const best = data.best_sectors || [];
+    const pb = data.personal_best_sectors || [];
+    const PURPLE = "#c084fc";
+    const secColor = (i) => {
+      const s = sectors[i];
+      if (s == null) return T.label;
+      if (best[i] != null && s <= best[i]) return PURPLE;       // overall best
+      if (pb[i] != null && s <= pb[i]) return T.ledGreen;       // personal best
+      return T.ledRed;                                           // slower
+    };
+    const secFs = Math.max(11, Math.min(h * 0.12, w * 0.07));
+    return (
+      <div className="w-full h-full p-2 flex flex-col">
+        <div className="grid grid-cols-3 gap-1 mb-1">
+          {["S1", "S2", "S3"].map((lbl, i) => {
+            const c = secColor(i);
+            return (
+              <div key={lbl} className="rounded border text-center py-0.5" style={{ borderColor: `${c}55`, background: `${c}11` }}>
+                <div className="font-digi" style={{ fontSize: Math.max(7, secFs * 0.5), color: T.label, letterSpacing: "0.1em" }}>{lbl}</div>
+                <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c, textShadow: `0 0 8px ${c}77` }}>
+                  {sectors[i] != null ? fmt(sectors[i]) : "--"}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <Row label="LAST" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
+        <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
+          <div className="font-digi font-bold tabular-nums leading-none" style={{
+            fontSize: deltaFs, color: tone,
+            textShadow: `0 0 16px ${tone}88, 0 0 32px ${tone}44`,
+          }}>
+            {delta == null ? "--" : `${delta > 0 ? "+" : ""}${delta.toFixed(2)}`}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Single lap delta (existing)
   return (
     <div className="w-full h-full p-2 flex flex-col">
       <Row label="LAST" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
@@ -455,7 +549,7 @@ function Status({ data, color, w, h, T }) {
 }
 
 export function renderWidget(type, ctx) {
-  const { data, color, w, h, theme, shape, units } = ctx;
+  const { data, color, w, h, theme, shape, units, caps } = ctx;
   const T = { ...SEM, ...(theme || {}) };
   const sh = shape || "led";
   const u = units || { speed: "kmh", pressure: "psi" };
@@ -464,10 +558,10 @@ export function renderWidget(type, ctx) {
     case "rpmBar": return <RpmBar data={data} w={w} h={h} T={T} />;
     case "shiftLights": return <ShiftLights data={data} T={T} shape={sh} />;
     case "speed": return <Speed data={data} w={w} h={h} T={T} units={u} />;
-    case "tyres": return <Tyres data={data} w={w} h={h} T={T} units={u} />;
+    case "tyres": return <Tyres data={data} w={w} h={h} T={T} units={u} caps={caps} />;
     case "fuel": return <Fuel data={data} w={w} h={h} T={T} />;
     case "gear": return <Gear data={data} w={w} h={h} T={T} shape={sh} />;
-    case "delta": return <Delta data={data} w={w} h={h} T={T} />;
+    case "delta": return <Delta data={data} w={w} h={h} T={T} caps={caps} />;
     case "laps": return <Laps data={data} color={color} w={w} h={h} T={T} />;
     case "cars": return <Cars data={data} w={w} h={h} T={T} />;
     case "inputs": return <Inputs data={data} color={color} w={w} h={h} T={T} shape={sh} />;

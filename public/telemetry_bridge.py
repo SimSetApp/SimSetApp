@@ -77,18 +77,35 @@ def _b(v, lo, hi):
     return v
 
 
-def _tyres(temps=None, wears=None, pressures=None):
-    """Build the unified tyres dict. FL, FR, RL, RR."""
+def _tyres(temps=None, wears=None, pressures=None, brakes=None, temps_imo=None):
+    """Build the unified tyres dict. FL, FR, RL, RR.
+
+    temps   — single core temp per corner (legacy)
+    temps_imo — 3-point [I, M, O] per corner: list of (i, m, o) tuples
+    brakes  — brake disc temp per corner
+    """
     out = {}
     for i, k in enumerate(["fl", "fr", "rl", "rr"]):
         t = _b(temps[i] if temps else None, -20, 200)
         w = _b(wears[i] if wears else None, 0, 1.2)
         p = _b(pressures[i] if pressures else None, 0, 100)
-        out[k] = {
+        b = _b(brakes[i] if brakes else None, 0, 1000)
+        corner = {
             "temp_c": round(t, 1) if t is not None else None,
             "wear_pct": round(w * 100, 1) if w is not None else None,
             "pressure_psi": round(p, 1) if p is not None else None,
+            "brake_temp": round(b, 1) if b is not None else None,
         }
+        if temps_imo and i < len(temps_imo):
+            imo = temps_imo[i]
+            if imo and len(imo) == 3:
+                ti = _b(imo[0], -20, 200)
+                tm = _b(imo[1], -20, 200)
+                to = _b(imo[2], -20, 200)
+                corner["temp_i"] = round(ti, 1) if ti is not None else None
+                corner["temp_m"] = round(tm, 1) if tm is not None else None
+                corner["temp_o"] = round(to, 1) if to is not None else None
+        out[k] = corner
     return out
 
 
@@ -105,6 +122,10 @@ def base_frame(sim):
         "air_temp": None, "track_temp": None, "boost": None, "brake_bias": None,
         "tc1": None, "tc2": None, "abs": None, "map": None,
         "car_ahead_gap": None, "car_behind_gap": None, "tyres": None,
+        # Pro-depth fields (sim-native only — providers set capabilities when populated)
+        "sector_times": None, "best_sectors": None, "personal_best_sectors": None,
+        "flag_state": None, "water_temp": None, "oil_temp": None,
+        "capabilities": {"tyre_3point": False, "brake_temps": False, "sectors": False, "flags": False},
     }
 
 
@@ -368,20 +389,36 @@ class iRacingProvider:
         ir = self.irsdk
         speed_ms = self._g(ir, "Speed", 0) or 0
         fuel = self._g(ir, "FuelLevel")
-        tyres = {
-            "fl": {"temp_c": round(_b(self._g(ir, "LFtempCM", 0), -20, 200), 1) or 0,
-                   "wear_pct": round(_b((self._g(ir, "LFwear", 0) or 0) * 100, 0, 120), 1) or 0,
-                   "pressure_psi": round(_b(self._g(ir, "LFpressure", 0), 0, 100), 1) or 0},
-            "fr": {"temp_c": round(_b(self._g(ir, "RFtempCM", 0), -20, 200), 1) or 0,
-                   "wear_pct": round(_b((self._g(ir, "RFwear", 0) or 0) * 100, 0, 120), 1) or 0,
-                   "pressure_psi": round(_b(self._g(ir, "RFpressure", 0), 0, 100), 1) or 0},
-            "rl": {"temp_c": round(_b(self._g(ir, "LRtempCM", 0), -20, 200), 1) or 0,
-                   "wear_pct": round(_b((self._g(ir, "LRwear", 0) or 0) * 100, 0, 120), 1) or 0,
-                   "pressure_psi": round(_b(self._g(ir, "LRpressure", 0), 0, 100), 1) or 0},
-            "rr": {"temp_c": round(_b(self._g(ir, "RRtempCM", 0), -20, 200), 1) or 0,
-                   "wear_pct": round(_b((self._g(ir, "RRwear", 0) or 0) * 100, 0, 120), 1) or 0,
-                   "pressure_psi": round(_b(self._g(ir, "RRpressure", 0), 0, 100), 1) or 0},
-        }
+        def _ircorner(p):
+            return (
+                _b(self._g(ir, p + "tempCM", 0), -20, 200) or 0,  # core
+                (_b(self._g(ir, p + "tempL", 0), -20, 200),
+                 _b(self._g(ir, p + "tempM", 0), -20, 200),
+                 _b(self._g(ir, p + "tempR", 0), -20, 200)),  # I/M/O
+                _b((self._g(ir, p + "wear", 0) or 0) * 100, 0, 120) or 0,  # wear
+                _b(self._g(ir, p + "pressure", 0), 0, 100) or 0,  # pressure
+                _b(self._g(ir, p + "brakeTemp", 0), 0, 1000),  # brake disc
+            )
+        fl_c, fl_imo, fl_w, fl_p, fl_b = _ircorner("LF")
+        fr_c, fr_imo, fr_w, fr_p, fr_b = _ircorner("RF")
+        rl_c, rl_imo, rl_w, rl_p, rl_b = _ircorner("LR")
+        rr_c, rr_imo, rr_w, rr_p, rr_b = _ircorner("RR")
+        tyres = _tyres(
+            temps=[fl_c, fr_c, rl_c, rr_c],
+            wears=[fl_w, fr_w, rl_w, rr_w],
+            pressures=[fl_p, fr_p, rl_p, rr_p],
+            brakes=[fl_b, fr_b, rl_b, rr_b],
+            temps_imo=[fl_imo, fr_imo, rl_imo, rr_imo],
+        )
+        # Flag state from SessionFlags bitmask
+        _flags = self._g(ir, "SessionFlags", 0) or 0
+        flag_state = None
+        if _flags & 32:
+            flag_state = "red"
+        elif _flags & 8 or _flags & 16:
+            flag_state = "yellow"
+        elif _flags & 64:
+            flag_state = "blue"
         f = base_frame(self.sim_name())
         f.update({
             "session_type": "Race", "track": self._g(ir, "TrackName", "") or "",
@@ -398,7 +435,11 @@ class iRacingProvider:
             "brake": round(self._g(ir, "Brake", 0) or 0, 2),
             "steer": round(self._g(ir, "SteeringWheelAngle", 0) or 0, 2),
             "fuel_litres": round(fuel, 1) if fuel is not None else None,
+            "water_temp": round(_b(self._g(ir, "WaterTemp", 0), 0, 150), 1) if self._g(ir, "WaterTemp") else None,
+            "oil_temp": round(_b(self._g(ir, "OilTemp", 0), 0, 200), 1) if self._g(ir, "OilTemp") else None,
+            "flag_state": flag_state,
             "tyres": tyres,
+            "capabilities": {"tyre_3point": True, "brake_temps": True, "sectors": False, "flags": flag_state is not None},
         })
         return f
 
@@ -443,10 +484,12 @@ class ACCProvider:
 
         temps = getattr(ph, "tyre_core_temp", None)
         pressures = getattr(ph, "wheel_pressure", None)
+        brakes = getattr(ph, "brake_temp", None)
         tyres = _tyres(
             [w(temps, 0), w(temps, 1), w(temps, 2), w(temps, 3)] if temps else None,
             None,
             [w(pressures, 0), w(pressures, 1), w(pressures, 2), w(pressures, 3)] if pressures else None,
+            [w(brakes, 0), w(brakes, 1), w(brakes, 2), w(brakes, 3)] if brakes else None,
         )
         f = base_frame(self.sim_name())
         f.update({
@@ -481,6 +524,7 @@ class ACCProvider:
             "car_behind_gap": (lambda v: round(v / 1000.0, 3) if v and v > 0 else None)(getattr(g, "gap_behind", 0) or 0),
             "time_remaining": round(getattr(g, "session_time_left", 0) or 0, 1) or None,
             "tyres": tyres,
+            "capabilities": {"tyre_3point": False, "brake_temps": brakes is not None, "sectors": False, "flags": False},
         })
         return f
 
@@ -1458,6 +1502,8 @@ def dashboard_html():
     box-shadow:inset 0 0 50px rgba(0,0,0,.35),inset 0 0 100px rgba(0,0,0,.12)}
   .pixgrid{position:absolute;inset:0;z-index:20;pointer-events:none;
     background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:3px 3px}
+  #alarms{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+  .alarm-chip{font-family:'Orbitron';font-weight:700;padding:4px 12px;border-radius:9999px;font-size:12px;letter-spacing:0.15em;white-space:nowrap}
   #switcher{position:absolute;top:env(safe-area-inset-top,8px);left:50%;transform:translateX(-50%);z-index:30;display:flex;gap:6px;padding:6px 8px;border-radius:9999px;
     background:rgba(10,10,10,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);
     transition:opacity .35s ease,transform .35s ease;max-width:96vw;overflow-x:auto;scrollbar-width:none}
@@ -1500,6 +1546,7 @@ def dashboard_html():
         <div class="glass"></div>
         <div class="pixgrid"></div>
       </div>
+      <div id="alarms"></div>
     </div>
     <div class="leds-col" id="leds-r"></div>
   </div>
@@ -1518,6 +1565,10 @@ const VARIANTS=[
 let activeId=localStorage.getItem('dashVariant')||'gt3-pro';
 let active=VARIANTS.find(v=>v.id===activeId)||VARIANTS[0];
 let lastData=null,demo=false;
+const PORTRAIT_LAYOUT=[{type:'rpmBar',x:8,y:8,w:544,h:32,color:''},{type:'gear',x:80,y:48,w:400,h:180,color:''},{type:'speed',x:80,y:236,w:400,h:100,color:''},{type:'delta',x:8,y:344,w:544,h:130,color:''},{type:'tyres',x:8,y:482,w:544,h:200,color:''},{type:'fuel',x:8,y:690,w:544,h:140,color:''},{type:'laps',x:8,y:838,w:544,h:120,color:''}];
+let isPortrait=false;
+function deriveCaps(d){if(!d)return{tyre_3point:false,brake_temps:false,sectors:false,flags:false};if(d.capabilities)return{tyre_3point:!!d.capabilities.tyre_3point,brake_temps:!!d.capabilities.brake_temps,sectors:!!d.capabilities.sectors,flags:!!d.capabilities.flags};const ty=d.tyres||{},cs=Object.values(ty);return{tyre_3point:cs.some(t=>t&&t.temp_i!=null),brake_temps:cs.some(t=>t&&t.brake_temp!=null),sectors:Array.isArray(d.sector_times)&&d.sector_times.some(s=>s!=null),flags:d.flag_state!=null&&d.flag_state!=='none'&&d.flag_state!=='green'};}
+function detectPortrait(){const was=isPortrait;isPortrait=window.innerHeight>window.innerWidth;if(was!==isPortrait){buildLayout();buildSwitcher();}fit();}
 
 function fmt(t){if(t==null||isNaN(t))return'--:--.---';const m=Math.floor(t/60),s=Math.floor(t%60),ms=Math.round((t%1)*1000);return m+':'+String(s).padStart(2,'0')+'.'+String(ms).padStart(3,'0');}
 function tempColor(t,T){if(t==null)return T.label;if(t<70)return T.blue;if(t<86)return T.ledGreen;if(t<96)return T.ledYellow;if(t<108)return T.amber;return T.ledRed;}
@@ -1540,8 +1591,13 @@ function wRpmBar(d,w,h,T){
   return '<div style="width:100%;height:100%;display:flex;align-items:center;gap:2px;padding:0 4px">'+s+'</div>';
 }
 function wSpeed(d,w,h,T,u){const v=u.speed==='mph'?Math.round((d.speed_kmh||0)*0.621371):Math.round(d.speed_kmh||0);const fs=Math.max(28,Math.min(h*0.5,w*0.28));return '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-weight:700;font-size:'+fs+'px;color:'+T.text+';text-shadow:0 0 24px '+T.text+'66,0 0 48px '+T.text+'22;line-height:1">'+v+'</div><div class="fd" style="font-size:'+Math.max(9,h*0.07)+'px;color:'+T.label+';letter-spacing:0.25em">'+(u.speed==='mph'?'MPH':'KM/H')+'</div></div>';}
-function wTyres(d,w,h,T,u){
-  const ty=d.tyres||{},pr=p=>p==null?'--':(u.pressure==='bar'?(p*0.0689476).toFixed(1):p.toFixed(1)),tfs=Math.max(13,Math.min(h*0.15,w*0.11)),sd=h>150;let s='';
+function wTyres(d,w,h,T,u,caps){
+  const ty=d.tyres||{},pr=p=>p==null?'--':(u.pressure==='bar'?(p*0.0689476).toFixed(1):p.toFixed(1)),tfs=Math.max(13,Math.min(h*0.15,w*0.11));
+  if(caps&&caps.tyre_3point){const hasBrake=caps.brake_temps;let s='';
+    for(const k of ['FL','FR','RL','RR']){const t=ty[k.toLowerCase()]||{},ti=t.temp_i,tm=t.temp_m,to=t.temp_o,core=t.temp_c!=null?t.temp_c:(ti!=null&&tm!=null&&to!=null?(ti+tm+to)/3:null),tc=tempColor(core,T),brake=t.brake_temp,bc=brake!=null?(brake>600?T.ledRed:brake>400?T.ledYellow:T.ledGreen):T.label;
+      s+='<div style="border-radius:4px;border:1px solid '+T.panelEdge+';padding:4px;display:flex;flex-direction:column;gap:2px;justify-content:center;background:linear-gradient(135deg,'+tc+'18,transparent)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="fd" style="font-size:'+Math.max(8,tfs*0.4)+'px;color:'+T.label+';letter-spacing:0.1em">'+k+'</span><span class="fd" style="font-weight:700;font-size:'+(tfs*0.72)+'px;color:'+tc+';text-shadow:0 0 10px '+tc+'77;line-height:1">'+(core!=null?Math.round(core):'--')+'°</span></div><div style="display:flex;gap:2px;border-radius:3px;overflow:hidden;height:'+Math.max(6,tfs*0.4)+'px">'+[ti,tm,to].map(v=>{const c=tempColor(v,T);return '<div style="flex:1;border-radius:2px;background:'+(v!=null?c:'rgba(255,255,255,0.08)')+';box-shadow:'+(v!=null?'0 0 6px '+c+'88':'none')+'"></div>';}).join('')+'</div><div style="display:flex;justify-content:space-between;font-size:'+Math.max(6,tfs*0.32)+'px;color:'+T.label+';font-family:Share Tech Mono">'+(hasBrake?'<span>BRK <span style="color:'+bc+'">'+(brake!=null?Math.round(brake):'--')+'°</span></span>':'')+'<span>PRS <span style="color:'+T.text+'">'+pr(t.pressure_psi)+'</span></span></div></div>';}
+    return '<div style="width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px">'+s+'</div>';}
+  const sd=h>150;let s='';
   for(const k of ['FL','FR','RL','RR']){const t=ty[k.toLowerCase()],temp=t?t.temp_c:null,pv=t?t.pressure_psi:null,wr=t?t.wear_pct:null,tc=tempColor(temp,T);
     s+='<div style="border-radius:4px;border:1px solid '+T.panelEdge+';padding:4px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(135deg,'+tc+'18,transparent)"><div class="fd" style="font-size:'+Math.max(8,tfs*0.38)+'px;color:'+T.label+';letter-spacing:0.1em">'+k+'</div><div class="fd" style="font-weight:700;font-size:'+tfs+'px;color:'+tc+';text-shadow:0 0 12px '+tc+'77,0 0 24px '+tc+'33;line-height:1">'+(temp!=null?Math.round(temp):'--')+'°</div>'+(sd?'<div class="fl" style="font-size:'+Math.max(7,tfs*0.36)+'px;color:'+T.label+'">PRS <span style="color:'+T.text+'">'+pr(pv)+'</span></div><div class="fl" style="font-size:'+Math.max(7,tfs*0.36)+'px;color:'+T.label+'">WR <span style="color:'+wearColor(wr,T)+'">'+(wr!=null?Math.round(wr):'--')+'%</span></div>':'')+'</div>';}
   return '<div style="width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px">'+s+'</div>';
@@ -1554,14 +1610,18 @@ function wGear(d,w,h,T,shape){
   if(shape==='arc'||shape==='dial'){const ac=shift?T.shiftColor:T.accent,r=44,c=2*Math.PI*r;return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative"><svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+T.track+'" stroke-width="6"/><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+ac+'" stroke-width="6" stroke-dasharray="'+(c*rpmPct)+' '+c+'" stroke-linecap="round" transform="rotate(-90 50 50)" style="filter:drop-shadow(0 0 5px '+ac+') drop-shadow(0 0 10px '+ac+'88)"/><circle cx="50" cy="50" r="38" fill="none" stroke="'+T.panelEdge+'" stroke-width="0.5" opacity="0.6"/></svg>'+num+'</div>';}
   return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">'+num+'</div>';
 }
-function wDelta(d,w,h,T){const dl=d.lap_delta,tone=dl==null?T.label:dl<=0?T.ledGreen:T.ledRed,dfs=Math.max(18,Math.min(h*0.32,w*0.16));return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column">'+row('LAST',fmt(d.last_lap_time),T.label,T.text)+row('BEST',fmt(d.best_lap_time),T.label,T.text)+'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-size:'+Math.max(8,dfs*0.22)+'px;color:'+T.label+';letter-spacing:0.15em">DELTA</div><div class="fd" style="font-weight:700;font-size:'+dfs+'px;color:'+tone+';text-shadow:0 0 16px '+tone+'88,0 0 32px '+tone+'44;line-height:1">'+(dl==null?'--':(dl>0?'+':'')+dl.toFixed(2))+'</div></div></div>';}
+function wDelta(d,w,h,T,caps){const dl=d.lap_delta,tone=dl==null?T.label:dl<=0?T.ledGreen:T.ledRed,dfs=Math.max(18,Math.min(h*0.32,w*0.16));
+  if(caps&&caps.sectors){const secs=d.sector_times||[],best=d.best_sectors||[],pb=d.personal_best_sectors||[],PURPLE='#c084fc',sc=i=>{const s=secs[i];if(s==null)return T.label;if(best[i]!=null&&s<=best[i])return PURPLE;if(pb[i]!=null&&s<=pb[i])return T.ledGreen;return T.ledRed;},sfs=Math.max(11,Math.min(h*0.12,w*0.07));
+    let g='';for(let i=0;i<3;i++){const c=sc(i),lbl='S'+(i+1);g+='<div style="border-radius:4px;border:1px solid '+c+'55;background:'+c+'11;text-align:center;padding:2px"><div class="fd" style="font-size:'+Math.max(7,sfs*0.5)+'px;color:'+T.label+';letter-spacing:0.1em">'+lbl+'</div><div class="fd" style="font-weight:700;font-size:'+sfs+'px;color:'+c+';text-shadow:0 0 8px '+c+'77;line-height:1">'+(secs[i]!=null?fmt(secs[i]):'--')+'</div></div>';}
+    return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:4px">'+g+'</div>'+row('LAST',fmt(d.last_lap_time),T.label,T.text)+row('BEST',fmt(d.best_lap_time),T.label,T.text)+'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-size:'+Math.max(8,dfs*0.22)+'px;color:'+T.label+';letter-spacing:0.15em">DELTA</div><div class="fd" style="font-weight:700;font-size:'+dfs+'px;color:'+tone+';text-shadow:0 0 16px '+tone+'88,0 0 32px '+tone+'44;line-height:1">'+(dl==null?'--':(dl>0?'+':'')+dl.toFixed(2))+'</div></div></div>';}
+  return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column">'+row('LAST',fmt(d.last_lap_time),T.label,T.text)+row('BEST',fmt(d.best_lap_time),T.label,T.text)+'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-size:'+Math.max(8,dfs*0.22)+'px;color:'+T.label+';letter-spacing:0.15em">DELTA</div><div class="fd" style="font-weight:700;font-size:'+dfs+'px;color:'+tone+';text-shadow:0 0 16px '+tone+'88,0 0 32px '+tone+'44;line-height:1">'+(dl==null?'--':(dl>0?'+':'')+dl.toFixed(2))+'</div></div></div>';}
 function wLaps(d,color,w,h,T){const big=h>180,curFs=Math.max(14,Math.min(h*0.28,w*0.11)),tr=d.time_remaining!=null?Math.floor(d.time_remaining/60)+':'+String(Math.floor(d.time_remaining%60)).padStart(2,'0'):'--:--';if(big){return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column;gap:4px;justify-content:center">'+row('LAPS',(d.lap||0)+'/'+(d.total_laps||0),T.label,T.text)+row('TIME REM',tr,T.label,T.text)+'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-size:'+Math.max(8,curFs*0.3)+'px;color:'+T.label+';letter-spacing:0.15em">CURRENT LAP</div><div class="fd" style="font-weight:700;font-size:'+curFs+'px;color:'+color+';text-shadow:0 0 14px '+color+'77;line-height:1">'+fmt(d.current_lap_time)+'</div></div></div>';}return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column;gap:4px;justify-content:center">'+row('LAPS',(d.lap||0)+'/'+(d.total_laps||0),T.label,T.text)+row('TIME REM',tr,T.label,T.text)+row('CURRENT',fmt(d.current_lap_time),T.label,color)+'</div>';}
 function wCars(d,w,h,T){const g=v=>v==null?'--.---':(v>0?'+':'')+v.toFixed(3),fs=Math.max(14,Math.min(h*0.22,w*0.11));return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column;gap:8px;justify-content:center"><div>'+title('CAR AHEAD',T)+'<div class="fd" style="font-weight:700;font-size:'+fs+'px;color:'+T.ledGreen+';text-shadow:0 0 12px '+T.ledGreen+'77,0 0 24px '+T.ledGreen+'33;line-height:1">'+g(d.car_ahead_gap)+'</div></div><div>'+title('CAR BEHIND',T)+'<div class="fd" style="font-weight:700;font-size:'+fs+'px;color:'+T.ledRed+';text-shadow:0 0 12px '+T.ledRed+'77,0 0 24px '+T.ledRed+'33;line-height:1">'+g(d.car_behind_gap)+'</div></div></div>';}
 function wInputs(d,color,w,h,T,shape){const ss=d.steer==null?0:d.steer,show=h>100;return '<div style="width:100%;height:100%;padding:8px;display:flex;flex-direction:column;gap:8px;justify-content:center">'+bar('THR',d.throttle,T.ledGreen,T)+bar('BRK',d.brake,T.ledRed,T)+(show?'<div><div style="display:flex;justify-content:space-between;font-size:0.9em;color:'+T.label+'"><span class="fl">STR</span><span class="fl">'+ss.toFixed(2)+'</span></div><div style="position:relative;border-radius:9999px;height:0.7em;background:'+T.track+'"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:'+T.panelEdge+'"></div><div style="position:absolute;top:50%;transform:translateY(-50%);border-radius:2px;left:calc('+(50+ss*50)+'% - 4px);width:8px;height:1.3em;background:'+(color||T.accent)+';box-shadow:0 0 6px '+(color||T.accent)+'"></div></div></div>':'')+'</div>';}
 function wStatus(d,color,w,h,T){const items=[['POS','P'+(d.position||0),null],['THR',''+Math.round((d.throttle||0)*100),T.ledGreen],['BST',d.boost!=null?d.boost.toFixed(1):'--',null],['INC',''+(d.incidents||0),T.ledYellow],['BBI',d.brake_bias!=null?d.brake_bias.toFixed(0):'--',T.ledRed],['TC1',d.tc1!=null?d.tc1:'--',color],['TC2',d.tc2!=null?d.tc2:'--',null],['ABS',d.abs!=null?d.abs:'--',T.blue],['MAP',d.map!=null?d.map:'--',T.ledGreen]];let s='';for(const [l,v,b] of items){s+='<div style="flex:1;border-radius:4px;border:1px solid '+(b||T.panelEdge)+';background:'+T.panel+';box-shadow:'+(b?'inset 0 0 0 1px '+b+'33':'none')+';display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="fd" style="font-size:0.65em;color:'+T.label+';letter-spacing:0.08em">'+l+'</div><div class="fd" style="font-weight:700;font-size:1.05em;color:'+(b||T.text)+'">'+v+'</div></div>';}return '<div style="width:100%;height:100%;display:flex;gap:4px;padding:4px">'+s+'</div>';}
 
-function renderWidget(type,d,color,w,h,T,shape,u){
-  switch(type){case 'rpmGear':return wRpmGear(d,w,h,T,u);case 'rpmBar':return wRpmBar(d,w,h,T);case 'speed':return wSpeed(d,w,h,T,u);case 'tyres':return wTyres(d,w,h,T,u);case 'fuel':return wFuel(d,w,h,T);case 'gear':return wGear(d,w,h,T,shape);case 'delta':return wDelta(d,w,h,T);case 'laps':return wLaps(d,color,w,h,T);case 'cars':return wCars(d,w,h,T);case 'inputs':return wInputs(d,color,w,h,T,shape);case 'status':return wStatus(d,color,w,h,T);default:return '';}
+function renderWidget(type,d,color,w,h,T,shape,u,caps){
+  switch(type){case 'rpmGear':return wRpmGear(d,w,h,T,u);case 'rpmBar':return wRpmBar(d,w,h,T);case 'speed':return wSpeed(d,w,h,T,u);case 'tyres':return wTyres(d,w,h,T,u,caps);case 'fuel':return wFuel(d,w,h,T);case 'gear':return wGear(d,w,h,T,shape);case 'delta':return wDelta(d,w,h,T,caps);case 'laps':return wLaps(d,color,w,h,T);case 'cars':return wCars(d,w,h,T);case 'inputs':return wInputs(d,color,w,h,T,shape);case 'status':return wStatus(d,color,w,h,T);default:return '';}
 }
 
 function buildLayout(){
@@ -1569,23 +1629,37 @@ function buildLayout(){
   $('screen').style.background=T.bg;$('screen').style.setProperty('--pe',T.panelEdge);
   $('header').style.borderBottomColor=T.panelEdge;$('header').style.color=T.text;
   $('h-clock').style.color=T.text;
-  const c=$('canvas');c.innerHTML='';
-  for(const w of v.layout){const el=document.createElement('div');el.className='widget';el.style.left=w.x+'px';el.style.top=w.y+'px';el.style.width=w.w+'px';el.style.height=w.h+'px';el.style.background=T.panel;el.style.borderColor=T.panelEdge;el.style.fontSize=Math.max(10,Math.min(20,w.h*0.06))+'px';el.dataset.type=w.type;el.dataset.color=w.color||'';el.dataset.w=w.w;el.dataset.h=w.h;c.appendChild(el);}
+  const c=$('canvas');c.innerHTML='';const layout=isPortrait?PORTRAIT_LAYOUT:v.layout,cw=isPortrait?560:1000,ch=isPortrait?1000:560;c.style.width=cw+'px';c.style.height=ch+'px';
+  for(const w of layout){const el=document.createElement('div');el.className='widget';el.style.left=w.x+'px';el.style.top=w.y+'px';el.style.width=w.w+'px';el.style.height=w.h+'px';el.style.background=T.panel;el.style.borderColor=T.panelEdge;el.style.fontSize=Math.max(10,Math.min(20,w.h*0.06))+'px';el.dataset.type=w.type;el.dataset.color=w.color||'';el.dataset.w=w.w;el.dataset.h=w.h;c.appendChild(el);}
 }
 function renderFrame(d){
   if(!d)return;lastData=d;
-  const v=active,T=Object.assign({},SEM,v.theme),shape=v.shape,u={speed:'kmh',pressure:'psi'};
-  for(const el of $('canvas').children){const type=el.dataset.type,color=el.dataset.color||T.accent,w=+el.dataset.w,h=+el.dataset.h;el.innerHTML=renderWidget(type,d,color,w,h,T,shape,u);}
+  const v=active,T=Object.assign({},SEM,v.theme),shape=v.shape,u={speed:'kmh',pressure:'psi'},caps=deriveCaps(d);
+  for(const el of $('canvas').children){const type=el.dataset.type,color=el.dataset.color||T.accent,w=+el.dataset.w,h=+el.dataset.h;el.innerHTML=renderWidget(type,d,color,w,h,T,shape,u,caps);}
+  updateAlarms(d,caps);
   $('h-air').textContent=(d.air_temp!=null?d.air_temp.toFixed(1):'0.0')+'°';
   $('h-trk').textContent=(d.track_temp!=null?d.track_temp.toFixed(1):'0.0')+'°';
   $('h-sim').textContent=d.sim||'';
   $('h-demo').style.display=demo?'inline':'none';
 }
+function updateAlarms(d,caps){
+  if(!d){$('alarms').innerHTML='';return;}
+  const a=[];
+  if(caps.flags&&d.flag_state){const f=d.flag_state;if(f==='red')a.push({l:'RED FLAG',c:'#ff1a1a',p:6});if(f==='yellow'||f==='yellow_full')a.push({l:'YELLOW FLAG',c:'#ffe600',p:5});if(f==='blue')a.push({l:'BLUE FLAG',c:'#3b82f6',p:4});}
+  if(d.fuel_litres!=null&&d.fuel_per_lap){if(d.fuel_litres/d.fuel_per_lap<2)a.push({l:'LOW FUEL',c:'#ff9800',p:3});}else if(d.fuel_litres!=null&&d.fuel_litres<3)a.push({l:'LOW FUEL',c:'#ff9800',p:3});
+  if(d.water_temp!=null&&d.water_temp>110)a.push({l:'WATER TEMP',c:'#ff1a1a',p:4});
+  if(d.oil_temp!=null&&d.oil_temp>130)a.push({l:'OIL TEMP',c:'#ff1a1a',p:4});
+  if(d.tyres){const ps=Object.entries(d.tyres).map(([k,t])=>({p:t?t.pressure_psi:null})).filter(x=>x.p!=null);if(ps.length>=2){const avg=ps.reduce((s,x)=>s+x.p,0)/ps.length;for(const e of ps){if(e.p<avg-5){a.push({l:'TYRE PRESSURE',c:'#ff1a1a',p:5});break;}}}}
+  if(d.lap_delta!=null&&d.lap_delta>1.5)a.push({l:'OFF PACE',c:'#ff9800',p:2});
+  if(!a.length){$('alarms').innerHTML='';return;}
+  const top=[...a].sort((x,y)=>y.p-x.p).slice(0,3),flash=Math.floor(Date.now()/250)%2===0;
+  $('alarms').innerHTML=top.map(x=>'<div class="alarm-chip" style="color:'+(flash?'#000':x.c)+';background:'+(flash?x.c:'rgba(0,0,0,0.78)')+';border:2px solid '+x.c+';box-shadow:0 0 18px '+x.c+'88">'+x.l+'</div>').join('');
+}
 function buildSwitcher(){
   const s=$('switcher');s.innerHTML='';
   for(const v of VARIANTS){const chip=document.createElement('button');chip.className='chip'+(v.id===active.id?' active':'');chip.innerHTML='<span class="dot" style="background:'+v.theme.accent+';color:'+v.theme.accent+'"></span><span>'+v.name+'</span>';chip.onclick=()=>{active=VARIANTS.find(x=>x.id===v.id);localStorage.setItem('dashVariant',v.id);buildLayout();buildSwitcher();fit();if(lastData)renderFrame(lastData);showSwitcher();};s.appendChild(chip);}
 }
-function fit(){const wrap=$('canvas-wrap');if(!wrap)return;let aw=wrap.clientWidth,ah=wrap.clientHeight;if(!ah){const scr=$('screen');if(scr){ah=scr.clientHeight;const hdr=$('header');if(hdr)ah-=hdr.offsetHeight;}}if(!ah||ah<0)ah=(window.visualViewport?window.visualViewport.height:window.innerHeight)-40;if(!aw)aw=window.innerWidth-8;if(!aw||!ah)return;const sc=Math.max(0.1,Math.min(aw/1000,ah/560));$('canvas').style.transform='translate(-50%,-50%) scale('+sc+')';}
+function fit(){const wrap=$('canvas-wrap');if(!wrap)return;let aw=wrap.clientWidth,ah=wrap.clientHeight;if(!ah){const scr=$('screen');if(scr){ah=scr.clientHeight;const hdr=$('header');if(hdr)ah-=hdr.offsetHeight;}}if(!ah||ah<0)ah=(window.visualViewport?window.visualViewport.height:window.innerHeight)-40;if(!aw)aw=window.innerWidth-8;if(!aw||!ah)return;const cw=isPortrait?560:1000,ch=isPortrait?1000:560;const sc=Math.max(0.1,Math.min(aw/cw,ah/ch));$('canvas').style.transform='translate(-50%,-50%) scale('+sc+')';}
 function buildLeds(){for(const id of ['leds-l','leds-r']){const c=$(id);c.innerHTML='';for(let i=0;i<4;i++){const d=document.createElement('div');d.className='led-dot'+(i===0?'':' dim');c.appendChild(d);}}}
 function clock(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
 setInterval(()=>{$('h-clock').textContent=clock();},1000);
@@ -1608,10 +1682,11 @@ function connect(){
   ws.onerror=()=>{try{ws.close();}catch(ex){}};
 }
 
+isPortrait=window.innerHeight>window.innerWidth;
 buildLeds();buildLayout();buildSwitcher();requestAnimationFrame(fit);showSwitcher();
 const ro=new ResizeObserver(fit);ro.observe($('canvas-wrap'));ro.observe($('screen'));
-window.addEventListener('orientationchange',()=>setTimeout(fit,200));
-window.addEventListener('resize',fit);
+window.addEventListener('orientationchange',()=>{detectPortrait();setTimeout(fit,200);});
+window.addEventListener('resize',()=>{detectPortrait();fit();});
 window.addEventListener('visibilitychange',fit);
 if(window.visualViewport)window.visualViewport.addEventListener('resize',fit);
 connect();

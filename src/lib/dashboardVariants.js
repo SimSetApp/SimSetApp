@@ -137,6 +137,20 @@ export const DASH_VARIANTS = [
   },
 ];
 
+// Shared portrait (mobile) layout — vertical flex-stack that reflows to fill
+// the screen at full size instead of shrinking the landscape canvas.
+// flex weights: thin RPM bar, big gear, speed, delta, big tyres, fuel, laps.
+export const PORTRAIT_LAYOUT = [
+  { type: "rpmBar", flex: 0.4 },
+  { type: "gear", flex: 1.5 },
+  { type: "speed", flex: 1.1 },
+  { type: "delta", flex: 1.3 },
+  { type: "tyres", flex: 2.6 },
+  { type: "fuel", flex: 1.8 },
+  { type: "laps", flex: 1.3 },
+];
+
 export function getVariant(id) {
-  return DASH_VARIANTS.find((v) => v.id === id) || DASH_VARIANTS[0];
+  const v = DASH_VARIANTS.find((v) => v.id === id) || DASH_VARIANTS[0];
+  return { ...v, portraitLayout: v.portraitLayout || PORTRAIT_LAYOUT };
 }
