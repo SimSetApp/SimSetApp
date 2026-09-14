@@ -1435,7 +1435,7 @@ def dashboard_html():
   .leds-col{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:4px 2px}
   .led-dot{width:6px;height:6px;border-radius:50%;background:#00ff66;box-shadow:0 0 6px #00ff66}
   .led-dot.dim{opacity:.4}
-  #screen{flex:1;min-width:0;min-height:0;position:relative;border-radius:8px;overflow:hidden;background:#050505;
+  #screen{flex:1;min-width:0;min-height:0;position:relative;border-radius:8px;overflow:hidden;background:#050505;display:flex;flex-direction:column;
     box-shadow:inset 0 0 0 1px rgba(0,0,0,.85),inset 0 2px 10px rgba(0,0,0,.55)}
   #header{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;font-size:11px;border-bottom:1px solid #1c1c1c;color:#f5f5f5;position:relative;z-index:10;flex-shrink:0}
   #header .grp{display:flex;align-items:center;gap:10px}

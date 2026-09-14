@@ -31,24 +31,23 @@ export default function DDU3Dashboard({ data, demo }) {
   }, []);
   useEffect(() => {
     const measure = () => {
-      if (!wrapRef.current || !bezelRef.current) return;
-      const bezelRect = bezelRef.current.getBoundingClientRect();
+      if (!wrapRef.current) return;
       const w = wrapRef.current.clientWidth;
-      const header = wrapRef.current.previousElementSibling;
-      const headerH = header ? header.offsetHeight : 0;
-      // Fit both axes: available height = viewport bottom minus bezel top minus padding/header
-      const availH = window.innerHeight - bezelRect.top - 12 - headerH - 4;
-      setScale(Math.max(0.2, Math.min(w / CW, availH / CH)));
+      const h = wrapRef.current.clientHeight;
+      if (!w || !h) return;
+      setScale(Math.max(0.1, Math.min(w / CW, h / CH)));
     };
     const raf = () => requestAnimationFrame(measure);
     raf();
     const ro = new ResizeObserver(raf);
     if (wrapRef.current) ro.observe(wrapRef.current);
     window.addEventListener("resize", raf);
+    window.addEventListener("orientationchange", raf);
     window.addEventListener("scroll", raf, true);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", raf);
+      window.removeEventListener("orientationchange", raf);
       window.removeEventListener("scroll", raf, true);
     };
   }, [fs, customize]);
@@ -83,9 +82,9 @@ export default function DDU3Dashboard({ data, demo }) {
             ))}
           </div>
           {/* Screen */}
-          <div className="flex-1 min-w-0 relative rounded-lg overflow-hidden dash-bezel-inner" style={{ background: theme.bg }}>
+          <div className="flex-1 min-w-0 relative rounded-lg overflow-hidden dash-bezel-inner flex flex-col" style={{ background: theme.bg }}>
             {/* Header */}
-            <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10" style={{ borderColor: theme.panelEdge, color: theme.text }}>
+            <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: theme.panelEdge, color: theme.text }}>
               <div className="flex items-center gap-2.5">
                 <span className="tabular-nums" style={{ color: theme.text }}>{clock}</span>
                 <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "0.0"}°</span></span>
@@ -103,8 +102,8 @@ export default function DDU3Dashboard({ data, demo }) {
             </div>
 
             {/* Canvas */}
-            <div ref={wrapRef} className="w-full relative" style={{ height: CH * scale }}>
-              <div className="absolute top-0 left-0" style={{ width: CW, height: CH, transform: `scale(${scale})`, transformOrigin: "top left", background: theme.bg }}>
+            <div ref={wrapRef} className="flex-1 min-h-0 w-full relative">
+              <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
                 {variant.layout.map((w) => {
                   const color = w.color || accent;
                   return (
