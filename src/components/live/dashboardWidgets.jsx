@@ -52,10 +52,7 @@ export function tempGradient(t, T) {
 
 // Layered bloom: tight inner glow + mid halo + far scatter
 export function bloom(color, intense = false) {
-  if (intense) {
-    return `0 0 8px ${color}, 0 0 20px ${color}88, 0 0 40px ${color}44`;
-  }
-  return `0 0 6px ${color}bb, 0 0 16px ${color}55`;
+  return "none";
 }
 
 // Panel bevel: top inner highlight + border + bottom inner shadow (recessed glass)
@@ -72,8 +69,8 @@ export function innerBevel(T) {
 function ledSeg(col, on) {
   if (!on) return { background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.5), inset 0 1px 1px rgba(0,0,0,0.3)", opacity: 0.35 };
   return {
-    background: `radial-gradient(circle, ${col} 0%, ${col} 60%, ${col}88 100%)`,
-    boxShadow: `0 0 10px ${col}, 0 0 4px ${col}, inset 0 0 3px rgba(255,255,255,0.6)`,
+    background: `radial-gradient(circle, ${col} 0%, ${col} 65%, ${col}88 100%)`,
+    boxShadow: `0 0 3px ${col}, 0 0 6px ${col}aa, 0 0 12px ${col}44, inset 0 0 2px rgba(255,255,255,0.7)`,
     opacity: 1,
   };
 }
