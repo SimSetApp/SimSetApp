@@ -72,7 +72,7 @@ export const DASH_VARIANTS = [
     shape: "bar",
     theme: {
       isLight: false, bg: "#050505", panel: "#0d0d0d", panelEdge: "#1c1c1c",
-      text: "#f5f5f5", label: "#5a5a5a", dim: "#2a2a2a", accent: "#00ff88",
+      text: "#f5f5f5", label: "#8a8a8a", dim: "#2a2a2a", accent: "#00ff88",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
       track: "#161616", warn: "#ff9800",
     },
@@ -86,7 +86,7 @@ export const DASH_VARIANTS = [
     shape: "arc",
     theme: {
       isLight: false, bg: "#0a0f14", panel: "#111821", panelEdge: "#1c2a36",
-      text: "#e6f3f7", label: "#5b7385", dim: "#2a3a48", accent: "#00d4c8",
+      text: "#e6f3f7", label: "#7a95a8", dim: "#2a3a48", accent: "#00d4c8",
       ledGreen: "#2ee6a0", ledYellow: "#ffd23f", ledRed: "#ff4d5e", shiftColor: "#ff4d5e",
       track: "#0d141b", warn: "#ff9800",
     },
@@ -100,7 +100,7 @@ export const DASH_VARIANTS = [
     shape: "bar",
     theme: {
       isLight: false, bg: "#060604", panel: "#0e0e0a", panelEdge: "#1f1f14",
-      text: "#f5f0e0", label: "#6a5d3a", dim: "#2a2418", accent: "#ffb020",
+      text: "#f5f0e0", label: "#8a7d5a", dim: "#2a2418", accent: "#ffb020",
       ledGreen: "#00ff66", ledYellow: "#ffd23f", ledRed: "#ff4d4d", shiftColor: "#ff4d4d",
       track: "#161408", warn: "#ff9800",
     },
@@ -114,7 +114,7 @@ export const DASH_VARIANTS = [
     shape: "ring",
     theme: {
       isLight: false, bg: "#080808", panel: "#101010", panelEdge: "#222222",
-      text: "#ffffff", label: "#5a5a5a", dim: "#2a2a2a", accent: "#ff2d2d",
+      text: "#ffffff", label: "#8a8a8a", dim: "#2a2a2a", accent: "#ff2d2d",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ffe600",
       track: "#161616", warn: "#ff9800",
     },
@@ -128,7 +128,7 @@ export const DASH_VARIANTS = [
     shape: "led",
     theme: {
       isLight: false, bg: "#000000", panel: "#0a0a0a", panelEdge: "#1a1a1a",
-      text: "#ffffff", label: "#4a4a4a", dim: "#222222", accent: "#ffffff",
+      text: "#ffffff", label: "#7a7a7a", dim: "#222222", accent: "#ffffff",
       ledGreen: "#00ff66", ledYellow: "#ffe600", ledRed: "#ff1a1a", shiftColor: "#ff1a1a",
       track: "#141414", warn: "#ff9800",
     },

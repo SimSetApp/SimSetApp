@@ -223,9 +223,8 @@ export default function DDU3Dashboard({ data, demo, inKiosk = false }) {
             {/* Alarm / flag overlay — flashes over the dash when active */}
             <AlarmOverlay data={data} caps={caps} />
 
-            {/* Glass overlay — reflection, scanlines, pixel grid, vignette (landscape only) */}
+            {/* Glass overlay — subtle reflection and vignette (landscape only) */}
             {!isPortrait && <div className="dash-glass absolute inset-0 z-20" />}
-            {!isPortrait && <div className="dash-pixel-grid absolute inset-0 z-20" />}
           </div>
           {/* Right bezel status LEDs */}
           <div className="flex flex-col items-center justify-center gap-2 py-3 px-1">

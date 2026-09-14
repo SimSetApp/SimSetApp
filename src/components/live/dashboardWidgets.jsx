@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export const SEM = {
   green: "#00ff66", yellow: "#ffe600", red: "#ff1a1a",
-  blue: "#3b82f6", amber: "#ff9800", label: "#6a6a6a",
+  blue: "#3b82f6", amber: "#ff9800", label: "#9a9a9a",
   text: "#ffffff", panel: "#0a0a0a", panelEdge: "#1a1a1a", dim: "#2a2a2a",
   border: "#262626", track: "#161616", warn: "#ff9800",
 };
@@ -53,9 +53,9 @@ export function tempGradient(t, T) {
 // Layered bloom: tight inner glow + mid halo + far scatter
 export function bloom(color, intense = false) {
   if (intense) {
-    return `0 0 10px ${color}, 0 0 30px ${color}aa, 0 0 60px ${color}66, 0 0 90px ${color}44`;
+    return `0 0 8px ${color}, 0 0 20px ${color}88, 0 0 40px ${color}44`;
   }
-  return `0 0 10px ${color}cc, 0 0 30px ${color}66, 0 0 60px ${color}33`;
+  return `0 0 6px ${color}bb, 0 0 16px ${color}55`;
 }
 
 // Panel bevel: top inner highlight + border + bottom inner shadow (recessed glass)
@@ -72,8 +72,8 @@ export function innerBevel(T) {
 function ledSeg(col, on) {
   if (!on) return { background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.5), inset 0 1px 1px rgba(0,0,0,0.3)", opacity: 0.35 };
   return {
-    background: `radial-gradient(circle, ${col} 0%, ${col}cc 55%, ${col}66 100%)`,
-    boxShadow: `0 0 14px ${col}aa, 0 0 6px ${col}, inset 0 0 4px rgba(255,255,255,0.5)`,
+    background: `radial-gradient(circle, ${col} 0%, ${col} 60%, ${col}88 100%)`,
+    boxShadow: `0 0 10px ${col}, 0 0 4px ${col}, inset 0 0 3px rgba(255,255,255,0.6)`,
     opacity: 1,
   };
 }
