@@ -63,9 +63,14 @@ export function panelBevel(theme) {
   return `inset 0 1px 0 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${theme.panelEdge}55, inset 0 -1px 3px rgba(0,0,0,0.5), inset 0 2px 5px rgba(0,0,0,0.35)`;
 }
 
+// Inner bevel for sub-panels: stamped/recessed glass inset (tyre cells, sector cells, bar tracks)
+export function innerBevel(T) {
+  return `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.25)`;
+}
+
 // Soft LED segment style: radial-gradient fill + layered glow (physical LED look)
 function ledSeg(col, on) {
-  if (!on) return { background: "rgba(255,255,255,0.06)", boxShadow: "none", opacity: 0.5 };
+  if (!on) return { background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.5), inset 0 1px 1px rgba(0,0,0,0.3)", opacity: 0.35 };
   return {
     background: `radial-gradient(circle, ${col} 0%, ${col}cc 55%, ${col}66 100%)`,
     boxShadow: `0 0 14px ${col}aa, 0 0 6px ${col}, inset 0 0 4px rgba(255,255,255,0.5)`,
@@ -103,8 +108,8 @@ function Bar({ label, value, color, T }) {
       <div className="flex justify-between" style={{ fontSize: "0.9em", color: T.label }}>
         <span className="font-lcd">{label}</span><span className="font-lcd tabular-nums">{Math.round(v * 100)}%</span>
       </div>
-      <div className="rounded-full overflow-hidden" style={{ height: "0.65em", background: T.track }}>
-        <div className="h-full rounded-full" style={{ width: `${v * 100}%`, background: color, boxShadow: v > 0.05 ? `0 0 8px ${color}, inset 0 0 4px rgba(255,255,255,0.35)` : "none" }} />
+      <div className="rounded-full overflow-hidden" style={{ height: "0.65em", background: T.track, boxShadow: innerBevel(T) }}>
+        <div className="h-full rounded-full" style={{ width: `${v * 100}%`, background: `linear-gradient(180deg, ${color}, ${color}aa)`, boxShadow: v > 0.05 ? `0 0 8px ${color}aa, 0 0 4px ${color}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.2)` : "none" }} />
       </div>
     </div>
   );
@@ -236,6 +241,7 @@ function Tyres({ data, w, h, T, units, caps }) {
             <div key={k} className="rounded border p-1 flex flex-col gap-0.5 justify-center" style={{
               borderColor: T.panelEdge,
               background: `linear-gradient(135deg, ${tc}18, transparent)`,
+              boxShadow: innerBevel(T),
             }}>
               <div className="flex justify-between items-baseline">
                 <span className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
@@ -276,6 +282,7 @@ function Tyres({ data, w, h, T, units, caps }) {
           <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{
             borderColor: T.panelEdge,
             background: `linear-gradient(135deg, ${tc}18, transparent)`,
+            boxShadow: innerBevel(T),
           }}>
             <div className="font-digi" style={{ fontSize: Math.max(8, tempFs * 0.38), color: T.label, letterSpacing: "0.1em" }}>{k}</div>
             <div className="font-digi font-bold tabular-nums leading-none" style={{
@@ -407,7 +414,7 @@ function Delta({ data, w, h, T, caps }) {
           {["S1", "S2", "S3"].map((lbl, i) => {
             const c = secColor(i);
             return (
-              <div key={lbl} className="rounded border text-center py-0.5" style={{ borderColor: `${c}55`, background: `${c}11` }}>
+              <div key={lbl} className="rounded border text-center py-0.5" style={{ borderColor: `${c}55`, background: `${c}11`, boxShadow: innerBevel(T) }}>
                 <div className="font-digi" style={{ fontSize: Math.max(7, secFs * 0.5), color: T.label, letterSpacing: "0.1em" }}>{lbl}</div>
                 <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c, textShadow: bloom(c) }}>
                   {sectors[i] != null ? fmt(sectors[i]) : "--"}
@@ -513,9 +520,9 @@ function DialInputs({ data, T }) {
         <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
           <svg viewBox="0 0 100 50" className="w-full h-full">
             <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={T.track} strokeWidth="6" />
-            <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={color} strokeWidth="6" strokeDasharray={`${circ * value} ${circ}`} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 3px ${color})` }} />
-            <line x1="50" y1="50" x2={x2} y2={y2} stroke={T.text} strokeWidth="2" />
-            <circle cx="50" cy="50" r="2.5" fill={T.text} />
+            <path d="M5 50 A45 45 0 0 1 95 50" fill="none" stroke={color} strokeWidth="6" strokeDasharray={`${circ * value} ${circ}`} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 4px ${color}) drop-shadow(0 0 8px ${color}66)` }} />
+            <line x1="50" y1="50" x2={x2} y2={y2} stroke={T.text} strokeWidth="2" style={{ filter: `drop-shadow(0 0 2px ${T.text}88)` }} />
+            <circle cx="50" cy="50" r="2.5" fill={T.text} style={{ filter: `drop-shadow(0 0 3px ${T.text}aa)` }} />
           </svg>
         </div>
         <div className="font-lcd" style={{ fontSize: "0.7em", color: T.label }}>{label} <span className="tabular-nums">{Math.round((value ?? 0) * 100)}%</span></div>
@@ -530,9 +537,9 @@ function DialInputs({ data, T }) {
       </div>
       <div>
         <div className="flex justify-between" style={{ fontSize: "0.8em", color: T.label }}><span className="font-lcd">STR</span><span className="font-lcd tabular-nums">{(data.steer ?? 0).toFixed(2)}</span></div>
-        <div className="relative rounded-full" style={{ height: "0.6em", background: T.track }}>
+        <div className="relative rounded-full" style={{ height: "0.6em", background: T.track, boxShadow: innerBevel(T) }}>
           <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.panelEdge }} />
-          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: T.accent, boxShadow: `0 0 6px ${T.accent}` }} />
+          <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.2em", background: T.accent, boxShadow: `0 0 6px ${T.accent}, inset 0 1px 0 rgba(255,255,255,0.4)` }} />
         </div>
       </div>
     </div>
@@ -549,9 +556,9 @@ function Inputs({ data, color, w, h, T, shape }) {
       {showSteer && (
         <div>
           <div className="flex justify-between" style={{ fontSize: "0.9em", color: T.label }}><span className="font-lcd">STR</span><span className="font-lcd tabular-nums">{(data.steer ?? 0).toFixed(2)}</span></div>
-          <div className="relative rounded-full" style={{ height: "0.7em", background: T.track }}>
+          <div className="relative rounded-full" style={{ height: "0.7em", background: T.track, boxShadow: innerBevel(T) }}>
             <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ background: T.panelEdge }} />
-            <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.3em", background: color || T.accent, boxShadow: `0 0 6px ${color || T.accent}` }} />
+            <div className="absolute top-1/2 -translate-y-1/2 rounded-sm" style={{ left: `calc(${50 + (data.steer ?? 0) * 50}% - 4px)`, width: "8px", height: "1.3em", background: color || T.accent, boxShadow: `0 0 6px ${color || T.accent}, inset 0 1px 0 rgba(255,255,255,0.4)` }} />
           </div>
         </div>
       )}
@@ -577,7 +584,7 @@ function Status({ data, color, w, h, T }) {
       {items.map(([l, v, b, fl]) => (
         <div key={l} className="rounded border flex flex-col items-center justify-center" style={{
           flex: fl, borderColor: b || T.panelEdge, background: T.panel,
-          boxShadow: b ? `inset 0 0 0 1px ${b}33, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.04)",
+          boxShadow: b ? `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${b}44, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)` : `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`,
         }}>
           <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{l}</div>
           <div className="font-digi font-bold tabular-nums" style={{ fontSize: "1.05em", color: b || T.text }}>{v}</div>
