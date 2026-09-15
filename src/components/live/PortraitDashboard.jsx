@@ -56,19 +56,19 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
         return (
           <div
             key={slotId}
-            className="rounded-lg overflow-hidden relative"
+            className="overflow-hidden relative"
             style={{
               flex: `${item.flex} 1 0`,
               minHeight: 0,
-              border: editing ? `1px dashed ${accent}` : `1px solid ${theme.panelEdge}`,
-              background: theme.panel,
-              boxShadow: editing ? "none" : panelBevel(theme),
+              border: editing ? `1px dashed ${accent}` : "none",
+              background: "transparent",
+              boxShadow: "none",
               cursor: editing ? "pointer" : "default",
             }}
             onClick={editing && onSlotTap ? () => onSlotTap(slotId, effectiveType) : undefined}
           >
             {editing && (
-              <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: theme.panel, padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
+              <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: "rgba(0,0,0,0.6)", padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
                 {isEmpty ? "EMPTY" : def?.label || effectiveType}
               </div>
             )}

@@ -154,7 +154,7 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
             <div className="dash-glass absolute inset-0 z-0" />
 
             {/* Header — above glass */}
-            <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: theme.panelEdge, color: theme.text }}>
+            <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: `${theme.panelEdge}88`, color: theme.text }}>
               <div className="flex items-center gap-2.5">
                 <DashClock theme={theme} />
                 <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }} className="tabular-nums">{data.air_temp != null ? data.air_temp.toFixed(1) : "--"}°</span></span>
@@ -162,12 +162,12 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                 {data.water_temp != null && <span style={{ color: theme.label }}>H₂O <span style={{ color: data.water_temp > 110 ? "#ff1a1a" : theme.text }} className="tabular-nums">{data.water_temp.toFixed(0)}°</span></span>}
                 {data.oil_temp != null && <span style={{ color: theme.label }}>OIL <span style={{ color: data.oil_temp > 130 ? "#ff1a1a" : theme.text }} className="tabular-nums">{data.oil_temp.toFixed(0)}°</span></span>}
                 {caps?.flags && (
-                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: flagCol || theme.dim, background: flagCol ? `${flagCol}22` : "transparent", border: `1px solid ${flagCol ? flagCol + "44" : theme.panelEdge}`, letterSpacing: "0.1em" }}>
+                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: flagCol || theme.dim, background: flagCol ? `${flagCol}22` : "transparent", letterSpacing: "0.1em" }}>
                     {data.flag_state ? data.flag_state.toUpperCase() : "GREEN"}
                   </span>
                 )}
                 {data.pit_limiter && (
-                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: "#ff9800", background: "#ff980022", border: "1px solid #ff980044", letterSpacing: "0.1em" }}>
+                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: "#ff9800", background: "#ff980022", letterSpacing: "0.1em" }}>
                     PIT {data.pit_speed_limit || 60}
                   </span>
                 )}
@@ -198,6 +198,9 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                 />
               ) : (
                 <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
+                  {/* Hairline dividers between major zones — implied separation, no boxed panels */}
+                  <div className="absolute pointer-events-none" style={{ left: 292, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
+                  <div className="absolute pointer-events-none" style={{ left: 708, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
                   {variant.layout.map((w) => {
                     const color = w.color || accent;
                     const effectiveType = getSlotType(w.id, w.type);
@@ -206,19 +209,19 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                     return (
                       <div
                         key={w.id}
-                        className="absolute rounded-lg overflow-hidden"
+                        className="absolute overflow-hidden"
                         style={{
                           left: w.x, top: w.y, width: w.w, height: w.h,
                           fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
-                          border: editing ? `1px dashed ${accent}` : `1px solid ${theme.panelEdge}`,
-                          background: theme.panel,
-                          boxShadow: editing ? "none" : panelBevel(theme),
+                          border: editing ? `1px dashed ${accent}` : "none",
+                          background: "transparent",
+                          boxShadow: "none",
                           cursor: editing ? "pointer" : "default",
                         }}
                         onClick={editing ? () => setPickerSlot({ id: w.id, currentType: effectiveType }) : undefined}
                       >
                         {editing && (
-                          <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: theme.panel, padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
+                          <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: "rgba(0,0,0,0.6)", padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
                             {isEmpty ? "EMPTY" : def?.label || effectiveType}
                           </div>
                         )}

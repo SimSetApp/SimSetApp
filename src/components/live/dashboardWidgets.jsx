@@ -56,9 +56,10 @@ export function tempGradient(t, T) {
   return "hsl(0, 100%, 50%)";
 }
 
-// Panel bevel: top inner highlight + border + bottom inner shadow (recessed glass)
-export function panelBevel(theme) {
-  return `inset 0 1px 0 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${theme.panelEdge}55, inset 0 -1px 3px rgba(0,0,0,0.5), inset 0 2px 5px rgba(0,0,0,0.35)`;
+// Panel bevel: no-op — unified surface has no per-widget chrome.
+// Kept as an export so existing callers don't break; returns "none".
+export function panelBevel(_theme) {
+  return "none";
 }
 
 // Inner bevel for sub-panels: stamped/recessed glass inset (tyre cells, sector cells, bar tracks)
@@ -160,7 +161,7 @@ function RpmGear({ data, w, h, T, units }) {
   const limiter = rpmPct >= 0.99;
   const segs = 26;
   const barH = Math.max(14, h * 0.09);
-  const gearFs = Math.max(40, Math.min(h * 0.34, w * 0.32, 96));
+  const gearFs = Math.max(48, Math.min(h * 0.42, w * 0.38, 128));
   const speedFs = Math.max(16, h * 0.11);
   const rpmFs = Math.max(11, h * 0.07);
   const dispSpeed = units.speed === "mph" ? Math.round((data.speed_kmh || 0) * 0.621371) : Math.round(data.speed_kmh || 0);
@@ -266,10 +267,8 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
       const brake = t.brake_temp;
       const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
       return (
-        <div key={k} className="rounded border p-1 flex flex-col gap-0.5 justify-center" style={{
-          borderColor: T.panelEdge,
-          background: `linear-gradient(135deg, ${tc}18, transparent)`,
-          boxShadow: innerBevel(T),
+        <div key={k} className="flex flex-col gap-0.5 justify-center" style={{
+          background: "transparent",
         }}>
           <div className="flex justify-between items-baseline">
             <span className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
@@ -302,10 +301,8 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
     const temp = t?.temp_c, pressVal = t?.pressure_psi, wear = t?.wear_pct;
     const tc = tempGradient(temp, T);
     return (
-      <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{
-        borderColor: T.panelEdge,
-        background: `linear-gradient(135deg, ${tc}18, transparent)`,
-        boxShadow: innerBevel(T),
+      <div key={k} className="flex flex-col justify-center" style={{
+        background: "transparent",
       }}>
         <div className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.38), color: T.label, letterSpacing: "0.1em" }}>{k}</div>
         <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs, color: tc }}>{temp != null ? Math.round(temp) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></div>
@@ -364,7 +361,7 @@ function Gear({ data, w, h, T, shape }) {
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
   // Cap gear numeral so the Formula Wheel 448px slot doesn't render a 168px giant
-  const gearFs = Math.max(48, Math.min(h * 0.42, w * 0.42, 120));
+  const gearFs = Math.max(56, Math.min(h * 0.52, w * 0.48, 168));
   // Contrasting shift alert: white flash stands out from red/yellow RPM segments
   const gearColor = shift ? "#ffffff" : data.gear > 0 ? T.text : T.amber;
   const rpmFs = Math.max(10, h * 0.06);
@@ -473,7 +470,7 @@ function Delta({ data, w, h, T, caps, trends }) {
             const d = secDelta(i);
             const nb = isNewBest(i);
             return (
-              <div key={lbl} className="rounded border text-center py-0.5 relative" style={{ borderColor: `${c}55`, background: `${c}11`, boxShadow: innerBevel(T) }}>
+              <div key={lbl} className="text-center py-0.5 relative" style={{ background: "transparent" }}>
                 <div className="font-digi" style={{ fontSize: Math.max(8, secFs * 0.5), color: T.label, letterSpacing: "0.1em" }}>{lbl}</div>
                 <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c }}>
                   {sectors[i] != null ? fmt(sectors[i]) : "--"}
@@ -648,13 +645,10 @@ function Status({ data, color, w, h, T }) {
   return (
     <div className="w-full h-full flex gap-1 p-1">
       {items.map((it) => (
-        <div key={it.l} className="rounded border flex flex-col items-center justify-center" style={{
+        <div key={it.l} className="flex flex-col items-center justify-center" style={{
           flex: it.fl,
-          borderColor: it.c || T.panelEdge,
-          background: it.primary ? `${T.accent}15` : it.setting ? T.dim : T.panel,
-          boxShadow: it.c
-            ? `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${it.c}44, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`
-            : `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`,
+          background: "transparent",
+          border: it.primary ? `1px solid ${T.accent}44` : "none",
         }}>
           <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{it.l}</div>
           <div className="font-digi font-bold tabular-nums" style={{ fontSize: it.fs, color: it.c || T.text }}>{it.v}</div>
