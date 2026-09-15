@@ -258,6 +258,8 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
   const compound = data.tyre_compound;
 
   // 3-point thermal view (sim-native only): I/M/O strip + brake disc temp
+  // Orientation: inner edge faces the car centerline, so left tyres read
+  // outer→inner (O left, I right) and right tyres read inner→outer (I left, O right).
   if (has3Point) {
     const renderCell = (k) => {
       const t = tyres[k.toLowerCase()] || {};
@@ -266,6 +268,12 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
       const tc = tempGradient(core, T);
       const brake = t.brake_temp;
       const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
+      const isLeft = k.endsWith("L");
+      const grad = ti != null && tm != null && to != null
+        ? (isLeft
+          ? `linear-gradient(90deg, ${tempGradient(to, T)}, ${tempGradient(tm, T)}, ${tempGradient(ti, T)})`
+          : `linear-gradient(90deg, ${tempGradient(ti, T)}, ${tempGradient(tm, T)}, ${tempGradient(to, T)})`)
+        : "rgba(255,255,255,0.08)";
       return (
         <div key={k} className="flex flex-col gap-0.5 justify-center" style={{
           background: "transparent",
@@ -274,9 +282,9 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
             <span className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
             <span className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs * 0.72, color: tc }}>{core != null ? Math.round(core) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></span>
           </div>
-          <div className="rounded overflow-hidden relative" style={{ height: Math.max(8, tempFs * 0.4), background: ti != null && tm != null && to != null ? `linear-gradient(90deg, ${tempGradient(ti, T)}, ${tempGradient(tm, T)}, ${tempGradient(to, T)})` : "rgba(255,255,255,0.08)", boxShadow: ti != null ? `0 0 6px ${tc}66, inset 0 0 3px rgba(255,255,255,0.25)` : "none" }}>
-            <span className="absolute left-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>I</span>
-            <span className="absolute right-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>O</span>
+          <div className="rounded overflow-hidden relative" style={{ height: Math.max(8, tempFs * 0.4), background: grad, boxShadow: ti != null ? `0 0 6px ${tc}66, inset 0 0 3px rgba(255,255,255,0.25)` : "none" }}>
+            <span className="absolute left-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>{isLeft ? "O" : "I"}</span>
+            <span className="absolute right-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>{isLeft ? "I" : "O"}</span>
           </div>
           <div className="flex justify-between font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.32), color: T.label }}>
             {hasBrake && <span>BRK <span style={{ color: bc }} className="tabular-nums">{brake != null ? Math.round(brake) : "--"}°</span></span>}

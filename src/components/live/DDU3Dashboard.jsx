@@ -198,9 +198,10 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                 />
               ) : (
                 <div className="absolute" style={{ width: CW, height: CH, left: "50%", top: "50%", transform: `translate(-50%, -50%) scale(${scale})`, transformOrigin: "center", background: theme.bg }}>
-                  {/* Hairline dividers between major zones — implied separation, no boxed panels */}
-                  <div className="absolute pointer-events-none" style={{ left: 292, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
-                  <div className="absolute pointer-events-none" style={{ left: 708, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
+                  {/* Hairline dividers between major zones — per-variant to avoid overlapping widgets */}
+                  {(variant.dividers || []).map((dx, i) => (
+                    <div key={`d${i}`} className="absolute pointer-events-none" style={{ left: dx, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
+                  ))}
                   {variant.layout.map((w) => {
                     const color = w.color || accent;
                     const effectiveType = getSlotType(w.id, w.type);

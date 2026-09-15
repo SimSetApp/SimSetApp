@@ -124,6 +124,7 @@ export const DASH_VARIANTS = [
       absColor: "#4a9eff", track: "#161616", warn: "#ff9800",
     },
     layout: GT3_PRO_LAYOUT, portraitLayout: GT3_PRO_PORTRAIT,
+    dividers: [292, 708],
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -138,6 +139,7 @@ export const DASH_VARIANTS = [
       absColor: "#4a9eff", track: "#0d141b", warn: "#ff9800",
     },
     layout: GT3_RACE_LAYOUT, portraitLayout: GT3_RACE_PORTRAIT,
+    dividers: [292, 708],
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -152,6 +154,7 @@ export const DASH_VARIANTS = [
       absColor: "#4a9eff", track: "#161408", warn: "#ff9800",
     },
     layout: GT3_ENDURANCE_LAYOUT, portraitLayout: GT3_ENDURANCE_PORTRAIT,
+    dividers: [292, 708],
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -166,6 +169,7 @@ export const DASH_VARIANTS = [
       absColor: "#4a9eff", track: "#161616", warn: "#ff9800",
     },
     layout: FORMULA_WHEEL_LAYOUT, portraitLayout: FORMULA_WHEEL_PORTRAIT,
+    dividers: [296, 706],
     units: { speed: "kmh", pressure: "psi" },
   },
   {
@@ -180,6 +184,7 @@ export const DASH_VARIANTS = [
       absColor: "#4a9eff", track: "#141414", warn: "#ff9800",
     },
     layout: FORMULA_HALO_LAYOUT, portraitLayout: FORMULA_HALO_PORTRAIT,
+    dividers: [312, 682],
     units: { speed: "kmh", pressure: "psi" },
   },
 ];
