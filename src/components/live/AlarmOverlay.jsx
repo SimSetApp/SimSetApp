@@ -44,12 +44,14 @@ function deriveAlarms(data, caps) {
     if (f === "checkered") alarms.push({ id: "flag_checkered", label: "CHECKERED", tone: "white", priority: 6 });
   }
 
-  // Low fuel — laps-based (warning) vs litres-based (critical)
-  if (data.fuel_litres != null && data.fuel_per_lap) {
+  // Low fuel — litres-based critical fires first (independent of fuel_per_lap);
+  // laps-based warning only fires when not already critical, so both are
+  // reachable but never redundant.
+  if (data.fuel_litres != null && data.fuel_litres < FUEL_CRITICAL_L) {
+    alarms.push({ id: "fuel_critical", label: "FUEL CRITICAL", tone: "red", priority: 4 });
+  } else if (data.fuel_litres != null && data.fuel_per_lap) {
     const lapsLeft = data.fuel_litres / data.fuel_per_lap;
     if (lapsLeft < FUEL_LOW_LAPS) alarms.push({ id: "fuel_low", label: "LOW FUEL", tone: "amber", priority: 3 });
-  } else if (data.fuel_litres != null && data.fuel_litres < FUEL_CRITICAL_L) {
-    alarms.push({ id: "fuel_critical", label: "FUEL CRITICAL", tone: "red", priority: 4 });
   }
 
   // Over-temp (water / oil — sim-native only)
@@ -90,7 +92,7 @@ function AlarmBannerStack({ alarms }) {
 
   return (
     // Positioned below the header strip so it doesn't overlap clock/temps
-    <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 pointer-events-none">
+    <div className="absolute top-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 pointer-events-none">
       {top.map((a, i) => {
         const col = TONE[a.tone] || TONE.red;
         // Stagger flash phase: even alarms follow global, odd alarms invert

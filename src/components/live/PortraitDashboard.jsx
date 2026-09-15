@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { renderWidget, WIDGET_DEFS, panelBevel } from "@/components/live/dashboardWidgets";
+import { renderWidget, WIDGET_DEFS, WIDGET_DEF_MAP, panelBevel } from "@/components/live/dashboardWidgets";
 import { PORTRAIT_LAYOUT } from "@/lib/dashboardVariants";
 
 /**
@@ -51,7 +51,7 @@ export default function PortraitDashboard({ data, variant, config, caps, editing
         const slotId = `p${i}_${item.type}`;
         const effectiveType = getSlotType ? getSlotType(slotId, item.type) : item.type;
         const isEmpty = effectiveType === "empty";
-        const def = WIDGET_DEFS.find((d) => d.type === effectiveType);
+        const def = WIDGET_DEF_MAP.get(effectiveType);
         const itemH = (availH * item.flex) / totalFlex;
         return (
           <div

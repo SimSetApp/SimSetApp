@@ -6,7 +6,7 @@ import { FlashProvider } from "@/lib/flashContext";
 import { useTrend } from "@/hooks/useTrend";
 import { useCapabilities } from "@/lib/dashboardCapabilities";
 import BezelLEDs from "@/components/live/BezelLEDs";
-import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
+import { WIDGET_DEFS, WIDGET_DEF_MAP } from "@/components/live/dashboardWidgets";
 import WidgetPicker from "@/components/live/WidgetPicker";
 import { renderWidget, panelBevel } from "@/components/live/dashboardWidgets";
 import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
@@ -37,7 +37,6 @@ function DashClock({ theme }) {
 function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale = false }) {
   const bezelRef = useRef(null);
   const wrapRef = useRef(null);
-  const rafRef = useRef(null);
   const [fs, setFs] = useState(false);
   const [customize, setCustomize] = useState(false);
   const [scale, setScale] = useState(0.76);
@@ -84,9 +83,8 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
       ro.disconnect();
       window.removeEventListener("resize", measure);
       window.removeEventListener("orientationchange", measure);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [fs, customize, isPortrait]);
+  }, [fs, isPortrait]);
 
   const toggleFs = async () => {
     if (inKiosk) {
@@ -141,9 +139,9 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
       <FlashProvider>
       <div
         ref={bezelRef}
-        className={`dash-bezel font-digi select-none overflow-hidden rounded-xl ${fs && !inKiosk ? "w-screen h-screen flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
+        className={`dash-bezel font-digi select-none overflow-hidden rounded-xl ${fs && !inKiosk ? "w-full h-full flex flex-col justify-center max-w-none p-3" : inKiosk ? "flex-1 min-h-0 w-full p-2.5" : isPortrait ? "w-full p-2.5 h-[78vh] min-h-[440px]" : "w-full p-2.5 aspect-[16/9]"}`}
       >
-        <div className={`flex gap-2 h-full ${fs ? "max-w-5xl mx-auto w-full" : ""}`}>
+        <div className={`flex gap-2 h-full ${fs ? "max-w-7xl mx-auto w-full" : ""}`}>
           {/* Left bezel status LEDs — functional indicators */}
           <BezelLEDs data={data} caps={caps} theme={theme} side="left" />
           {/* Screen */}
@@ -189,7 +187,7 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                     const color = w.color || accent;
                     const effectiveType = getSlotType(w.id, w.type);
                     const isEmpty = effectiveType === "empty";
-                    const def = WIDGET_DEFS.find((d) => d.type === effectiveType);
+                    const def = WIDGET_DEF_MAP.get(effectiveType);
                     return (
                       <div
                         key={w.id}

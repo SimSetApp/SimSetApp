@@ -156,11 +156,11 @@ function mockTick(s) {
     }
   }
 
-  let rpm = Math.max(800, Math.min(8000, Math.round(MOCK_GEAR_MAX[s.gear] ? (s.speed / MOCK_GEAR_MAX[s.gear]) * 8000 : 0)));
+  let rpm = MOCK_GEAR_MAX[s.gear] ? Math.max(800, Math.min(8000, Math.round((s.speed / MOCK_GEAR_MAX[s.gear]) * 8000))) : Math.round(800 + Math.sin(s.t * 8) * 150);
   if (rpm >= 7800) rpm = Math.round(7800 - 100 - 100 * Math.sin(s.t * 30));
 
   // DRS: active on straights (high speed, full throttle, not cornering, not pitting, green flag)
-  const drs = !s.inPit && s.speed > 200 && s.throttle > 0.8 && s.cornerDir !== undefined && !(s.lastCorner);
+  const drs = !s.inPit && s.speed > 200 && s.throttle > 0.8 && !s.lastCorner;
 
   // Water/oil temp: gentle fluctuation
   s.waterTemp = 90 + Math.sin(s.t * 0.05) * 2;
@@ -197,21 +197,24 @@ function mockTick(s) {
       s.finished = true;
       s.finishedTimer = 4;
     }
-    // Brief FINISHED state — checkered flag waves, car slows, then restart
-    if (s.finished) {
-      s.finishedTimer -= dt;
-      s.speed = Math.max(0, s.speed - 20 * dt);
-      s.throttle = 0;
-      s.brake = s.speed > 5 ? 0.2 : 0;
-      if (s.finishedTimer <= 0) {
-        s.finished = false;
-        s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
-        s.lapTimes = []; s.raceElapsed = 0;
-        s.bestSectors = [null, null, null]; s.personalBestSectors = [null, null, null];
-        for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; s.tyres[k].brake_temp = 80; }
-      }
-    }
     lapTime = 0;
+  }
+
+  // Brief FINISHED state — checkered flag waves, car slows, then restart.
+  // Runs every frame (not just on lap completion) so the timer counts down
+  // in ~4 seconds instead of ~80 laps.
+  if (s.finished) {
+    s.finishedTimer -= dt;
+    s.speed = Math.max(0, s.speed - 20 * dt);
+    s.throttle = 0;
+    s.brake = s.speed > 5 ? 0.2 : 0;
+    if (s.finishedTimer <= 0) {
+      s.finished = false;
+      s.lap = 1; s.fuel = MOCK_FUEL_START; s.best = null; s.position = 4;
+      s.lapTimes = []; s.raceElapsed = 0;
+      s.bestSectors = [null, null, null]; s.personalBestSectors = [null, null, null];
+      for (const k in s.tyres) { s.tyres[k].wear_pct = 0; s.tyres[k].temp_c = MOCK_AMBIENT + 5; s.tyres[k].brake_temp = 80; }
+    }
   }
 
   s.raceElapsed += dt;
@@ -244,6 +247,7 @@ function mockTick(s) {
     type: "telemetry",
     ts: Date.now() / 1000,
     sim: "Demo Sim",
+    demo: true,
     connected: true,
     session_type: "Race",
     track: "Silverstone GP",

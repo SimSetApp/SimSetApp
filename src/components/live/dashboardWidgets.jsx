@@ -25,6 +25,8 @@ export const WIDGET_DEFS = [
   { type: "status", label: "Status Bar", w: 960, h: 48 },
 ];
 
+export const WIDGET_DEF_MAP = new Map(WIDGET_DEFS.map((d) => [d.type, d]));
+
 /* ── Visual helpers (shared across all widgets) ── */
 
 // Symmetric thermal gradient: blue=too cold (grip warning) → green=optimal → red=too hot.
@@ -125,12 +127,27 @@ function Title({ children, T }) {
 }
 
 /* ── Integrated RPM bar + gear + speed (GT3 Pro / Endurance) ── */
-function RpmGear({ data, w, h, T, units }) {
+// Isolated LED bar — the only part of RpmGear that consumes flash, so the
+// 5Hz toggle re-renders just these segments, not the entire large widget.
+function RpmGearBar({ rpmPct, shift, segs, barH, T }) {
   const flash = useFlash();
+  const flashOn = shift && flash;
+  return (
+    <div className="w-full flex gap-0.5" style={{ height: barH }}>
+      {Array.from({ length: segs }).map((_, i) => {
+        const frac = i / segs;
+        const lit = rpmPct >= frac + 1 / segs * 0.5;
+        const col = frac < 0.6 ? T.ledGreen : frac < 0.82 ? T.ledYellow : T.ledRed;
+        const on = lit && (!shift || flashOn);
+        return <div key={i} className="flex-1 rounded-sm" style={ledSeg(col, on)} />;
+      })}
+    </div>
+  );
+}
+function RpmGear({ data, w, h, T, units }) {
   const maxRpm = data.max_rpm || 8000;
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
-  const flashOn = shift && flash;
   const segs = 26;
   const barH = Math.max(16, h * 0.11);
   const gearFs = Math.max(44, Math.min(h * 0.42, w * 0.4, 120));
@@ -140,15 +157,7 @@ function RpmGear({ data, w, h, T, units }) {
   const gearColor = shift ? "#ffffff" : data.gear > 0 ? T.text : T.amber;
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-2">
-      <div className="w-full flex gap-0.5" style={{ height: barH }}>
-        {Array.from({ length: segs }).map((_, i) => {
-          const frac = i / segs;
-          const lit = rpmPct >= frac + 1 / segs * 0.5;
-          const col = frac < 0.6 ? T.ledGreen : frac < 0.82 ? T.ledYellow : T.ledRed;
-          const on = lit && (!shift || flashOn);
-          return <div key={i} className="flex-1 rounded-sm" style={ledSeg(col, on)} />;
-        })}
-      </div>
+      <RpmGearBar rpmPct={rpmPct} shift={shift} segs={segs} barH={barH} T={T} />
       <motion.div
         key={data.gear}
         initial={{ scale: 1 }}
@@ -172,13 +181,10 @@ function RpmGear({ data, w, h, T, units }) {
 }
 
 /* ── Slim standalone RPM bar (Formula Halo) ── */
-function RpmBar({ data, w, h, T }) {
+// Isolated segments — only these consume flash, not the parent wrapper.
+function RpmBarSegments({ rpmPct, shift, segs, T }) {
   const flash = useFlash();
-  const maxRpm = data.max_rpm || 8000;
-  const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
-  const shift = rpmPct > 0.93;
   const flashOn = shift && flash;
-  const segs = 34;
   return (
     <div className="w-full h-full flex items-center gap-0.5 px-1">
       {Array.from({ length: segs }).map((_, i) => {
@@ -190,6 +196,13 @@ function RpmBar({ data, w, h, T }) {
       })}
     </div>
   );
+}
+function RpmBar({ data, w, h, T }) {
+  const maxRpm = data.max_rpm || 8000;
+  const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
+  const shift = rpmPct > 0.93;
+  const segs = 34;
+  return <RpmBarSegments rpmPct={rpmPct} shift={shift} segs={segs} T={T} />;
 }
 
 function ShiftLights({ data, T, shape }) {

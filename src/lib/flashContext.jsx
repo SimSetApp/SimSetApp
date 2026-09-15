@@ -12,7 +12,7 @@ import { useFlashToggle } from "@/hooks/useFlashToggle";
  * subscribing when idle — no 5Hz re-renders when nothing is flashing.
  */
 
-export const FlashContext = createContext(true);
+export const FlashContext = createContext(false);
 
 export function FlashProvider({ children, hz = 2.5 }) {
   const flash = useFlashToggle(hz);

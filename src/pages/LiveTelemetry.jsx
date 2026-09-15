@@ -34,8 +34,10 @@ export default function LiveTelemetry() {
   const [autoLog, setAutoLog] = useState(false);
   const [logError, setLogError] = useState(null);
   const [logSetupId, setLogSetupId] = useState("");
+  const [hasSessionLog, setHasSessionLog] = useState(false);
   const sessionLogRef = useRef(null);
   const lapTimesRef = useRef([]);
+  const logInFlightRef = useRef(false);
 
   const { data: setups = [] } = useQuery({
     queryKey: ["saved-setups"],
@@ -50,7 +52,7 @@ export default function LiveTelemetry() {
     if (lapTime == null || isNaN(lapTime)) return;
     lapTimesRef.current = [...lapTimesRef.current, lapTime];
     const laps = lapTimesRef.current;
-    const best = Math.min(...laps);
+    const best = laps.reduce((min, l) => (l < min ? l : min), Infinity);
     const payload = {
       setup_id: logSetupId,
       session_type: "Race",
@@ -63,16 +65,21 @@ export default function LiveTelemetry() {
       notes: `Auto-logged by Live Telemetry bridge (${lastLap.sim || "sim"}${lastLap.track ? ", " + lastLap.track : ""})`,
     };
     (async () => {
+      if (logInFlightRef.current) return;
       try {
         if (sessionLogRef.current) {
           await base44.entities.SessionLog.update(sessionLogRef.current, payload);
         } else {
+          logInFlightRef.current = true;
           const created = await base44.entities.SessionLog.create(payload);
           sessionLogRef.current = created.id;
+          setHasSessionLog(true);
+          logInFlightRef.current = false;
           toast.success("Session logging started");
         }
         queryClient.invalidateQueries({ queryKey: ["session-logs"] });
       } catch (e) {
+        logInFlightRef.current = false;
         setLogError("Failed to save lap data");
         toast.error("Lap log failed — check connection");
       }
@@ -83,6 +90,7 @@ export default function LiveTelemetry() {
   useEffect(() => {
     sessionLogRef.current = null;
     lapTimesRef.current = [];
+    setHasSessionLog(false);
   }, [logSetupId, autoLog]);
 
   // Auto-end session on disconnect
@@ -90,6 +98,7 @@ export default function LiveTelemetry() {
     if ((status === "idle" || status === "failed") && sessionLogRef.current) {
       sessionLogRef.current = null;
       lapTimesRef.current = [];
+      setHasSessionLog(false);
       if (autoLog) toast.info("Session ended — disconnected");
     }
   }, [status, autoLog]);
@@ -204,13 +213,14 @@ export default function LiveTelemetry() {
                     <CheckCircle2 className="w-4 h-4 text-primary" /> Auto-log laps
                   </h4>
                   <div className="flex items-center gap-2">
-                    {autoLog && sessionLogRef.current && (
+                    {autoLog && hasSessionLog && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
                           sessionLogRef.current = null;
                           lapTimesRef.current = [];
+                          setHasSessionLog(false);
                           toast.success("Session ended");
                         }}
                         className="font-heading text-xs tracking-wider h-6 px-2"

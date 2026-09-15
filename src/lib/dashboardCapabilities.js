@@ -10,10 +10,11 @@ import { useMemo, useRef } from "react";
  * the connected sim genuinely exposes the underlying data — never synthesised.
  *
  * `flags` is stable per-sim: we prefer the bridge's explicit capability flag,
- * and the fallback checks whether the sim sends flag_state at all (not whether
- * a flag is currently active) so the capability doesn't flicker on/off per frame.
+ * and the fallback tracks whether the sim has EVER sent a non-null flag_state
+ * (not whether a flag is currently active) so the capability doesn't flicker
+ * on/off per frame.
  */
-export function deriveCapabilities(frame) {
+export function deriveCapabilities(frame, flagsSeen = false) {
   if (!frame) return EMPTY_CAPS;
   if (frame.capabilities) {
     return {
@@ -29,7 +30,7 @@ export function deriveCapabilities(frame) {
     tyre_3point: corners.some((t) => t && t.temp_i != null),
     brake_temps: corners.some((t) => t && t.brake_temp != null),
     sectors: Array.isArray(frame.sector_times) && frame.sector_times.some((s) => s != null),
-    flags: frame.flag_state != null && frame.flag_state !== "none",
+    flags: flagsSeen || (frame.flag_state != null && frame.flag_state !== "none"),
   };
 }
 
@@ -39,11 +40,18 @@ const EMPTY_CAPS = Object.freeze({ tyre_3point: false, brake_temps: false, secto
  * Memoized capability hook — returns a STABLE reference when the boolean
  * flags haven't changed, so downstream memo/components don't re-render from
  * identity churn on every telemetry frame.
+ *
+ * `flagsSeenRef` persists across frames: once a non-null flag_state is seen,
+ * the flags capability stays true for the rest of the session.
  */
 export function useCapabilities(frame) {
   const cache = useRef(EMPTY_CAPS);
+  const flagsSeenRef = useRef(false);
   return useMemo(() => {
-    const next = deriveCapabilities(frame);
+    if (frame && frame.flag_state != null && frame.flag_state !== "none") {
+      flagsSeenRef.current = true;
+    }
+    const next = deriveCapabilities(frame, flagsSeenRef.current);
     if (
       next.tyre_3point === cache.current.tyre_3point &&
       next.brake_temps === cache.current.brake_temps &&

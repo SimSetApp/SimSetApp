@@ -33,7 +33,7 @@ export default function BezelLEDs({ data, caps, theme, side }) {
       : [
           { id: "tc", col: theme.accent, active: tcActive, label: "TC" },
           { id: "abs", col: theme.absColor || "#4a9eff", active: absActive, label: "ABS" },
-          { id: "shift", col: theme.ledRed, active: false, label: "SFT", isShift: true },
+          { id: "shift", col: theme.ledRed, label: "SFT", isShift: true },
         ];
 
   return (

@@ -113,7 +113,14 @@ export default function DashboardFullscreen() {
       {/* Floating controls — always visible */}
       <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
         <button
-          onClick={() => navigate("/live-telemetry")}
+          onClick={() => {
+            if (window.opener && !window.opener.closed) {
+              window.opener.focus();
+              window.close();
+            } else {
+              navigate("/live-telemetry");
+            }
+          }}
           className="flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 backdrop-blur px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-white/20 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
