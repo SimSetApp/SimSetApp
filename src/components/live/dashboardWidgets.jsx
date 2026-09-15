@@ -24,6 +24,7 @@ export const WIDGET_DEFS = [
   { type: "cars", label: "Cars Ahead / Behind", w: 320, h: 220 },
   { type: "inputs", label: "Inputs", w: 300, h: 170 },
   { type: "status", label: "Status Bar", w: 960, h: 48 },
+  { type: "temps", label: "Temps", w: 300, h: 200 },
 ];
 
 export const WIDGET_DEF_MAP = new Map(WIDGET_DEFS.map((d) => [d.type, d]));
@@ -666,6 +667,47 @@ function Status({ data, color, w, h, T }) {
   );
 }
 
+function Temps({ data, w, h, T, caps }) {
+  const tyres = data.tyres || {};
+  const hasBrake = caps?.brake_temps;
+  const tempFs = Math.max(16, Math.min(h * 0.13, w * 0.085));
+  const labelFs = Math.max(9, tempFs * 0.42);
+  const row = (label, value, warn) => (
+    <div className="flex justify-between items-baseline">
+      <span className="font-digi" style={{ fontSize: labelFs, color: T.label, letterSpacing: "0.1em" }}>{label}</span>
+      <span className="font-digi font-bold tabular-nums" style={{ fontSize: tempFs, color: warn ? T.ledRed : T.text }}>
+        {value != null ? Math.round(value) : "--"}°
+      </span>
+    </div>
+  );
+  return (
+    <div className="w-full h-full p-2 flex flex-col gap-1 justify-center">
+      <Title T={T}>TEMPERATURES</Title>
+      {row("WATER", data.water_temp, data.water_temp > 110)}
+      {row("OIL", data.oil_temp, data.oil_temp > 130)}
+      {row("TRACK", data.track_temp, false)}
+      {row("AIR", data.air_temp, false)}
+      {hasBrake && (
+        <>
+          <div className="font-digi mt-0.5" style={{ fontSize: labelFs, color: T.label, letterSpacing: "0.1em" }}>BRAKES</div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+            {["fl", "fr", "rl", "rr"].map((k) => {
+              const bt = tyres[k]?.brake_temp;
+              const c = bt != null ? (bt > 600 ? T.ledRed : bt > 400 ? T.ledYellow : T.ledGreen) : T.label;
+              return (
+                <div key={k} className="flex justify-between">
+                  <span className="font-digi" style={{ fontSize: labelFs, color: T.label }}>{k.toUpperCase()}</span>
+                  <span className="font-digi tabular-nums" style={{ fontSize: labelFs, color: c }}>{bt != null ? Math.round(bt) : "--"}°</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function renderWidget(type, ctx) {
   const { data, color, w, h, theme, shape, units, caps, trends } = ctx;
   const T = { ...SEM, ...(theme || {}) };
@@ -684,6 +726,7 @@ export function renderWidget(type, ctx) {
     case "cars": return <Cars data={data} w={w} h={h} T={T} />;
     case "inputs": return <Inputs data={data} color={color} w={w} h={h} T={T} shape={sh} />;
     case "status": return <Status data={data} color={color} w={w} h={h} T={T} />;
+    case "temps": return <Temps data={data} w={w} h={h} T={T} caps={caps} />;
     default: return null;
   }
 }

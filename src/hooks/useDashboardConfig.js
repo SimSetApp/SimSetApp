@@ -13,10 +13,11 @@ function loadSaved(variantId, namespace = "") {
       return {
         accent: p.accent ?? variant.theme.accent,
         units: { ...variant.units, ...(p.units || {}) },
+        activeScreen: p.activeScreen || "race1",
       };
     }
   } catch { /* ignore */ }
-  return { accent: variant.theme.accent, units: { ...variant.units } };
+  return { accent: variant.theme.accent, units: { ...variant.units }, activeScreen: "race1" };
 }
 
 export function useDashboardConfig(namespace = "") {
@@ -36,9 +37,10 @@ export function useDashboardConfig(namespace = "") {
   }, [config, activeId, namespace]);
 
   const update = useCallback((patch) => setConfig((c) => ({ ...c, ...patch })), []);
+  const setActiveScreen = useCallback((screen) => setConfig((c) => ({ ...c, activeScreen: screen })), []);
   const reset = useCallback(() => {
     const variant = getVariant(activeId);
-    setConfig({ accent: variant.theme.accent, units: { ...variant.units } });
+    setConfig({ accent: variant.theme.accent, units: { ...variant.units }, activeScreen: "race1" });
   }, [activeId]);
   const loadVariant = useCallback((id) => {
     if (!DASH_VARIANTS.some((v) => v.id === id)) return;
@@ -46,5 +48,5 @@ export function useDashboardConfig(namespace = "") {
     setConfig(loadSaved(id, namespace));
   }, [namespace]);
 
-  return { config, activeId, loadVariant, update, reset };
+  return { config, activeId, loadVariant, update, reset, setActiveScreen };
 }

@@ -202,13 +202,97 @@ export const PORTRAIT_LAYOUT = [
   { type: "laps", flex: 1.3 },
 ];
 
+// ── Multi-screen system (Porsche 911 GT3 R DDU style) ──────────────────
+// Core widget types — always visible, never swapped between screens.
+// The driver's primary readout (gear, RPM, speed) + status bar stay fixed.
+export const CORE_TYPES = new Set([
+  "rpmGear", "gear", "rpmBar", "shiftLights", "speed", "status",
+]);
+
+// The 4 selectable screens, shown as compact header tab labels.
+export const SCREEN_DEFS = [
+  { id: "race1", label: "R1" },
+  { id: "race2", label: "R2" },
+  { id: "quali", label: "Q" },
+  { id: "temps", label: "TMP" },
+];
+
+// Widget priority per screen — first widget gets the biggest peripheral slot.
+// Each screen has a distinct focus:
+//   race1: live driving balance (tyres, inputs, delta)
+//   race2: stint management (fuel, laps, cars)
+//   quali: lap-time attack (delta, laps, sectors)
+//   temps: thermal monitoring (tyres, engine/brake temps)
+const SCREEN_WIDGETS = {
+  race1: ["tyres", "inputs", "delta", "fuel", "laps", "cars"],
+  race2: ["fuel", "laps", "cars", "tyres", "inputs", "delta"],
+  quali: ["delta", "laps", "tyres", "fuel", "inputs", "cars"],
+  temps: ["tyres", "temps", "fuel", "laps", "delta", "cars"],
+};
+
+// Flex weights for portrait peripheral items per widget type.
+const PORTRAIT_FLEX = {
+  rpmBar: 0.4, gear: 1.5, speed: 1.0,
+  tyres: 2.4, fuel: 1.6, laps: 1.2, delta: 1.3, cars: 1.0, inputs: 1.2, temps: 1.8,
+};
+
+// Fixed pixel heights for portrait core items — keeps the gear/speed readout
+// stable across screens instead of flexing when peripheral content changes.
+export const PORTRAIT_CORE_HEIGHTS = {
+  rpmBar: 30, gear: 150, speed: 80, status: 36,
+};
+
+// Build per-screen widget assignments for a variant's peripheral slots.
+// Peripheral slots are sorted by area (biggest first) and filled with the
+// screen's widget list in priority order, so the most important widget for
+// each screen lands in the largest available slot.
+function buildScreens(variant) {
+  const peripheralSlots = variant.layout
+    .filter((w) => !CORE_TYPES.has(w.type))
+    .sort((a, b) => b.w * b.h - a.w * a.h);
+  const screens = {};
+  for (const screenId of SCREEN_DEFS.map((s) => s.id)) {
+    const widgets = SCREEN_WIDGETS[screenId];
+    const assignment = {};
+    peripheralSlots.forEach((slot, i) => {
+      assignment[slot.id] = widgets[i] || "empty";
+    });
+    screens[screenId] = assignment;
+  }
+  return screens;
+}
+
+// Build per-screen portrait layouts.
+// Core items (rpmBar, gear, speed) stay fixed with stable heights;
+// peripheral items swap per screen and flex-fill the remaining space.
+function buildPortraitScreens(variant) {
+  const basePortrait = variant.portraitLayout || PORTRAIT_LAYOUT;
+  const coreItems = basePortrait.filter((item) => CORE_TYPES.has(item.type));
+  const peripheralCount = Math.max(1, basePortrait.length - coreItems.length);
+  const screens = {};
+  for (const screenId of SCREEN_DEFS.map((s) => s.id)) {
+    const widgets = SCREEN_WIDGETS[screenId].slice(0, peripheralCount);
+    const peripheralItems = widgets.map((type) => ({
+      type,
+      flex: PORTRAIT_FLEX[type] ?? 1.2,
+    }));
+    screens[screenId] = [...coreItems, ...peripheralItems];
+  }
+  return screens;
+}
+
 // Memoized variant lookup — returns a stable reference per id so consumers
 // don't get a new object every call.
 const variantCache = {};
 export function getVariant(id) {
   if (variantCache[id]) return variantCache[id];
   const v = DASH_VARIANTS.find((v) => v.id === id) || DASH_VARIANTS[0];
-  const result = { ...v, portraitLayout: v.portraitLayout || PORTRAIT_LAYOUT };
+  const result = {
+    ...v,
+    portraitLayout: v.portraitLayout || PORTRAIT_LAYOUT,
+    screens: buildScreens(v),
+    portraitScreens: buildPortraitScreens(v),
+  };
   variantCache[id] = result;
   return result;
 }

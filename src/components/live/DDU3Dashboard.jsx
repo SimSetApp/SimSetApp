@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect, memo } from "react";
+import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { Maximize2, Minimize2, Sliders, LayoutGrid, Plus, RotateCcw, Check, AlertTriangle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { useCustomLayout } from "@/hooks/useCustomLayout";
 import { FlashProvider } from "@/lib/flashContext";
@@ -9,11 +10,13 @@ import BezelLEDs from "@/components/live/BezelLEDs";
 import { WIDGET_DEFS, WIDGET_DEF_MAP } from "@/components/live/dashboardWidgets";
 import WidgetPicker from "@/components/live/WidgetPicker";
 import { renderWidget, panelBevel } from "@/components/live/dashboardWidgets";
-import { DASH_VARIANTS, getVariant } from "@/lib/dashboardVariants";
+import { DASH_VARIANTS, getVariant, CORE_TYPES, SCREEN_DEFS } from "@/lib/dashboardVariants";
 import DashboardCustomizer from "@/components/live/DashboardCustomizer";
 import DashVariantGallery from "@/components/live/DashVariantGallery";
 import PortraitDashboard from "@/components/live/PortraitDashboard";
 import AlarmOverlay from "@/components/live/AlarmOverlay";
+import ScreenTabs, { ScreenDots } from "@/components/live/ScreenTabs";
+import DashSlot from "@/components/live/DashSlot";
 
 const CW = 1000, CH = 560;
 const pad = (n) => String(n).padStart(2, "0");
@@ -41,13 +44,14 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
   const [customize, setCustomize] = useState(false);
   const [scale, setScale] = useState(0.76);
   const [isPortrait, setIsPortrait] = useState(false);
-  const { config, activeId, loadVariant, update, reset } = useDashboardConfig(namespace);
+  const { config, activeId, loadVariant, update, reset, setActiveScreen } = useDashboardConfig(namespace);
+  const activeScreen = config.activeScreen || "race1";
   const variant = getVariant(activeId);
   const trends = useTrend(data, TREND_KEYS);
   const caps = useCapabilities(data);
   const theme = variant.theme;
-  const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false, namespace);
-  const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true, namespace);
+  const { getSlotType, setSlotType, clearSlot, resetLayout } = useCustomLayout(activeId, false, namespace, activeScreen);
+  const { getSlotType: getPortraitType, setSlotType: setPortraitType, clearSlot: clearPortraitSlot, resetLayout: resetPortraitLayout } = useCustomLayout(activeId, true, namespace, activeScreen);
   const [editing, setEditing] = useState(false);
   const [pickerSlot, setPickerSlot] = useState(null);
 
@@ -114,6 +118,24 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
     ? { red: "#ff1a1a", yellow: "#ffe600", yellow_full: "#ffe600", blue: "#3b82f6", green: "#00ff66", checkered: "#ffffff" }[data.flag_state]
     : null;
 
+  // Screen cycling (swipe + buttons)
+  const dragRef = useRef(null);
+  const cycleScreen = useCallback((dir) => {
+    const idx = SCREEN_DEFS.findIndex((s) => s.id === activeScreen);
+    const next = SCREEN_DEFS[(idx + dir + SCREEN_DEFS.length) % SCREEN_DEFS.length].id;
+    setActiveScreen(next);
+  }, [activeScreen, setActiveScreen]);
+  const onPointerDown = (e) => {
+    if (editing) return;
+    dragRef.current = e.clientX;
+  };
+  const onPointerUp = (e) => {
+    if (dragRef.current == null) return;
+    const dx = e.clientX - dragRef.current;
+    if (Math.abs(dx) > 50) cycleScreen(dx > 0 ? -1 : 1);
+    dragRef.current = null;
+  };
+
   return (
     <div className={inKiosk ? "flex flex-col h-full gap-3" : "space-y-3"}>
       {editing && (!fs || inKiosk) && (
@@ -173,6 +195,7 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <ScreenTabs activeScreen={activeScreen} onScreenChange={setActiveScreen} accent={accent} labelColor={theme.label} />
                 {demo && <span style={{ color: theme.warn }}>DEMO</span>}
                 <button onClick={() => setCustomize((c) => !c)} className="p-0.5 rounded transition-colors" style={{ color: customize ? accent : theme.label }} aria-label="Display options">
                   <Sliders className="w-3 h-3" />
@@ -186,13 +209,19 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
               </div>
             </div>
 
+            {/* Screen page dots */}
+            <div className="flex items-center justify-center py-0.5 relative z-10 shrink-0" style={{ borderBottom: `1px solid ${theme.panelEdge}44` }}>
+              <ScreenDots activeScreen={activeScreen} accent={accent} dim={theme.dim} />
+            </div>
+
             {/* Canvas — above glass */}
-            <div ref={wrapRef} className="flex-1 min-h-0 w-full relative z-10">
+            <div ref={wrapRef} className="flex-1 min-h-0 w-full relative z-10" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
               {isPortrait ? (
                 <PortraitDashboard
                   data={data} variant={variant} config={config} caps={caps}
                   editing={editing}
                   trends={trends}
+                  activeScreen={activeScreen}
                   getSlotType={getPortraitType}
                   onSlotTap={(id, currentType) => setPickerSlot({ id, currentType, portrait: true })}
                 />
@@ -202,50 +231,56 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
                   {(variant.dividers || []).map((dx, i) => (
                     <div key={`d${i}`} className="absolute pointer-events-none" style={{ left: dx, top: 56, bottom: 56, width: 1, background: theme.panelEdge, opacity: 0.5 }} />
                   ))}
-                  {variant.layout.map((w) => {
-                    const color = w.color || accent;
-                    const effectiveType = getSlotType(w.id, w.type);
-                    const isEmpty = effectiveType === "empty";
-                    const def = WIDGET_DEF_MAP.get(effectiveType);
-                    return (
-                      <div
-                        key={w.id}
-                        className="absolute overflow-hidden"
-                        style={{
-                          left: w.x, top: w.y, width: w.w, height: w.h,
-                          fontSize: `${Math.max(10, Math.min(20, w.h * 0.06))}px`,
-                          border: editing ? `1px dashed ${accent}` : "none",
-                          background: "transparent",
-                          boxShadow: "none",
-                          cursor: editing ? "pointer" : "default",
-                        }}
-                        onClick={editing ? () => setPickerSlot({ id: w.id, currentType: effectiveType }) : undefined}
-                      >
-                        {editing && (
-                          <div className="absolute top-1 left-1 z-30 font-digi pointer-events-none" style={{ fontSize: 9, color: theme.label, background: "rgba(0,0,0,0.6)", padding: "1px 5px", borderRadius: 3, letterSpacing: "0.08em" }}>
-                            {isEmpty ? "EMPTY" : def?.label || effectiveType}
-                          </div>
-                        )}
-                        {isEmpty ? (
-                          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5" style={{ opacity: 0.4 }}>
-                            {editing && (
-                              <>
-                                <div className="rounded-full p-2" style={{ border: `1px dashed ${theme.label}`, opacity: 0.6 }}>
-                                  <Plus className="w-4 h-4" style={{ color: theme.label }} />
-                                </div>
-                                <span className="font-digi" style={{ fontSize: 8, color: theme.label, letterSpacing: "0.1em" }}>TAP TO ASSIGN</span>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          // Editing mode: full opacity, dashed border + label only (no dim)
-                          <div className="w-full h-full">
-                            {renderWidget(effectiveType, { data, color, w: w.w, h: w.h, theme, shape: variant.shape, units: config.units, caps, trends })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {/* Core slots — always mounted, never swapped (gear/RPM/speed/status) */}
+                  {variant.layout.filter((w) => CORE_TYPES.has(w.type)).map((w) => (
+                    <DashSlot
+                      key={w.id}
+                      w={w}
+                      effectiveType={w.type}
+                      editing={editing}
+                      accent={accent}
+                      theme={theme}
+                      data={data}
+                      variant={variant}
+                      config={config}
+                      caps={caps}
+                      trends={trends}
+                      isCore
+                    />
+                  ))}
+                  {/* Peripheral slots — cross-fade per screen */}
+                  <AnimatePresence initial={false}>
+                    <motion.div
+                      key={activeScreen}
+                      className="absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {variant.layout.filter((w) => !CORE_TYPES.has(w.type)).map((w) => {
+                        const screenDefault = variant.screens?.[activeScreen]?.[w.id] || w.type;
+                        const effectiveType = getSlotType(w.id, screenDefault);
+                        return (
+                          <DashSlot
+                            key={w.id}
+                            w={w}
+                            effectiveType={effectiveType}
+                            editing={editing}
+                            accent={accent}
+                            theme={theme}
+                            data={data}
+                            variant={variant}
+                            config={config}
+                            caps={caps}
+                            trends={trends}
+                            isCore={false}
+                            onSlotTap={(id, type) => setPickerSlot({ id, currentType: type })}
+                          />
+                        );
+                      })}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               )}
             </div>

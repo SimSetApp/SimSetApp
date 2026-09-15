@@ -1,8 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WIDGET_DEFS } from "@/components/live/dashboardWidgets";
+import { CORE_TYPES } from "@/lib/dashboardVariants";
 import {
   Gauge, BarChart3, Lightbulb, Disc, Fuel,
   Settings, TrendingUp, Timer, Users, SlidersHorizontal, LayoutGrid, Trash2,
+  Thermometer,
 } from "lucide-react";
 
 const ICONS = {
@@ -18,6 +20,7 @@ const ICONS = {
   cars: Users,
   inputs: SlidersHorizontal,
   status: LayoutGrid,
+  temps: Thermometer,
 };
 
 export default function WidgetPicker({ open, onOpenChange, currentType, onSelect, onClear }) {
@@ -28,7 +31,7 @@ export default function WidgetPicker({ open, onOpenChange, currentType, onSelect
           <DialogTitle>Choose widget</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2 mt-2">
-          {WIDGET_DEFS.map((w) => {
+          {WIDGET_DEFS.filter((w) => !CORE_TYPES.has(w.type)).map((w) => {
             const Icon = ICONS[w.type] || LayoutGrid;
             const active = w.type === currentType;
             return (
