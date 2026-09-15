@@ -110,6 +110,9 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
   };
 
   const accent = config.accent;
+  const flagCol = caps?.flags && data.flag_state
+    ? { red: "#ff1a1a", yellow: "#ffe600", yellow_full: "#ffe600", blue: "#3b82f6", green: "#00ff66", checkered: "#ffffff" }[data.flag_state]
+    : null;
 
   return (
     <div className={inKiosk ? "flex flex-col h-full gap-3" : "space-y-3"}>
@@ -154,8 +157,20 @@ function DDU3DashboardInner({ data, demo, inKiosk = false, namespace = "", stale
             <div className="flex items-center justify-between px-2 py-1 text-[10px] border-b relative z-10 shrink-0" style={{ borderColor: theme.panelEdge, color: theme.text }}>
               <div className="flex items-center gap-2.5">
                 <DashClock theme={theme} />
-                <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }}>{data.air_temp != null ? data.air_temp.toFixed(1) : "--"}°</span></span>
-                <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }}>{data.track_temp != null ? data.track_temp.toFixed(1) : "--"}°</span></span>
+                <span style={{ color: theme.label }}>AIR <span style={{ color: theme.text }} className="tabular-nums">{data.air_temp != null ? data.air_temp.toFixed(1) : "--"}°</span></span>
+                <span style={{ color: theme.label }}>TRK <span style={{ color: theme.text }} className="tabular-nums">{data.track_temp != null ? data.track_temp.toFixed(1) : "--"}°</span></span>
+                {data.water_temp != null && <span style={{ color: theme.label }}>H₂O <span style={{ color: data.water_temp > 110 ? "#ff1a1a" : theme.text }} className="tabular-nums">{data.water_temp.toFixed(0)}°</span></span>}
+                {data.oil_temp != null && <span style={{ color: theme.label }}>OIL <span style={{ color: data.oil_temp > 130 ? "#ff1a1a" : theme.text }} className="tabular-nums">{data.oil_temp.toFixed(0)}°</span></span>}
+                {caps?.flags && (
+                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: flagCol || theme.dim, background: flagCol ? `${flagCol}22` : "transparent", border: `1px solid ${flagCol ? flagCol + "44" : theme.panelEdge}`, letterSpacing: "0.1em" }}>
+                    {data.flag_state ? data.flag_state.toUpperCase() : "GREEN"}
+                  </span>
+                )}
+                {data.pit_limiter && (
+                  <span className="font-digi font-bold px-1.5 rounded" style={{ color: "#ff9800", background: "#ff980022", border: "1px solid #ff980044", letterSpacing: "0.1em" }}>
+                    PIT {data.pit_speed_limit || 60}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 {demo && <span style={{ color: theme.warn }}>DEMO</span>}

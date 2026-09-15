@@ -28,7 +28,7 @@ export default function BezelLEDs({ data, caps, theme, side }) {
       ? [
           { id: "flag", col: flagCol, active: !!flagCol, label: "FLG" },
           { id: "pit", col: "#ff9800", active: pitActive, label: "PIT" },
-          { id: "drs", col: theme.ledGreen, active: drsActive, label: "DRS" },
+          { id: "drs", col: theme.ledGreen, active: drsActive, label: "DRS", isDrs: true },
         ]
       : [
           { id: "tc", col: theme.accent, active: tcActive, label: "TC" },
@@ -41,6 +41,8 @@ export default function BezelLEDs({ data, caps, theme, side }) {
       {items.map((it) =>
         it.isShift ? (
           <ShiftLED key={it.id} data={data} theme={theme} label={it.label} />
+        ) : it.isDrs ? (
+          <DrsLED key={it.id} data={data} theme={theme} label={it.label} />
         ) : (
           <div key={it.id} className="flex flex-col items-center gap-0.5">
             <div
@@ -60,6 +62,33 @@ export default function BezelLEDs({ data, caps, theme, side }) {
           </div>
         )
       )}
+    </div>
+  );
+}
+
+// DRS LED — distinguishes available (flashing) from active (solid).
+function DrsLED({ data, theme, label }) {
+  const flash = useFlash();
+  const drsActive = !!(data.drs || data.drs_enabled);
+  const drsAvailable = !!(data.drs_available) && !drsActive;
+  const col = theme.ledGreen;
+  const on = drsActive || (drsAvailable && flash);
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <div
+        className="w-2.5 h-2.5 rounded-full transition-colors duration-150"
+        style={
+          on
+            ? { background: col, boxShadow: `0 0 8px ${col}, 0 0 4px ${col}, inset 0 0 2px rgba(255,255,255,0.5)` }
+            : { background: "rgba(255,255,255,0.06)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.5)" }
+        }
+      />
+      <span
+        className="font-digi"
+        style={{ fontSize: 9, color: on ? col : theme.dim, letterSpacing: "0.05em", opacity: on ? 1 : 0.5 }}
+      >
+        {label}
+      </span>
     </div>
   );
 }
