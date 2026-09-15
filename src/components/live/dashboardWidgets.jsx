@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { useFlash } from "@/lib/flashContext";
 import { fmt, fmtDuration } from "@/lib/formatTime";
 
@@ -67,7 +68,7 @@ export function innerBevel(T) {
 
 // Soft LED segment style: radial-gradient fill + layered glow (physical LED look)
 function ledSeg(col, on) {
-  if (!on) return { background: "rgba(255,255,255,0.04)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.5), inset 0 1px 1px rgba(0,0,0,0.3)", opacity: 0.35 };
+  if (!on) return { background: "rgba(0,0,0,0.6)", boxShadow: "inset 0 0 3px rgba(0,0,0,0.9), inset 0 1px 1px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)", opacity: 1 };
   return {
     background: `radial-gradient(circle, ${col} 0%, ${col} 65%, ${col}88 100%)`,
     boxShadow: `0 0 3px ${col}, 0 0 6px ${col}aa, 0 0 12px ${col}44, inset 0 0 2px rgba(255,255,255,0.7)`,
@@ -129,49 +130,53 @@ function Title({ children, T }) {
 /* ── Integrated RPM bar + gear + speed (GT3 Pro / Endurance) ── */
 // Isolated LED bar — the only part of RpmGear that consumes flash, so the
 // 5Hz toggle re-renders just these segments, not the entire large widget.
-function RpmGearBar({ rpmPct, shift, segs, barH, T }) {
+function RpmGearBar({ rpmPct, shift, segs, barH, w, T }) {
   const flash = useFlash();
   const flashOn = shift && flash;
+  const gap = 2;
+  const ledSize = Math.min(barH, (w - (segs - 1) * gap) / segs);
   return (
-    <div className="w-full flex gap-0.5" style={{ height: barH }}>
+    <div className="w-full flex justify-between items-center" style={{ height: barH }}>
       {Array.from({ length: segs }).map((_, i) => {
         const frac = i / segs;
         const lit = rpmPct >= frac + 1 / segs * 0.5;
         const col = frac < 0.6 ? T.ledGreen : frac < 0.82 ? T.ledYellow : T.ledRed;
         const on = lit && (!shift || flashOn);
-        return <div key={i} className="flex-1 rounded-sm" style={ledSeg(col, on)} />;
+        return <div key={i} className="rounded-full" style={{ width: ledSize, height: ledSize, flexShrink: 0, ...ledSeg(col, on) }} />;
       })}
     </div>
+  );
+}
+function ShiftPrompt({ T, fs }) {
+  const flash = useFlash();
+  return (
+    <div className="font-digi font-bold tracking-widest leading-none" style={{ fontSize: fs, color: flash ? T.ledRed : T.dim }}>SHIFT</div>
   );
 }
 function RpmGear({ data, w, h, T, units }) {
   const maxRpm = data.max_rpm || 8000;
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
+  const limiter = rpmPct >= 0.99;
   const segs = 26;
-  const barH = Math.max(16, h * 0.11);
-  const gearFs = Math.max(44, Math.min(h * 0.42, w * 0.4, 120));
-  const speedFs = Math.max(13, h * 0.1);
+  const barH = Math.max(14, h * 0.09);
+  const gearFs = Math.max(40, Math.min(h * 0.34, w * 0.32, 96));
+  const speedFs = Math.max(16, h * 0.11);
+  const rpmFs = Math.max(11, h * 0.07);
   const dispSpeed = units.speed === "mph" ? Math.round((data.speed_kmh || 0) * 0.621371) : Math.round(data.speed_kmh || 0);
-  // Contrasting shift alert: white flash so the gear stands out from red/yellow RPM segments
   const gearColor = shift ? "#ffffff" : data.gear > 0 ? T.text : T.amber;
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-2">
-      <RpmGearBar rpmPct={rpmPct} shift={shift} segs={segs} barH={barH} T={T} />
-      <motion.div
-        key={data.gear}
-        initial={{ scale: 1 }}
-        animate={{ scale: [1, 1.08, 1] }}
-        transition={{ duration: 0.12, ease: "easeOut" }}
-        className="font-digi font-bold tabular-nums leading-none"
-        style={{ fontSize: gearFs, color: gearColor }}
-      >
+    <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-2">
+      <RpmGearBar rpmPct={rpmPct} shift={shift} segs={segs} barH={barH} w={w} T={T} />
+      <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: rpmFs, color: limiter ? T.ledRed : shift ? T.ledYellow : T.label, letterSpacing: "0.05em" }}>
+        {Math.round(data.rpm || 0)}{limiter && <span className="ml-1.5">LIMITER</span>}
+      </div>
+      {shift && <ShiftPrompt T={T} fs={Math.max(10, h * 0.055)} />}
+      <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: gearFs, color: gearColor }}>
         {gearLabel(data.gear)}
-      </motion.div>
+      </div>
       <div className="flex items-baseline gap-1.5">
-        <span className="font-digi font-bold tabular-nums leading-none" style={{
-          fontSize: speedFs * 1.5, color: T.text,
-        }}>{dispSpeed}</span>
+        <span className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: speedFs * 1.8, color: T.text }}>{dispSpeed}</span>
         <span className="font-digi" style={{ fontSize: speedFs, color: T.label, letterSpacing: "0.2em" }}>
           {units.speed === "mph" ? "MPH" : "KM/H"}
         </span>
@@ -182,17 +187,19 @@ function RpmGear({ data, w, h, T, units }) {
 
 /* ── Slim standalone RPM bar (Formula Halo) ── */
 // Isolated segments — only these consume flash, not the parent wrapper.
-function RpmBarSegments({ rpmPct, shift, segs, T }) {
+function RpmBarSegments({ rpmPct, shift, segs, w, T }) {
   const flash = useFlash();
   const flashOn = shift && flash;
+  const gap = 1.5;
+  const ledSize = Math.min(20, (w - (segs - 1) * gap) / segs);
   return (
-    <div className="w-full h-full flex items-center gap-0.5 px-1">
+    <div className="w-full h-full flex items-center justify-between px-1">
       {Array.from({ length: segs }).map((_, i) => {
         const frac = i / segs;
         const lit = rpmPct >= frac + 1 / segs * 0.5;
         const col = frac < 0.6 ? T.ledGreen : frac < 0.82 ? T.ledYellow : T.ledRed;
         const on = lit && (!shift || flashOn);
-        return <div key={i} className="flex-1 rounded-full" style={{ ...ledSeg(col, on), height: "55%" }} />;
+        return <div key={i} className="rounded-full" style={{ width: ledSize, height: ledSize, flexShrink: 0, ...ledSeg(col, on) }} />;
       })}
     </div>
   );
@@ -202,7 +209,7 @@ function RpmBar({ data, w, h, T }) {
   const rpmPct = Math.min(1, (data.rpm || 0) / maxRpm);
   const shift = rpmPct > 0.93;
   const segs = 34;
-  return <RpmBarSegments rpmPct={rpmPct} shift={shift} segs={segs} T={T} />;
+  return <RpmBarSegments rpmPct={rpmPct} shift={shift} segs={segs} w={w} T={T} />;
 }
 
 function ShiftLights({ data, T, shape }) {
@@ -247,71 +254,75 @@ function Tyres({ data, w, h, T, units, caps, trends }) {
   const tempFs = Math.max(13, Math.min(h * 0.15, w * 0.11));
   const has3Point = caps?.tyre_3point;
   const hasBrake = caps?.brake_temps;
+  const compound = data.tyre_compound;
 
   // 3-point thermal view (sim-native only): I/M/O strip + brake disc temp
   if (has3Point) {
+    const renderCell = (k) => {
+      const t = tyres[k.toLowerCase()] || {};
+      const ti = t.temp_i, tm = t.temp_m, to = t.temp_o;
+      const core = t.temp_c ?? (ti != null && tm != null && to != null ? ti * 0.25 + tm * 0.5 + to * 0.25 : null);
+      const tc = tempGradient(core, T);
+      const brake = t.brake_temp;
+      const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
+      return (
+        <div key={k} className="rounded border p-1 flex flex-col gap-0.5 justify-center" style={{
+          borderColor: T.panelEdge,
+          background: `linear-gradient(135deg, ${tc}18, transparent)`,
+          boxShadow: innerBevel(T),
+        }}>
+          <div className="flex justify-between items-baseline">
+            <span className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
+            <span className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs * 0.72, color: tc }}>{core != null ? Math.round(core) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></span>
+          </div>
+          <div className="rounded overflow-hidden relative" style={{ height: Math.max(8, tempFs * 0.4), background: ti != null && tm != null && to != null ? `linear-gradient(90deg, ${tempGradient(ti, T)}, ${tempGradient(tm, T)}, ${tempGradient(to, T)})` : "rgba(255,255,255,0.08)", boxShadow: ti != null ? `0 0 6px ${tc}66, inset 0 0 3px rgba(255,255,255,0.25)` : "none" }}>
+            <span className="absolute left-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>I</span>
+            <span className="absolute right-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>O</span>
+          </div>
+          <div className="flex justify-between font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.32), color: T.label }}>
+            {hasBrake && <span>BRK <span style={{ color: bc }} className="tabular-nums">{brake != null ? Math.round(brake) : "--"}°</span></span>}
+            <span>PRS <span style={{ color: T.text }} className="tabular-nums">{press(t.pressure_psi)}</span></span>
+          </div>
+        </div>
+      );
+    };
     return (
-      <div className="w-full h-full grid grid-cols-2 gap-1 p-1.5">
-        {["FL", "FR", "RL", "RR"].map((k) => {
-          const t = tyres[k.toLowerCase()] || {};
-          const ti = t.temp_i, tm = t.temp_m, to = t.temp_o;
-          const core = t.temp_c ?? (ti != null && tm != null && to != null ? ti * 0.25 + tm * 0.5 + to * 0.25 : null);
-          const tc = tempGradient(core, T);
-          const brake = t.brake_temp;
-          const bc = brake != null ? (brake > 600 ? T.ledRed : brake > 400 ? T.ledYellow : T.ledGreen) : T.label;
-          return (
-            <div key={k} className="rounded border p-1 flex flex-col gap-0.5 justify-center" style={{
-              borderColor: T.panelEdge,
-              background: `linear-gradient(135deg, ${tc}18, transparent)`,
-              boxShadow: innerBevel(T),
-            }}>
-              <div className="flex justify-between items-baseline">
-                <span className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.4), color: T.label, letterSpacing: "0.1em" }}>{k}</span>
-                <span className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs * 0.72, color: tc }}>{core != null ? Math.round(core) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></span>
-              </div>
-              {/* 3-point thermal strip: continuous Inner → Middle → Outer gradient */}
-              <div className="rounded overflow-hidden relative" style={{ height: Math.max(8, tempFs * 0.4), background: ti != null && tm != null && to != null ? `linear-gradient(90deg, ${tempGradient(ti, T)}, ${tempGradient(tm, T)}, ${tempGradient(to, T)})` : "rgba(255,255,255,0.08)", boxShadow: ti != null ? `0 0 6px ${tc}66, inset 0 0 3px rgba(255,255,255,0.25)` : "none" }}>
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>I</span>
-                <span className="absolute right-1 top-1/2 -translate-y-1/2 font-digi" style={{ fontSize: Math.max(8, tempFs * 0.3), color: "rgba(255,255,255,0.7)" }}>O</span>
-              </div>
-              <div className="flex justify-between font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.32), color: T.label }}>
-                {hasBrake && <span>BRK <span style={{ color: bc }} className="tabular-nums">{brake != null ? Math.round(brake) : "--"}°</span></span>}
-                <span>PRS <span style={{ color: T.text }} className="tabular-nums">{press(t.pressure_psi)}</span></span>
-              </div>
-            </div>
-          );
-        })}
+      <div className="w-full h-full flex flex-col gap-1 p-1.5">
+        <div className="flex gap-6 flex-1 min-h-0">{["FL", "FR"].map(renderCell)}</div>
+        {compound && <div className="font-digi text-center" style={{ fontSize: Math.max(8, tempFs * 0.28), color: T.label, letterSpacing: "0.15em" }}>{compound}</div>}
+        <div className="flex gap-6 flex-1 min-h-0">{["RL", "RR"].map(renderCell)}</div>
       </div>
     );
   }
 
-  // Single core-temp view — now with trend arrows
+  // Single core-temp view
   const showDetail = h > 150;
+  const renderCell = (k) => {
+    const t = tyres[k.toLowerCase()];
+    const temp = t?.temp_c, pressVal = t?.pressure_psi, wear = t?.wear_pct;
+    const tc = tempGradient(temp, T);
+    return (
+      <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{
+        borderColor: T.panelEdge,
+        background: `linear-gradient(135deg, ${tc}18, transparent)`,
+        boxShadow: innerBevel(T),
+      }}>
+        <div className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.38), color: T.label, letterSpacing: "0.1em" }}>{k}</div>
+        <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{ fontSize: tempFs, color: tc }}>{temp != null ? Math.round(temp) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></div>
+        {showDetail && (
+          <>
+            <div className="font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.36), color: T.label }}>PRS <span style={{ color: T.text }} className="tabular-nums">{press(pressVal)}</span></div>
+            <div className="font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.36), color: T.label }}>WR <span style={{ color: wearColor(wear, T) }} className="tabular-nums">{wear != null ? Math.round(wear) : "--"}%</span></div>
+          </>
+        )}
+      </div>
+    );
+  };
   return (
-    <div className="w-full h-full grid grid-cols-2 gap-1 p-1.5">
-      {["FL", "FR", "RL", "RR"].map((k) => {
-        const t = tyres[k.toLowerCase()];
-        const temp = t?.temp_c, pressVal = t?.pressure_psi, wear = t?.wear_pct;
-        const tc = tempGradient(temp, T);
-        return (
-          <div key={k} className="rounded border p-1 flex flex-col justify-center" style={{
-            borderColor: T.panelEdge,
-            background: `linear-gradient(135deg, ${tc}18, transparent)`,
-            boxShadow: innerBevel(T),
-          }}>
-            <div className="font-digi" style={{ fontSize: Math.max(9, tempFs * 0.38), color: T.label, letterSpacing: "0.1em" }}>{k}</div>
-            <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{
-              fontSize: tempFs, color: tc,
-            }}>{temp != null ? Math.round(temp) : "--"}°<TrendArrow dir={trends?.[`tyres.${k.toLowerCase()}.temp_c`]} color={tc} /></div>
-            {showDetail && (
-              <>
-                <div className="font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.36), color: T.label }}>PRS <span style={{ color: T.text }} className="tabular-nums">{press(pressVal)}</span></div>
-                <div className="font-lcd" style={{ fontSize: Math.max(8, tempFs * 0.36), color: T.label }}>WR <span style={{ color: wearColor(wear, T) }} className="tabular-nums">{wear != null ? Math.round(wear) : "--"}%</span></div>
-              </>
-            )}
-          </div>
-        );
-      })}
+    <div className="w-full h-full flex flex-col gap-1 p-1.5">
+      <div className="flex gap-6 flex-1 min-h-0">{["FL", "FR"].map(renderCell)}</div>
+      {compound && <div className="font-digi text-center" style={{ fontSize: Math.max(8, tempFs * 0.28), color: T.label, letterSpacing: "0.15em" }}>{compound}</div>}
+      <div className="flex gap-6 flex-1 min-h-0">{["RL", "RR"].map(renderCell)}</div>
     </div>
   );
 }
@@ -321,28 +332,29 @@ function Fuel({ data, w, h, T, trends }) {
   const hasMax = data.fuel_max_litres != null;
   const maxFuel = data.fuel_max_litres || 100;
   const pct = hasMax ? Math.max(0, Math.min(100, ((data.fuel_litres || 0) / maxFuel) * 100)) : null;
-  // Color agreement: prefer laps-left when available (more meaningful), else pct
   const fuelCol = lapsLeft != null
     ? (lapsLeft > 5 ? T.ledGreen : lapsLeft > 2 ? T.ledYellow : T.ledRed)
     : pct != null
       ? (pct > 30 ? T.ledGreen : pct > 12 ? T.ledYellow : T.ledRed)
       : T.label;
   return (
-    <div className="w-full h-full p-2 flex flex-col gap-1">
-      <div className="flex justify-between items-baseline">
-        <Title T={T}>FUEL</Title>
-        {pct != null && <span className="font-digi font-bold tabular-nums flex items-center" style={{ fontSize: "1.05em", color: fuelCol }}>{pct.toFixed(0)}%<TrendArrow dir={trends?.fuel_litres} color={fuelCol} /></span>}
-      </div>
+    <div className="w-full h-full p-2 flex gap-2">
       {pct != null && (
-        <div className="rounded-full overflow-hidden" style={{ height: "0.9em", background: T.track, boxShadow: innerBevel(T) }}>
-          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(180deg, ${fuelCol}, ${fuelCol}aa)`, boxShadow: pct > 1 ? `0 0 8px ${fuelCol}aa, inset 0 1px 0 rgba(255,255,255,0.4)` : "none" }} />
+        <div className="rounded-full overflow-hidden relative shrink-0" style={{ width: "1.2em", background: T.track, boxShadow: innerBevel(T) }}>
+          <div className="absolute bottom-0 w-full rounded-full" style={{ height: `${pct}%`, background: `linear-gradient(0deg, ${fuelCol}, ${fuelCol}aa)`, boxShadow: pct > 1 ? `0 0 8px ${fuelCol}aa, inset 0 1px 0 rgba(255,255,255,0.4)` : "none" }} />
         </div>
       )}
-      <Row label="REMAINING" value={`${(data.fuel_litres ?? 0).toFixed(1)}L`} lcolor={T.label} vcolor={T.text} />
-      <Row label="FUEL REQ" value={data.fuel_required != null ? `${data.fuel_required.toFixed(1)}L` : "--"} lcolor={T.label} vcolor={T.text} />
-      <Row label="AVG LAP" value={fmt(data.avg_lap_time)} lcolor={T.label} vcolor={T.text} />
-      <Row label="LAST LAP" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
-      {lapsLeft != null && <Row label="LAPS LEFT" value={lapsLeft.toFixed(1)} lcolor={T.label} vcolor={fuelCol} />}
+      <div className="flex-1 flex flex-col gap-0.5 justify-center min-w-0">
+        <div className="flex justify-between items-baseline">
+          <Title T={T}>FUEL</Title>
+          {pct != null && <span className="font-digi font-bold tabular-nums flex items-center" style={{ fontSize: "1.05em", color: fuelCol }}>{pct.toFixed(0)}%<TrendArrow dir={trends?.fuel_litres} color={fuelCol} /></span>}
+        </div>
+        <Row label="REMAINING" value={`${(data.fuel_litres ?? 0).toFixed(1)}L`} lcolor={T.label} vcolor={T.text} />
+        <Row label="FUEL REQ" value={data.fuel_required != null ? `${data.fuel_required.toFixed(1)}L` : "--"} lcolor={T.label} vcolor={T.text} />
+        <Row label="AVG LAP" value={fmt(data.avg_lap_time)} lcolor={T.label} vcolor={T.text} />
+        <Row label="LAST LAP" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
+        {lapsLeft != null && <Row label="LAPS LEFT" value={lapsLeft.toFixed(1)} lcolor={T.label} vcolor={fuelCol} />}
+      </div>
     </div>
   );
 }
@@ -355,17 +367,16 @@ function Gear({ data, w, h, T, shape }) {
   const gearFs = Math.max(48, Math.min(h * 0.42, w * 0.42, 120));
   // Contrasting shift alert: white flash stands out from red/yellow RPM segments
   const gearColor = shift ? "#ffffff" : data.gear > 0 ? T.text : T.amber;
+  const rpmFs = Math.max(10, h * 0.06);
   const numeral = (
-    <motion.span
-      key={data.gear}
-      initial={{ scale: 1 }}
-      animate={{ scale: [1, 1.08, 1] }}
-      transition={{ duration: 0.12, ease: "easeOut" }}
-      className="font-digi font-bold tabular-nums relative z-10"
-      style={{ fontSize: gearFs, lineHeight: 0.8, color: gearColor }}
-    >
-      {gearLabel(data.gear)}
-    </motion.span>
+    <div className="flex flex-col items-center relative z-10">
+      <span className="font-digi font-bold tabular-nums" style={{ fontSize: gearFs, lineHeight: 0.8, color: gearColor }}>
+        {gearLabel(data.gear)}
+      </span>
+      <span className="font-digi tabular-nums" style={{ fontSize: rpmFs, color: shift ? T.ledRed : T.label, letterSpacing: "0.05em" }}>
+        {Math.round(data.rpm || 0)}
+      </span>
+    </div>
   );
 
   if (shape === "ring") {
@@ -420,6 +431,17 @@ function Delta({ data, w, h, T, caps, trends }) {
   const tone = delta == null ? T.label : delta <= 0 ? T.ledGreen : T.ledRed;
   const deltaFs = Math.max(18, Math.min(h * 0.32, w * 0.16));
   const hasSectors = caps?.sectors;
+  const [bestFlash, setBestFlash] = useState(false);
+  const prevBestRef = useRef(data.best_lap_time);
+  useEffect(() => {
+    if (data.best_lap_time != null && prevBestRef.current != null && data.best_lap_time < prevBestRef.current) {
+      setBestFlash(true);
+      const id = setTimeout(() => setBestFlash(false), 3000);
+      prevBestRef.current = data.best_lap_time;
+      return () => clearTimeout(id);
+    }
+    prevBestRef.current = data.best_lap_time;
+  }, [data.best_lap_time]);
 
   // Sector deltas (sim-native only): show delta vs best/PB, not absolute time
   if (hasSectors) {
@@ -454,15 +476,17 @@ function Delta({ data, w, h, T, caps, trends }) {
               <div key={lbl} className="rounded border text-center py-0.5 relative" style={{ borderColor: `${c}55`, background: `${c}11`, boxShadow: innerBevel(T) }}>
                 <div className="font-digi" style={{ fontSize: Math.max(8, secFs * 0.5), color: T.label, letterSpacing: "0.1em" }}>{lbl}</div>
                 <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: secFs, color: c }}>
-                  {d != null ? `${d > 0 ? "+" : ""}${d.toFixed(2)}` : "--"}
+                  {sectors[i] != null ? fmt(sectors[i]) : "--"}
                 </div>
+                {d != null && <div className="font-digi tabular-nums" style={{ fontSize: Math.max(7, secFs * 0.55), color: c, opacity: 0.7 }}>{d > 0 ? "+" : ""}{d.toFixed(2)}</div>}
                 {nb && <span className="absolute -top-1 -right-1 font-digi" style={{ fontSize: 8, color: BEST }}>★</span>}
               </div>
             );
           })}
         </div>
         <Row label="LAST" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
-        <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
+        <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={bestFlash ? T.ledGreen : T.text} />
+        {bestFlash && <div className="font-digi font-bold text-center" style={{ color: T.ledGreen, fontSize: Math.max(9, deltaFs * 0.2) }}>BEST LAP!</div>}
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
           <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{
@@ -481,7 +505,8 @@ function Delta({ data, w, h, T, caps, trends }) {
   return (
     <div className="w-full h-full p-2 flex flex-col">
       <Row label="LAST" value={fmt(data.last_lap_time)} lcolor={T.label} vcolor={T.text} />
-      <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={T.text} />
+      <Row label="BEST" value={fmt(data.best_lap_time)} lcolor={T.label} vcolor={bestFlash ? T.ledGreen : T.text} />
+      {bestFlash && <div className="font-digi font-bold text-center" style={{ color: T.ledGreen, fontSize: Math.max(9, deltaFs * 0.2) }}>BEST LAP!</div>}
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="font-digi" style={{ fontSize: Math.max(8, deltaFs * 0.22), color: T.label, letterSpacing: "0.15em" }}>DELTA</div>
         <div className="font-digi font-bold tabular-nums leading-none flex items-center" style={{
@@ -500,27 +525,24 @@ function Laps({ data, color, w, h, T }) {
   const big = h > 180;
   const curFs = Math.max(14, Math.min(h * 0.28, w * 0.11));
   const hasTimeRem = data.time_remaining != null;
+  const lapType = data.lap_type;
+  const lapTypeMeta = lapType === "OUT" ? { label: "OUT LAP", col: T.label } : lapType === "IN" ? { label: "IN LAP", col: T.amber } : lapType === "FLYING" ? { label: "FLYING", col: T.ledGreen } : null;
   return (
     <div className="w-full h-full p-2 flex flex-col gap-1 justify-center">
       {big ? (
         <>
           <Row label="LAPS" value={`${data.lap || 0}/${data.total_laps || 0}`} lcolor={T.label} vcolor={T.text} />
+          {lapTypeMeta && <div className="font-digi font-bold tracking-widest" style={{ fontSize: Math.max(8, curFs * 0.2), color: lapTypeMeta.col }}>{lapTypeMeta.label}</div>}
           {hasTimeRem && <Row label="TIME REM" value={fmtDuration(data.time_remaining)} lcolor={T.label} vcolor={T.text} />}
           <div className="flex-1 flex flex-col items-center justify-center">
             <div className="font-digi" style={{ fontSize: Math.max(8, curFs * 0.3), color: T.label, letterSpacing: "0.15em" }}>CURRENT LAP</div>
-            <motion.div
-              key={data.lap}
-              initial={{ scale: 1 }}
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="font-digi font-bold tabular-nums leading-none"
-              style={{ fontSize: curFs, color }}
-            >{fmt(data.current_lap_time)}</motion.div>
+            <div className="font-digi font-bold tabular-nums leading-none" style={{ fontSize: curFs, color }}>{fmt(data.current_lap_time)}</div>
           </div>
         </>
       ) : (
         <>
           <Row label="LAPS" value={`${data.lap || 0}/${data.total_laps || 0}`} lcolor={T.label} vcolor={T.text} />
+          {lapTypeMeta && <div className="font-digi font-bold tracking-widest" style={{ fontSize: Math.max(8, curFs * 0.2), color: lapTypeMeta.col }}>{lapTypeMeta.label}</div>}
           {hasTimeRem && <Row label="TIME REM" value={fmtDuration(data.time_remaining)} lcolor={T.label} vcolor={T.text} />}
           <Row label="CURRENT" value={fmt(data.current_lap_time)} lcolor={T.label} vcolor={color} />
         </>
@@ -530,8 +552,8 @@ function Laps({ data, color, w, h, T }) {
 }
 
 function Cars({ data, w, h, T }) {
-  // 2 decimals, no leading '+' — matches real racing dashes
-  const gap = (g) => (g == null ? "--.--" : `${g > 0 ? "+" : ""}${Math.abs(g).toFixed(2)}`);
+  // Show sign: '-' = gaining (green), '+' = losing (red) — matches real racing dashes
+  const gap = (g) => (g == null ? "--.--" : `${g > 0 ? "+" : ""}${g.toFixed(2)}`);
   const fs = Math.max(14, Math.min(h * 0.22, w * 0.11));
   return (
     <div className="w-full h-full p-2 flex flex-col gap-2 justify-center">
@@ -613,27 +635,29 @@ function Inputs({ data, color, w, h, T, shape }) {
 }
 
 function Status({ data, color, w, h, T }) {
-  // Removed redundant THR (shown live in the Inputs widget of most variants).
-  // Brake bias shows one decimal. Labels shortened for density.
   const items = [
-    ["POS", `P${data.position || 0}`, null, 1.8, "1.35em"],
-    ["INC", `${data.incidents || 0}`, T.ledYellow, 1.1, "1.0em"],
-    ["BB", data.brake_bias != null ? data.brake_bias.toFixed(1) : "--", T.ledRed, 1.0, "1.0em"],
-    ["BST", data.boost != null ? data.boost.toFixed(1) : "--", null, 0.8, "0.85em"],
-    ["TC1", data.tc1 != null ? data.tc1 : "--", color, 0.7, "0.8em"],
-    ["TC2", data.tc2 != null ? data.tc2 : "--", null, 0.7, "0.8em"],
-    ["ABS", data.abs != null ? data.abs : "--", T.absColor || T.blue, 0.7, "0.8em"],
-    ["MAP", data.map != null ? data.map : "--", T.ledGreen, 0.7, "0.8em"],
+    { l: "POS", v: `P${data.position || 0}`, c: null, fl: 2.2, fs: "1.4em", primary: true },
+    { l: "INC", v: `${data.incidents || 0}`, c: T.ledYellow, fl: 1.2, fs: "1.1em", warning: true },
+    { l: "BB", v: data.brake_bias != null ? data.brake_bias.toFixed(1) : "--", c: T.ledRed, fl: 1.0, fs: "1.0em" },
+    { l: "BST", v: data.boost != null ? data.boost.toFixed(1) : "--", c: null, fl: 0.8, fs: "0.85em", setting: true },
+    { l: "TC1", v: data.tc1 != null ? data.tc1 : "--", c: color, fl: 0.7, fs: "0.8em", setting: true },
+    { l: "TC2", v: data.tc2 != null ? data.tc2 : "--", c: null, fl: 0.7, fs: "0.8em", setting: true },
+    { l: "ABS", v: data.abs != null ? data.abs : "--", c: T.absColor || T.blue, fl: 0.7, fs: "0.8em", setting: true },
+    { l: "MAP", v: data.map != null ? data.map : "--", c: T.ledGreen, fl: 0.7, fs: "0.8em", setting: true },
   ];
   return (
     <div className="w-full h-full flex gap-1 p-1">
-      {items.map(([l, v, b, fl, fs]) => (
-        <div key={l} className="rounded border flex flex-col items-center justify-center" style={{
-          flex: fl, borderColor: b || T.panelEdge, background: T.panel,
-          boxShadow: b ? `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${b}44, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)` : `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`,
+      {items.map((it) => (
+        <div key={it.l} className="rounded border flex flex-col items-center justify-center" style={{
+          flex: it.fl,
+          borderColor: it.c || T.panelEdge,
+          background: it.primary ? `${T.accent}15` : it.setting ? T.dim : T.panel,
+          boxShadow: it.c
+            ? `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px ${it.c}44, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`
+            : `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px ${T.panelEdge}88, inset 0 -1px 2px rgba(0,0,0,0.4), inset 0 1px 3px rgba(0,0,0,0.2)`,
         }}>
-          <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{l}</div>
-          <div className="font-digi font-bold tabular-nums" style={{ fontSize: fs || "1em", color: b || T.text }}>{v}</div>
+          <div className="font-digi" style={{ fontSize: "0.65em", color: T.label, letterSpacing: "0.08em" }}>{it.l}</div>
+          <div className="font-digi font-bold tabular-nums" style={{ fontSize: it.fs, color: it.c || T.text }}>{it.v}</div>
         </div>
       ))}
     </div>
